@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<body>
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar" th:fragment="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/dashboard}">
+                <i class="bi bi-grid"></i>
+                <span>Tổng quan</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/dashboard/user_management}">
+                <i class="bi bi-person"></i><span>Người dùng</span></i>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/dashboard/product_management}">
+                <i class="bi bi-journal-text"></i><span>Sản phẩm</span></i>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/dashboard/category_management}">
+                <i class="bi bi-layout-text-window-reverse"></i><span>Thể loại</span></i>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/dashboard/order_management}">
+                <i class="bi bi-basket2"></i><span>Đơn hàng</span></i>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/dashboard/contact_management}">
+                <i class="bi bi-envelope"></i><span>Liên hệ</span></i>
+            </a>
+        </li>
+
+        <li class="nav-heading">
+            <hr>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/logout}">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Đăng xuất</span>
+            </a>
+        </li>
+    </ul>
+</aside>
+</body>
+</html>

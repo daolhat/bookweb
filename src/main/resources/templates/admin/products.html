@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>book</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <div th:replace="admin/fragment/head :: head"></div>
+</head>
+
+<body>
+<!-- ======= Header ======= -->
+<header th:replace="admin/fragment/header :: header">
+</header>
+<!-- ======= Sidebar ======= -->
+<aside th:replace="admin/fragment/sidebar :: sidebar">
+</aside>
+
+<main id="main" class="main">
+
+    <div class="row">
+        <div class="pagetitle col-md-6">
+            <h1>Sản phẩm</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/dashboard}">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Sản phẩm</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-md-6 d-flex align-items-center justify-content-end">
+            <a th:href="@{/dashboard/product_management/add}" class="btn btn-primary">Thêm sản phẩm</a>
+        </div>
+    </div>
+
+    <!-- Hiển thị thông báo thành công hoặc lỗi nếu có -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${info}" class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="bi bi-info-circle me-1"></i>
+        <span th:text="${info}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Danh sách sản phẩm</h4>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <select class="form-select" name="category" id="categoryFilter"
+                                        th:onchange="'window.location.href=\'' + @{/dashboard/product_management(categoryId=this.value, layout=${selectedLayout}} + '\''">
+                                    <option value="">-- Chọn thể loại --</option>
+                                    <option th:each="category : ${categories}"
+                                            th:value="${category.id}"
+                                            th:text="${category.name}"
+                                            th:selected="${selectedCategoryId != null && selectedCategoryId == category.id}">
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <select class="form-select" name="layout" id="layoutFilter"
+                                        th:onchange="'window.location.href=\'' + @{/dashboard/product_management(categoryId=${selectedCategoryId}, layout=this.value)} + '\''">
+                                    <option value="">-- Chọn hình thức bìa --</option>
+                                    <option value="Bìa mềm" th:selected="${selectedLayout != null && selectedLayout == 'Bìa mềm'}">Bìa mềm</option>
+                                    <option value="Bìa cứng" th:selected="${selectedLayout != null && selectedLayout == 'Bìa cứng'}">Bìa cứng</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 d-flex d-flex justify-content-center align-items-center">
+                                <a th:href="@{/dashboard/product_management}" class="btn btn-secondary">Xoá bộ lọc</a>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive mt-5">
+                            <table class="table datatable table-striped table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Mã sản phẩm</th>
+                                    <th scope="col">Tiêu đề</th>
+                                    <th scope="col">Ảnh bìa</th>
+                                    <th scope="col" style="width: 12rem">Thể loại</th>
+                                    <th scope="col">Tác giả</th>
+                                    <th scope="col">Số lượng trong kho</th>
+                                    <th scope="col">Giá gốc</th>
+                                    <th scope="col">Số lượng đã bán</th>
+                                    <th scope="col">Giá bán</th>
+                                    <th scope="col" style="width: 8rem"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="text-center" th:each="product : ${products}">
+                                    <td th:text="${product.code}"></td>
+                                    <td th:text="${product.title}"></td>
+                                    <td class="text-center">
+                                        <img th:src="@{'/assets/img/product/' + ${product.imageProduct}}"
+                                             style="max-height: 120px; max-width: 90px; object-fit: cover;"
+                                             alt="Ảnh sản phẩm">
+                                    </td>
+                                    <td th:text="${product.category.name}"></td>
+                                    <td th:text="${product.author}"></td>
+                                    <td th:text="${product.quantity}"></td>
+                                    <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' Đ'"></td>
+                                    <td th:text="${product.quantitySold}"></td>
+                                    <td th:text="${#numbers.formatDecimal(product.price * (1 - product.discount / 100.0), 0, 'COMMA', 0, 'POINT')} + ' Đ'">
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <a th:href="@{/dashboard/product_management/update/{id}(id=${product.id})}"
+                                               class="me-2">
+                                                <button type="button" class="btn btn-outline-warning btn-sm border-0">
+                                                    <i class="bi bi-pencil-square"></i> Sửa
+                                                </button>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger btn-sm border-0"
+                                                    data-bs-toggle="modal"
+                                                    th:data-bs-target="'#deleteModal' + ${product.id}">
+                                                <i class="bi bi-trash"></i> Xoá
+                                            </button>
+
+                                            <!-- Modal Xác nhận xóa -->
+                                            <div class="modal fade" th:id="'deleteModal' + ${product.id}" tabindex="-1">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Xác nhận xóa</h5>
+                                                            <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body text-start">
+                                                            <p>Bạn có chắc chắn muốn xóa sản phẩm <strong
+                                                                    th:text="${product.title}"></strong>?</p>
+                                                            <p class="text-danger">Hành động này không thể hoàn tác.</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">Hủy
+                                                            </button>
+                                                            <a th:href="@{/dashboard/product_management/delete/{id}(id=${product.id})}"
+                                                               class="btn btn-danger">
+                                                                Xóa
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- ======= Footer ======= -->
+<footer th:replace="admin/fragment/footer :: footer"></footer>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+<script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/vendor/chart.js/chart.umd.js}"></script>
+<script th:src="@{/assets/vendor/echarts/echarts.min.js}"></script>
+<script th:src="@{/assets/vendor/quill/quill.js}"></script>
+<script th:src="@{/assets/vendor/simple-datatables/simple-datatables.js}"></script>
+<script th:src="@{/assets/vendor/tinymce/tinymce.min.js}"></script>
+<script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
+<!-- Template Main JS File -->
+<script th:src="@{/assets/js/main.js}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <div th:replace="user/fragment/head :: head"></div>
+</head>
+
+<body>
+<div class="wapper" id="wapper">
+    <!-- ======= Header ======= -->
+    <header th:replace="user/fragment/header :: header"></header>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+
+                    <!-- SUCCESS -->
+                    <div th:if="${isSuccess}" class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <i class="bi bi-check-circle text-success" style="font-size: 5rem;"></i>
+                        </div>
+                        <h2 class="fw-bold mb-3">Đặt hàng thành công</h2>
+                        <p class="text-muted mb-4">Cảm ơn bạn đã đặt hàng! Đơn hàng của bạn đã được tạo thành công.</p>
+
+                        <div class="mb-4">
+                            <h5>Chi tiết đơn hàng:</h5>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Mã đơn hàng:</span>
+                                <span class="fw-bold" th:text="${'#' + orderId}"></span>
+                            </div>
+                            <div th:if="${totalAmount != null}" class="d-flex justify-content-between mb-2">
+                                <span>Tổng tiền đơn hàng:</span>
+                                <span class="fw-bold text-danger" th:text="${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Phương thức thanh toán:</span>
+                                <span class="fw-bold" th:text="${paymentMethod != null ? paymentMethod.label : 'Tiền mặt khi nhận hàng'}"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                            <a th:href="@{'/order/' + ${orderId}}" class="btn btn-sm btn-primary px-4 py-2" style="min-width: 130px;">Xem chi tiết đơn hàng</a>
+                            <a th:href="@{/shop}" class="btn btn-sm btn-outline-secondary px-4 py-2" style="min-width: 130px;">Quay về trang chủ</a>
+                        </div>
+                    </div>
+
+                    <!-- FAILURE -->
+                    <div th:unless="${isSuccess}" class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <i class="bi bi-x-circle text-danger" style="font-size: 5rem;"></i>
+                        </div>
+                        <h2 class="fw-bold mb-3">Đặt hàng thất bại</h2>
+                        <p class="text-muted mb-4" th:text="${errorMessage != null ? errorMessage : 'Đã xảy ra lỗi trong quá trình tạo đơn hàng.'}">Đã xảy ra lỗi trong quá trình tạo đơn hàng.</p>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                            <a th:href="@{/cart}" class="btn btn-sm btn-outline-secondary px-4 py-2" style="min-width: 130px;">Quay lại giỏ hàng</a>
+                            <a th:href="@{/shop}" class="btn btn-sm btn-outline-secondary px-4 py-2" style="min-width: 130px;">Quay về trang chủ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= Footer ======= -->
+    <footer th:replace="user/fragment/footer :: footer"></footer>
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+</div>
+<!-- JS Files -->
+<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+<script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/vendor/chart.js/chart.umd.js}"></script>
+<script th:src="@{/assets/vendor/echarts/echarts.min.js}"></script>
+<script th:src="@{/assets/vendor/quill/quill.js}"></script>
+<script th:src="@{/assets/vendor/simple-datatables/simple-datatables.js}"></script>
+<script th:src="@{/assets/vendor/tinymce/tinymce.min.js}"></script>
+<script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
+<script th:src="@{/assets/js/main.js}"></script>
+
+
+</body>
+
+</html>

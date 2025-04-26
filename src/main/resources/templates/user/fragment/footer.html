@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<body>
+<!-- ======= Footer ======= -->
+<footer class="footer mt-5 bg-dark text-white py-4">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-5 pe-4">
+                <div class="footer-logo mb-2">
+                    <h4>Book.com</h4>
+                </div>
+                <p>Nam Từ Liêm, Hà Nội</p>
+                <p>Chúng tôi nhận đặt hàng và giao hàng tận nơi.</p>
+                <div class="social-icons">
+                    <a href="#" class="text-white me-2"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-white me-2"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white me-2"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-2">
+                <h5>DỊCH VỤ</h5>
+                <ul class="list-unstyled ">
+                    <li class="mb-3"><a href="#" class="text-white">Điều khoản sử dụng</a></li>
+                    <li class="mb-3"><a href="#" class="text-white">Chính sách bảo mật</a></li>
+                    <li class="mb-3"><a href="#" class="text-white">Chính sách thanh toán</a></li>
+                    <li class="mb-3"><a href="#" class="text-white">Giới thiệu cửa hàng</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-2">
+                <h5>TÀI KHOẢN</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-3"><a th:href="@{/login}" class="text-white">Đăng nhập</a></li>
+                    <li class="mb-3"><a th:href="@{/profile}" class="text-white">Tài khoản</a></li>
+                    <li class="mb-3"><a th:href="@{/order}" class="text-white">Lịch sử mua hàng</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3">
+                <h5>LIÊN HỆ</h5>
+                <p>Nam Từ Liêm, Hà Nội</p>
+                <p>Email: <a href="mailto:cskh@book.com.vn" class="text-white">cskh@book.com.vn</a></p>
+                <p>Gọi mua hàng: <b>xxx-xxx-xxxx</b></p>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

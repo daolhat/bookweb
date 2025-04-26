@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <div th:replace="user/fragment/head :: head"></div>
+</head>
+
+<body>
+<div class="wapper" id="wapper">
+    <!-- ======= Header ======= -->
+    <header th:replace="user/fragment/header :: header"></header>
+
+    <div class="container">
+        <section class="section register d-flex flex-column align-items-center justify-content-center py-4">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+                        <div class="d-flex justify-content-center py-4">
+                            <a th:href="@{/}" class="logo d-flex align-items-center w-auto">
+                                <span class="d-none d-lg-block">Book.com</span>
+                            </a>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="pt-4 pb-2">
+                                    <h5 class="card-title text-center pb-0 fs-4">Đăng ký</h5>
+                                    <p class="text-center small">Nhập thông tin để tạo tài khoản</p>
+                                </div>
+
+                                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                    <span th:text="${error}"></span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+
+                                <form class="row g-3 needs-validation" th:action="@{/register}" method="post" th:object="${user}" novalidate >
+                                    <div class="col-12">
+                                        <label for="fullName" class="form-label">Họ tên</label>
+                                        <input type="text" name="fullName" class="form-control" id="fullName" th:field="*{fullName}" required>
+                                        <div class="invalid-feedback">Vui lòng nhập tên của bạn</div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" name="email" class="form-control" id="email" th:field="*{email}" required>
+                                        <div class="invalid-feedback">Vui lòng nhập địa chỉ email</div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                                        <input type="text" name="phoneNumber" class="form-control" id="phoneNumber" pattern="[0-9]{10}"
+                                               th:field="*{phoneNumber}" required>
+                                        <div class="invalid-feedback">Vui lòng nhập số điện thoại hợp lệ (10 số)</div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="password" class="form-label">Mật khẩu</label>
+                                        <input type="password" name="password" class="form-control" id="password"
+                                               minlength="8" th:field="*{password}" required>
+                                        <div class="invalid-feedback">Vui lòng nhập mật khẩu phải có ít nhất 8 ký tự</div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                                        <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" required>
+                                        <div class="invalid-feedback">Vui lòng xác nhận lại mật khẩu</div>
+                                    </div>
+
+                                    <div class="col-12 mt-5">
+                                        <button class="btn btn-primary w-100" type="submit">Đăng ký</button>
+                                    </div>
+                                    <div class="col-12">
+                                        <p class="small mb-0">Bạn đã có tài khoản? <a th:href="@{/login}">Đăng nhập</a></p>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- JS Files -->
+<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+<script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/vendor/chart.js/chart.umd.js}"></script>
+<script th:src="@{/assets/vendor/echarts/echarts.min.js}"></script>
+<script th:src="@{/assets/vendor/quill/quill.js}"></script>
+<script th:src="@{/assets/vendor/simple-datatables/simple-datatables.js}"></script>
+<script th:src="@{/assets/vendor/tinymce/tinymce.min.js}"></script>
+<script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
+<script th:src="@{/assets/js/main.js}"></script>
+
+</body>
+
+</html>

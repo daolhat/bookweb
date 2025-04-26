@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <div th:replace="user/fragment/head :: head"></div>
+</head>
+
+<body>
+<div class="wapper" id="wapper">
+    <!-- ======= Header ======= -->
+    <header th:replace="user/fragment/header :: header"></header>
+
+    <div class="container mt-4">
+
+        <nav style="--bs-breadcrumb-divider: '>';">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/order}">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Đơn hàng của tôi</li>
+            </ol>
+        </nav>
+
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${param.success != null}">
+            <i class="bi bi-check-circle me-2"></i>
+            <span th:if="${param.success == 'order_cancelled'}">Đơn hàng đã được hủy thành công.</span>
+            <span th:if="${param.success == 'order_received'}">Đã xác nhận nhận hàng thành công.</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-3">
+                <ul class="sidebar-nav" id="sidebar-nav">
+
+                    <li class="nav-item">
+                        <div class="card">
+                            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                                <img th:if="${currentUser.avatar}" th:src="@{'/assets/img/user/' + ${currentUser.avatar}}"
+                                     alt="Profile" class="mb-2" style="width: 140px;">
+                                <img th:unless="${currentUser.avatar}" th:src="@{/assets/img/avatar-default.jpg}" alt="Profile"
+                                     class="mb-2" style="width: 140px;">
+                                <span th:text="${currentUser.fullName}"></span>
+                                <span th:text="${currentUser.phoneNumber}">Số điện thoại</span>
+                                <span th:text="${currentUser.email}">Email</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" th:href="@{/profile}">
+                            <i class="bi bi-person"></i>
+                            <span>Thông tin tài khoản</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" th:href="@{/order}">
+                            <i class="bi bi-basket2"></i>
+                            <span>Đơn hàng của tôi</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" th:href="@{/contact}">
+                            <i class="bi bi-envelope"></i>
+                            <span>Liên hệ hỗ trợ</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link collapsed" th:href="@{/profile/change-password}">
+                            <i class="bi bi-shield-lock"></i>
+                            <span>Đổi mật khẩu</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-heading">
+                        <hr>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link collapsed" th:href="@{/logout}">
+                            <i class="ri-logout-box-fill"></i>
+                            <span>Đăng xuất</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-lg-9">
+                <div class="pagetitle">
+                    <h4>Đơn hàng của tôi(<span th:text="${countOrder}"></span> đơn hàng)</h4>
+                </div>
+
+                <section class="section">
+
+                    <div class="text-center py-5" th:if="${#lists.isEmpty(orders)}">
+                        <h5 class="mt-3">Không có đơn hàng nào</h5>
+                        <p class="text-muted">Bạn chưa có đơn hàng nào trong danh sách</p>
+                        <a th:href="@{/shop}" class="btn btn-primary mt-2">Mua sắm ngay</a>
+                    </div>
+
+                    <div class="card mb-3" th:each="order : ${orders}" th:if="${!#lists.isEmpty(orders)}">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center p-3">
+                            <div>
+                                <span class="fw-bold">Đơn hàng <span th:text="${order.code}"></span></span>
+                                <span class="mx-2">|</span>
+                                <span class="text-muted" th:text="${#temporals.format(order.createdAt, 'HH:mm dd/MM/yyyy')}"></span>
+                            </div>
+                            <span class="badge" th:class="${
+                                order.status.name() == 'PENDING' ? 'badge bg-warning text-dark' :
+                                order.status.name() == 'PROCESSING' ? 'badge bg-info' :
+                                order.status.name() == 'DELIVERING' ? 'badge bg-primary' :
+                                order.status.name() == 'DELIVERED' ? 'badge bg-success' :
+                                'badge bg-danger'
+                            }" th:text="${order.status.label}">Trạng thái</span>
+                        </div>
+                        <div class="card-body p-3">
+                            <!-- Sản phẩm đầu tiên trong đơn hàng -->
+                            <div class="row" th:if="${!#lists.isEmpty(order.orderDetails)}">
+                                <div class="col-md-2">
+                                    <img th:if="${order.orderDetails[0].product != null && order.orderDetails[0].product.imageProduct != null}"
+                                         th:src="@{'/assets/img/product/' + ${order.orderDetails[0].product.imageProduct}}"
+                                         class="img-fluid" alt="Sản phẩm">
+                                    <img th:unless="${order.orderDetails[0].product != null && order.orderDetails[0].product.imageProduct != null}"
+                                         th:src="@{/assets/img/product-default.jpg}"
+                                         class="img-fluid" alt="Sản phẩm">
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold mb-2"
+                                        th:text="${order.orderDetails[0].product != null ? order.orderDetails[0].product.title : 'Sản phẩm không còn tồn tại'}">
+                                    </h6>
+                                    <p class="small mb-0">Số lượng: <span th:text="${order.orderDetails[0].quantity}"></span></p>
+                                    <p th:if="${#lists.size(order.orderDetails) > 1}" class="text-muted small">
+                                        và <span th:text="${#lists.size(order.orderDetails) - 1}"></span> sản phẩm khác
+                                    </p>
+                                </div>
+                                <div class="col-md-4 d-flex flex-column justify-content-between align-items-end">
+                                    <p class="text-danger fw-bold">
+                                        <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                                    </p>
+                                    <div>
+                                        <a class="btn btn-outline-primary btn-sm" th:href="@{'/order/' + ${order.id}}">
+                                            Xem chi tiết
+                                        </a>
+
+                                        <!-- Nút hủy đơn hàng - chỉ hiển thị khi đơn hàng đang ở trạng thái PENDING hoặc PROCESSING -->
+                                        <a th:if="${order.status.name() == 'PENDING' || order.status.name() == 'PROCESSING'}"
+                                           th:href="@{'/order/cancel/' + ${order.id}}"
+                                           class="btn btn-outline-danger btn-sm ms-1"
+                                           onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
+                                            Hủy
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phân trang -->
+                    <nav th:if="${totalPages > 1}" aria-label="Phân trang">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/orders(page=${currentPage - 1}" aria-label="Trước">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/orders(page=${i}" th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/orders(page=${currentPage + 1}" aria-label="Sau">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                </section>
+            </div>
+        </div>
+    </div>
+    <!-- ======= Footer ======= -->
+    <footer th:replace="user/fragment/footer :: footer"></footer>
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+</div>
+<!-- JS Files -->
+<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+<script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/vendor/chart.js/chart.umd.js}"></script>
+<script th:src="@{/assets/vendor/echarts/echarts.min.js}"></script>
+<script th:src="@{/assets/vendor/quill/quill.js}"></script>
+<script th:src="@{/assets/vendor/simple-datatables/simple-datatables.js}"></script>
+<script th:src="@{/assets/vendor/tinymce/tinymce.min.js}"></script>
+<script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
+<script th:src="@{/assets/js/main.js}"></script>
+
+</body>
+
+</html>

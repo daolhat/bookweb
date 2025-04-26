@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>book</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <div th:replace="admin/fragment/head :: head"></div>
+</head>
+
+<body>
+<!-- ======= Header ======= -->
+<header th:replace="admin/fragment/header :: header">
+</header>
+<!-- ======= Sidebar ======= -->
+<aside th:replace="admin/fragment/sidebar :: sidebar">
+</aside>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Thông tin sản phẩm</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/dashboard}">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/dashboard/product_management}">Sản phẩm</a></li>
+                <li class="breadcrumb-item active">Thông tin sản phẩm</li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Hiển thị thông báo thành công hoặc lỗi nếu có -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Thông tin sản phẩm</h4>
+                <form class="row g-3" th:action="@{/dashboard/product_management/update}" method="post" th:object="${product}" enctype="multipart/form-data">
+
+                    <div class="col-lg-3 d-flex justify-content-center">
+                        <div class="text-center">
+                            <label for="inputFile" class="form-label ">Ảnh bìa</label>
+                            <div class="col-sm-12">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="image-container mb-3" id="imageContainer">
+                                        <span th:if="${!product.imageProduct}">No Image</span>
+                                        <img th:if="${product.imageProduct}" th:src="@{'/assets/img/product/' + ${product.imageProduct}}"
+                                             style="max-width: 100%; max-height: 100%; object-fit: cover;"
+                                             alt="cover image"/>
+                                    </div>
+                                    <div class="d-flex gap-2 justify-content-center mt-3">
+                                        <label class="btn btn-primary btn-upload">
+                                            <input type="file" id="inputFile" name="cover_image" accept="image/*"
+                                                   hidden>
+                                            <i class="bi bi-upload"></i> Tải file
+                                        </label>
+                                        <button type="button" class="btn btn-danger btn-delete" id="deleteButton">
+                                            <i class="bi bi-trash"></i> Xoá file
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-9">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="code" class="form-label">Mã sản phẩm</label>
+                                <input type="text" class="form-control" id="code" th:field="*{code}" readonly>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="title" class="form-label">Tiêu đề</label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}">
+                            </div>
+                            <div class="col-md-6 ">
+                                <label for="author" class="form-label">Tác giả</label>
+                                <input type="text" class="form-control" id="author" th:field="*{author}">
+                            </div>
+                            <div class="col-md-6 ">
+                                <label for="translator" class="form-label">Dịch giả</label>
+                                <input type="text" class="form-control" id="translator" th:field="*{translator}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="publisher" class="form-label">Nhà xuất bản</label>
+                                <input type="text" class="form-control" id="publisher" th:field="*{publisher}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="supplier" class="form-label">Nhà cung cấp</label>
+                                <input type="text" class="form-control" id="supplier" th:field="*{supplier}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="categoryId" class="form-label">Thể loại</label>
+                                <select class="form-select" id="categoryId" name="categoryId" required>
+                                    <option value="">-- Chọn thể loại --</option>
+                                    <option th:each="category : ${categories}"
+                                            th:value="${category.id}"
+                                            th:text="${category.name}"
+                                            th:selected="${category.id == product.category.id}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="publishingYear" class="form-label">Năm xuất bản</label>
+                                <input type="text" class="form-control" id="publishingYear" th:field="*{publishingYear}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="layout" class="form-label">Hình thức bìa</label>
+<!--                                <input type="text" class="form-control" id="layout" th:field="*{layout}">-->
+                                <select th:field="*{layout}" class="form-select" id="layout" required>
+                                    <option value="">-- Chọn hình thức bìa --</option>
+                                    <option value="Bìa mềm">Bìa mềm</option>
+                                    <option value="Bìa cứng">Bìa cứng</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="numberOfPage" class="form-label">Số trang</label>
+                                <input type="number" class="form-control" id="numberOfPage" th:field="*{numberOfPage}">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="weight" class="form-label">Trọng lượng (gr)</label>
+                                <input type="text" class="form-control" id="weight" th:field="*{weight}">
+                            </div>
+
+                            <div class="col-md-5">
+                                <label for="size" class="form-label">Kích thước bao bì</label>
+                                <input type="text" class="form-control" id="size" th:field="*{size}">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="quantity" class="form-label">Số lượng trong kho</label>
+                                <input type="number" class="form-control" id="quantity" min="0" th:field="*{quantity}">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="price" class="form-label">Giá gốc</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="price" th:field="*{price}" min="0" required>
+                                    <span class="input-group-text">đ</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="discount" class="form-label">Giảm giá</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="discount" th:field="*{discount}" min="0" max="100" value="0">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="quantitySold" class="form-label">Số lượng đã bán</label>
+                                <input type="number" class="form-control" id="quantitySold" min="0" th:field="*{quantitySold}">
+                            </div>
+
+                            <div class="col-12">
+                                <label for="introduction" class="form-label">Mô tả/ Giới thiệu về sách</label>
+                                <textarea class="form-control" id="introduction" th:field="*{introduction}" style="height: 200px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary me-2">Cập nhật</button>
+                        <button type="button" class="btn btn-danger me-2 px-4" data-bs-toggle="modal" data-bs-target="#deleteModal">Xoá</button>
+                        <a th:href="@{/dashboard/product_management}" class="btn btn-secondary">Huỷ bỏ</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa sách <strong th:text="${product.title}"></strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <a th:href="@{/dashboard/product_management/delete/{id}(id=${product.id})}" class="btn btn-danger">
+                        Xóa
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- ======= Footer ======= -->
+<footer th:replace="admin/fragment/footer :: footer"></footer>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+<script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/vendor/chart.js/chart.umd.js}"></script>
+<script th:src="@{/assets/vendor/echarts/echarts.min.js}"></script>
+<script th:src="@{/assets/vendor/quill/quill.js}"></script>
+<script th:src="@{/assets/vendor/simple-datatables/simple-datatables.js}"></script>
+<script th:src="@{/assets/vendor/tinymce/tinymce.min.js}"></script>
+<script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
+<!-- Template Main JS File -->
+<script th:src="@{/assets/js/main.js}"></script>
+
+<script>
+    const fileInput = document.getElementById('inputFile');
+    const imageContainer = document.getElementById('imageContainer');
+    const deleteButton = document.getElementById('deleteButton');
+  
+    // Xử lý khi upload file
+    fileInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '100%';
+          img.style.maxHeight = '100%';
+          img.style.objectFit = 'cover';
+          imageContainer.innerHTML = '';
+          imageContainer.appendChild(img);
+          //deleteButton.disabled = false; // Kích hoạt button xóa
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  
+    // Xử lý khi xóa file
+    deleteButton.addEventListener('click', () => {
+      imageContainer.innerHTML = '<span>No Image</span>';
+      fileInput.value = ''; // Xóa giá trị của input file
+      //deleteButton.disabled = true; // Vô hiệu hóa button xóa
+    });
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <div th:replace="user/fragment/head :: head"></div>
+
+</head>
+
+<body>
+<div class="wapper" id="wapper">
+    <!-- ======= Header ======= -->
+    <header th:replace="user/fragment/header :: header"></header>
+
+    <div class="container mt-4">
+        <nav style="--bs-breadcrumb-divider: '>';">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Giỏ hàng</li>
+            </ol>
+        </nav>
+
+        <div th:if="${cart.cartItems.isEmpty()}" class="empty-cart">
+            <i class="bi bi-cart-x"></i>
+            <h4>Giỏ hàng của bạn đang trống</h4>
+            <p>Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm</p>
+            <a th:href="@{/shop}" class="btn btn-danger mt-3">Tiếp tục mua sắm</a>
+        </div>
+
+        <div th:if="${!cart.cartItems.isEmpty()}" class="row">
+            <div class="col-md-8">
+                <div class="card p-3">
+                    <div class="d-flex align-items-center">
+                        <h5 class="fw-bold">Giỏ hàng của bạn (<span th:text="${cart.cartItems.size()}">0</span> sản phẩm)</h5>
+                    </div>
+                    <hr>
+
+                    <div th:each="item : ${cart.cartItems}" class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                        <img th:src="@{'/assets/img/product/' + ${item.imageProduct}}" alt="book" width="80">
+                        <div class="ms-3">
+                            <p class="mb-0 fw-bold" th:text="${item.title}"></p>
+                            <p>
+                                <span class="text-danger fw-bold mb-0" th:text="${#numbers.formatDecimal(item.salePrice, 0, 'COMMA', 0, 'POINT')  + ' đ'}"></span>
+                                <span class="text-decoration-line-through text-muted fw-bold"
+                                      th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')  + ' đ'}"></span>
+                            </p>
+                        </div>
+                        <div class="ms-auto d-flex align-items-center">
+                            <div class="quantity-input" th:data-product-id="${item.productId}">
+                                <button class="decrease"><i class="bi bi-dash"></i></button>
+                                <span class="quantity" th:text="${item.quantity}">1</span>
+                                <button class="increase"><i class="bi bi-plus"></i></button>
+                            </div>
+                            <a th:href="@{'/cart/remove-cart-item/' + ${item.productId}}" class="btn btn-outline-danger ms-3 border-0"><i class="bi bi-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5 class="fw-bold mb-3">Tóm tắt đơn hàng</h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tạm tính:</span>
+                        <span class="fw-bold"><span th:text="${#numbers.formatDecimal(totalCart, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Giảm giá:</span>
+                        <span class="fw-bold">0 đ</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <span><strong>Tổng cộng:</strong></span>
+                        <span class="text-danger fw-bold fs-5"><span th:text="${#numbers.formatDecimal(totalCart, 0, 'COMMA', 0, 'POINT') + ' đ'}"></span></span>
+                    </div>
+                    <a th:href="@{/cart/checkout}" class="btn btn-danger w-100">
+                        <i class="bi bi-credit-card me-2"></i>Thanh toán
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======= Footer ======= -->
+    <footer th:replace="user/fragment/footer :: footer"></footer>
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+</div>
+<!-- JS Files -->
+<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+<script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/vendor/chart.js/chart.umd.js}"></script>
+<script th:src="@{/assets/vendor/echarts/echarts.min.js}"></script>
+<script th:src="@{/assets/vendor/quill/quill.js}"></script>
+<script th:src="@{/assets/vendor/simple-datatables/simple-datatables.js}"></script>
+<script th:src="@{/assets/vendor/tinymce/tinymce.min.js}"></script>
+<script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
+<script th:src="@{/assets/js/main.js}"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Xử lý tăng giảm số lượng
+        const decreaseBtn = document.querySelectorAll('.decrease');
+        const increaseBtn = document.querySelectorAll('.increase');
+
+        decreaseBtn.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+                const container = this.closest('.quantity-input');
+                const productId = container.getAttribute('data-product-id');
+                const quantityEl = container.querySelector('.quantity');
+                let quantity = parseInt(quantityEl.textContent);
+
+                if (quantity > 1) {
+                    quantity--;
+                    quantityEl.textContent = quantity;
+                    updateQuantity(productId, quantity);
+                }
+            });
+        });
+
+        increaseBtn.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+                const container = this.closest('.quantity-input');
+                const productId = container.getAttribute('data-product-id');
+                const quantityEl = container.querySelector('.quantity');
+                let quantity = parseInt(quantityEl.textContent);
+
+                quantity++;
+                quantityEl.textContent = quantity;
+                updateQuantity(productId, quantity);
+            });
+        });
+
+        // Hàm cập nhật số lượng sản phẩm
+        function updateQuantity(productId, quantity) {
+            fetch('/cart/update-cart-item?productId=' + productId + '&quantity=' + quantity, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error updating cart:', error);
+            });
+        }
+    });
+</script>
+
+</body>
+
+</html>

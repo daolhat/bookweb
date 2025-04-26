@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6" lang="en">
+
+<!-- ======= Header ======= -->
+<header class="bg-white text-white text-center">
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm">
+        <div class="container">
+
+            <a class="navbar-brand" th:href="@{/}">
+                <img src="logo.png" alt="" height="40" class="me-2"> Book.com
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item me-2">
+                        <a class="nav-link fw-semibold" th:href="@{/shop}">
+                            Cửa hàng
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle fw-semibold border rounded" href="#"
+                           id="categoryMenu" role="button" data-bs-toggle="dropdown">
+                            Thể loại
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li th:each="category : ${categories}">
+                                <a th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${category.id}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                   class="dropdown-item" th:text="${category.name}"></a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <div class="search-bar d-flex align-items-center mx-auto w-50">
+                    <form class="d-flex w-100" th:action="@{/shop}" method="get">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="keyword" placeholder="Nhập từ khóa"
+                                   title="">
+                            <button type="submit" class="btn btn-primary">Tìm</button>
+                        </div>
+                    </form>
+                </div>
+
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-2">
+                        <a class="nav-link fw-semibold" th:href="@{/cart}"><i class="bi bi-cart me-1"></i>Giỏ hàng
+                            <span class="badge bg-primary rounded-pill" th:if="${cartItemCount > 0}" th:text="${cartItemCount}"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link dropdown-toggle fw-semibold border rounded" href="#"
+                           id="loginAndRegister" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person me-1"></i>Tài khoản
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/login}">Đăng nhập</a></li>
+                            <li><a class="dropdown-item" th:href="@{/register}">Đăng ký</a></li>
+
+                        </ul>
+                    </li>
+
+                    <!-- User Account Dropdown - For authenticated users -->
+                    <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                        <a class="nav-link dropdown-toggle fw-semibold border rounded" href="#"
+                           id="userAccount" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <span sec:authentication="principal.fullName">Tài khoản</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <!-- Admin Dashboard Link - Only visible to ADMIN users -->
+                            <li sec:authorize="hasAuthority('ROLE_ADMIN')">
+                                <a class="dropdown-item text-danger" th:href="@{/dashboard}">Quản lý</a>
+                            </li>
+                            <li><a class="dropdown-item" th:href="@{/profile}">Thông tin tài khoản</a></li>
+                            <li><a class="dropdown-item" th:href="@{/order}">Đơn hàng</a></li>
+                            <li><a class="dropdown-item" th:href="@{/contact}">Liên hệ</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/profile/change-password}">Đổi mật khẩu</a></li>
+                            <li><a class="dropdown-item" th:href="@{/logout}">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+</body>
+</html>

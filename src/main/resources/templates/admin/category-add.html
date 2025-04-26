@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>book</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <div th:replace="admin/fragment/head :: head"></div>
+</head>
+
+<body>
+<!-- ======= Header ======= -->
+<header th:replace="admin/fragment/header :: header">
+</header>
+<!-- ======= Sidebar ======= -->
+<aside th:replace="admin/fragment/sidebar :: sidebar">
+</aside>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Thể loại</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/dashboard}">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/dashboard/category_management}">Thể loại</a></li>
+                <li class="breadcrumb-item active">Thêm mới</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Thêm mới thể loại</h4>
+                <form class="row g-3" th:action="@{/dashboard/category_management/add}" method="post" th:object="${category}">
+                    <div class="col-md-12">
+                        <label for="name" class="form-label">Tên thể loại</label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="description" class="form-label">Mô tả chi tiết</label>
+                        <textarea class="form-control" id="description" th:field="*{description}" style="height: 100px;" required></textarea>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-center">
+                        <button type="submit" class="btn btn-primary me-2">Thêm mới</button>
+                        <a th:href="@{/dashboard/category_management}" class="btn btn-secondary">Huỷ bỏ</a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- ======= Footer ======= -->
+<footer th:replace="admin/fragment/footer :: footer"></footer>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+<script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/vendor/chart.js/chart.umd.js}"></script>
+<script th:src="@{/assets/vendor/echarts/echarts.min.js}"></script>
+<script th:src="@{/assets/vendor/quill/quill.js}"></script>
+<script th:src="@{/assets/vendor/simple-datatables/simple-datatables.js}"></script>
+<script th:src="@{/assets/vendor/tinymce/tinymce.min.js}"></script>
+<script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
+<!-- Template Main JS File -->
+<script th:src="@{/assets/js/main.js}"></script>
+
+</body>
+
+</html>

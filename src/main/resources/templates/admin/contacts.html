@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>book</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <div th:replace="admin/fragment/head :: head"></div>
+</head>
+
+<body>
+<!-- ======= Header ======= -->
+<header th:replace="admin/fragment/header :: header"></header>
+<!-- ======= Sidebar ======= -->
+<aside th:replace="admin/fragment/sidebar :: sidebar"></aside>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Liên hệ</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/dashboard}">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Liên hệ</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Liên hệ</h4>
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col" style="width: 12rem">ID</th>
+                        <th scope="col" style="width: 12rem">Người gửi</th>
+                        <th scope="col" style="width: 10rem">Ngày gửi</th>
+                        <th scope="col" style="width: 12rem">Chủ đề</th>
+                        <th scope="col">Nội dung</th>
+                        <th scope="col" style="width: 8rem"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="contact : ${contact}">
+                        <td th:text="${contact.id}"></td>
+                        <td>
+                            <div th:text="${contact.name}"></div>
+                            <div class="small text-muted">
+                                <i class="bi bi-envelope-fill me-1"></i>
+                                <span th:text="${contact.email}"></span>
+                            </div>
+                        </td>
+                        <td th:text="${#temporals.format(contact.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${contact.subject}"></td>
+                        <td th:text="${#strings.abbreviate(contact.message, 120)}"></td>
+                        <td>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <a th:href="@{/dashboard/contact_management/contact-response}">
+                                    <button type="button" class="btn btn-outline-primary btn-sm border-0"><i
+                                            class="bi bi-reply me-2"></i>Phản hồi
+                                    </button>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- ======= Footer ======= -->
+<footer th:replace="admin/fragment/footer :: footer"></footer>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+<script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/vendor/chart.js/chart.umd.js}"></script>
+<script th:src="@{/assets/vendor/echarts/echarts.min.js}"></script>
+<script th:src="@{/assets/vendor/quill/quill.js}"></script>
+<script th:src="@{/assets/vendor/simple-datatables/simple-datatables.js}"></script>
+<script th:src="@{/assets/vendor/tinymce/tinymce.min.js}"></script>
+<script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
+<!-- Template Main JS File -->
+<script th:src="@{/assets/js/main.js}"></script>
+
+</body>
+
+</html>
