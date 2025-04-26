@@ -55,7 +55,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="contact : ${contact}">
+                    <tr th:each="contact : ${contacts}">
                         <td th:text="${contact.id}"></td>
                         <td>
                             <div th:text="${contact.name}"></div>
@@ -69,7 +69,7 @@
                         <td th:text="${#strings.abbreviate(contact.message, 120)}"></td>
                         <td>
                             <div class="d-flex justify-content-center align-items-center">
-                                <a th:href="@{/dashboard/contact_management/contact-response}">
+                                <a th:href="@{/dashboard/contact_management/response/{id}(id=${contact.id})}">
                                     <button type="button" class="btn btn-outline-primary btn-sm border-0"><i
                                             class="bi bi-reply me-2"></i>Phản hồi
                                     </button>

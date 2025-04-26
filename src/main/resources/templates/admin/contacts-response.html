@@ -12,11 +12,9 @@
 
 <body>
 <!-- ======= Header ======= -->
-<header th:replace="admin/fragment/header :: header">
-</header>
+<header th:replace="admin/fragment/header :: header"></header>
 <!-- ======= Sidebar ======= -->
-<aside th:replace="admin/fragment/sidebar :: sidebar">
-</aside>
+<aside th:replace="admin/fragment/sidebar :: sidebar"></aside>
 
 <main id="main" class="main">
 
@@ -24,37 +22,40 @@
         <h1>Liên hệ</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
-                <li class="breadcrumb-item"><a href="contacts.html">Liên hệ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/dashboard}">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/dashboard/contact_management}">Liên hệ</a></li>
                 <li class="breadcrumb-item active">Phản hồi</li>
             </ol>
         </nav>
+    </div>
+
+    <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>
+        <span th:text="${message}">Email đã được gửi thành công!</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
     <section class="section dashboard">
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Phản hồi</h4>
-                <form class="row g-3">
-                    <div class="col-md-4">
-                        <label for="input0" class="form-label">Tên người nhận</label>
-                        <input type="text" class="form-control" id="input0">
-                    </div>
-                    <div class="col-md-4">
-                        <label for="input1" class="form-label">Email người nhận</label>
-                        <input type="text" class="form-control" id="input1">
+                <form class="row g-3" th:action="@{/dashboard/contact_management/submit_email}" method="post" th:object="${newEmail}">
+                    <input type="hidden" name="uid" th:value="${uid}">
+                    <div class="col-md-8">
+                        <label for="to" class="form-label">Email người nhận</label>
+                        <input type="email" class="form-control" id="to" th:field="*{to}" readonly>
                     </div>
                     <div class="col-md-8">
-                        <label for="input2" class="form-label">Tiêu đề</label>
-                        <input type="text" class="form-control" id="input2">
+                        <label for="subject" class="form-label">Tiêu đề</label>
+                        <input type="text" class="form-control" id="subject" th:field="*{subject}" required>
                     </div>
                     <div class="col-12">
-                        <label for="input3" class="form-label">Nội dung</label>
-                        <textarea class="form-control" id="input3" style="height: 200px;"></textarea>
+                        <label for="message" class="form-label">Nội dung</label>
+                        <textarea class="form-control" id="message" th:field="*{message}" style="height: 200px;" required></textarea>
                     </div>
                     <div class="d-flex align-items-center justify-content-center">
-                        <button type="submit" class="btn btn-primary me-2">Phản hồi</button>
-                        <button type="reset" class="btn btn-secondary">Huỷ bỏ</button>
+                        <button type="submit" class="btn btn-primary me-2">Gửi phản hồi</button>
+                        <a th:href="@{/dashboard/contact_management}" class="btn btn-secondary">Quay lại</a>
                     </div>
                 </form>
             </div>
