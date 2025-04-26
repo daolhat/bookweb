@@ -6,6 +6,7 @@ import com.programing.bookweb.service.ICategoryService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -78,10 +79,24 @@ public class AdminCategoryController extends BaseController {
 
 
     @GetMapping("/delete/{id}")
+    @Transactional
     public String deleteCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        if (categoryService.getCategoryById(id) != null){
-            categoryService.deleteCategory(id);
-            redirectAttributes.addFlashAttribute("message", "Xoá danh mục thành công");
+        try {
+            Category category = categoryService.getCategoryById(id);
+            if (category != null) {
+                // Lưu lại tên danh mục trước khi xóa
+                String categoryName = category.getName();
+
+                // Gọi phương thức xóa category có xử lý products
+                categoryService.safeDeleteCategory(id);
+
+                redirectAttributes.addFlashAttribute("success", "Xóa danh mục " + categoryName + " thành công");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy danh mục");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Không thể xóa danh mục: " + e.getMessage());
         }
         return "redirect:/dashboard/category_management";
     }

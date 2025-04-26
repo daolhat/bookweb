@@ -5,6 +5,7 @@ import com.programing.bookweb.repository.CategoryRepository;
 import com.programing.bookweb.service.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +49,21 @@ public class CategoryServiceImpl implements ICategoryService {
     public void deleteCategory(Long categoryId) {
         Category category = getCategoryById(categoryId);
         if (category != null) {
+            categoryRepository.delete(category);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void safeDeleteCategory(Long categoryId) {
+        Category category = getCategoryById(categoryId);
+        if (category != null) {
+            // Đảm bảo xóa các sản phẩm trước khi xóa thể loại
+            // Do đã cài đặt CascadeType.ALL nên chỉ cần clear products
+            // và tự động xóa các sản phẩm khi xóa thể loại
+            category.getProducts().clear();
+
+            // Sau đó xóa thể loại
             categoryRepository.delete(category);
         }
     }

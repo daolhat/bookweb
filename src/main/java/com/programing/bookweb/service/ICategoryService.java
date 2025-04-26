@@ -16,6 +16,8 @@ public interface ICategoryService {
 
     void deleteCategory(Long categoryId);
 
+    void safeDeleteCategory(Long categoryId);
+
     boolean existsByName(Category category);
 
 }
