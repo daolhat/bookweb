@@ -28,6 +28,13 @@
             </ol>
         </nav>
     </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <section>
         <div class="row">
             <div class="col-lg-12">
@@ -35,31 +42,32 @@
                     <div class="col-12">
                         <div class="card mb-4">
                             <h5 class="card-header">Thông tin chi tiết</h5>
-                            <div class="card-body">
-                                <div class="row">
+                            <div class="card-body p-3">
+                                <div class="row p-3">
                                     <div class="col-md-6">
                                         <p class="mb-1"><strong>Mã đơn hàng:</strong> <span th:text="${order.code}"></span></p>
                                         <p class="mb-1"><strong>Người nhận:</strong> <span th:text="${order.receiver}"></span></p>
                                         <p class="mb-1"><strong>Số điện thoại:</strong> <span th:text="${order.customerPhone}"></span></p>
                                         <p class="mb-1"><strong>Email:</strong> <span th:text="${order.email}"></span></p>
-                                        <p class="mb-1"><strong>Thời gian tạo:</strong> <span th:text="${#dates.format(order.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                        <p class="mb-1"><strong>Thời gian tạo:</strong> <span th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm:ss')}"></span>
                                         </p>
                                     </div>
                                     <div class="col-md-6">
                                         <p class="mb-1"><strong>Tổng giá:</strong> <span
-                                                th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'POINT', 0, 'POINT')} + ' đ'"></span>
+                                                th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'POINT', 0, 'POINT')} + ' đ'"></span>
                                         </p>
                                         <p class="mb-1"><strong>Trạng thái: </strong>
-                                            <span th:if="${order.status == 'PENDING'}">Đang chờ xử lý</span>
-                                            <span th:if="${order.status == 'PROCESSING'}">Đang xử lý</span>
-                                            <span th:if="${order.status == 'DELIVERING'}">Đang giao hàng</span>
-                                            <span th:if="${order.status == 'DELIVERED'}">Đã giao thành công</span>
-                                            <span th:if="${order.status == 'CANCELLED'}">Đã hủy</span>
+                                            <span th:if="${order.status != null && order.status.name() == 'PENDING'}">Đang chờ xử lý</span>
+                                            <span th:if="${order.status != null && order.status.name() == 'PROCESSING'}">Đang xử lý</span>
+                                            <span th:if="${order.status != null && order.status.name() == 'DELIVERING'}">Đang giao hàng</span>
+                                            <span th:if="${order.status != null && order.status.name() == 'DELIVERED'}">Đã giao thành công</span>
+                                            <span th:if="${order.status != null && order.status.name() == 'CANCELLED'}">Đã hủy</span>
                                         </p>
                                         <p class="mb-1"><strong>Phương thức thanh toán: </strong>
-                                            <span th:text="${order.paymentMethod}"></span></p>
-                                        <p class="mb-1"><strong>Địa chỉ giao hàng: </strong><span th:text="${order.shippingAddress}"></span></p>
-                                        <p class="mb-1"><strong>Thời cập nhật: </strong><span th:text="${#dates.format(order.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                            <span th:if="${order.paymentMethod != null && order.paymentMethod.name() == 'COD'}">Thanh toán khi nhận hàng</span>
+                                            <span th:if="${order.paymentMethod != null && order.paymentMethod.name() == 'ONLINE'}">Thanh toán trực tuyến</span></p>
+                                        <p class="mb-1"><strong>Địa chỉ giao hàng: </strong><span th:text="${order.addressShipping}"></span></p>
+                                        <p class="mb-1"><strong>Thời cập nhật: </strong><span th:text="${#temporals.format(order.updatedAt, 'dd-MM-yyyy HH:mm:ss')}"></span>
                                         </p>
                                     </div>
                                 </div>
@@ -98,16 +106,16 @@
                                 <button type="button" class="btn btn-secondary me-2">Quay lại</button>
                             </a>
 
-                            <span th:if="${order.status == 'PENDING'}">
-                                <a th:href="@{/dashboard/order_management/detail/process/ + ${order.id}}" class="btn btn-warning me-2">Xử lý</a>
-                                <a th:href="@{/dashboard/order_management/detail/cancel/ + ${order.id}}" class="btn btn-danger me-2">Huỷ đơn hàng</a>
+                            <span th:if="${order.status != null && order.status.name() == 'PENDING'}">
+                                 <a th:href="@{/dashboard/order_management/detail/process/{id}(id=${order.id})}" class="btn btn-warning me-2">Xác nhận đon hàng</a>
+                                <a th:href="@{/dashboard/order_management/detail/cancel/{id}(id=${order.id})}" class="btn btn-danger me-2">Huỷ đơn hàng</a>
                             </span>
-                            <span th:if="${order.status == 'PROCESSING'}">
-                                <a th:href="@{/dashboard/order_management/detail/deliver/ + ${order.id}}" class="btn btn-primary me-2">Giao hàng</a>
-                                <a th:href="@{/dashboard/order_management/detail/cancel/ + ${order.id}}" class="btn btn-danger me-2">Huỷ đơn hàng</a>
+                            <span th:if="${order.status != null && order.status.name() == 'PROCESSING'}">
+                                <a th:href="@{/dashboard/order_management/detail/deliver/{id}(id=${order.id})}" class="btn btn-primary me-2">Giao hàng</a>
+                                <a th:href="@{/dashboard/order_management/detail/cancel/{id}(id=${order.id})}" class="btn btn-danger me-2">Huỷ đơn hàng</a>
                             </span>
-                            <span th:if="${order.status == 'DELIVERING'}">
-                                <a th:href="@{/dashboard/order_management/detail/delivered/ + ${order.id}}" class="btn btn-warning me-2">Đã giao hàng</a>
+                            <span th:if="${order.status != null && order.status.name() == 'DELIVERING'}">
+                                <a th:href="@{/dashboard/order_management/detail/delivered/{id}(id=${order.id})}" class="btn btn-warning me-2">Đã giao hàng</a>
                             </span>
                         </div>
 

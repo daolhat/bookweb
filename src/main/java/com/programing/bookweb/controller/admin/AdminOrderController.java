@@ -32,33 +32,57 @@ public class AdminOrderController extends BaseController {
     @GetMapping
     public String showOrderPageManagement(
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "status", required = false) String statusstring,
+            @RequestParam(value = "status", required = false) String statusString,
             Model model) {
-        int pageSize = 100;
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("createdAt").descending());
+        try {
+            int pageSize = 100;
+            Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("createdAt").descending());
 
-        OrderStatus status = OrderStatus.valueOf(statusstring);
+            Page<Order> orderPage;
+            OrderStatus status = null;
 
-        Page<Order> orderPage = orderService.getAllOrders(pageable);;
-//        if (status != null && !status.isEmpty()) {
-//            orderPage = orderService.getOrdersByStatus(status, pageable);
-//        }
+            // Chỉ chuyển đổi status khi statusString không null và không rỗng
+            if (statusString != null && !statusString.isEmpty()) {
+                try {
+                    status = OrderStatus.valueOf(statusString.toUpperCase());
+                    // orderPage = orderService.getOrdersByStatus(status, pageable);
+                } catch (IllegalArgumentException e) {
+                    // Xử lý khi statusString không khớp với bất kỳ giá trị enum nào
+                    // Chỉ log lỗi, không ném exception
+                    e.printStackTrace();
+                }
+            }
 
-        model.addAttribute("orders", orderPage);
-        model.addAttribute("selectedStatus", status);
-        return "admin/orders";
+            // Mặc định lấy tất cả đơn hàng
+            orderPage = orderService.getAllOrders(pageable);
+
+            model.addAttribute("orders", orderPage);
+            model.addAttribute("selectedStatus", status);
+            return "admin/orders";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Có lỗi xảy ra khi tải danh sách đơn hàng: " + e.getMessage());
+            return "admin/orders";
+        }
     }
+
 
 
     @GetMapping("/detail/{id}")
     public String showOrderDetailPage(Model model, @PathVariable Long id) {
-        Order order = orderService.getOrderById(id);
-        List<OrderDetail> orderDetails = orderDetailService.getAllOrderDetailByOrder(order);
+        try {
+            Order order = orderService.getOrderById(id);
+            List<OrderDetail> orderDetails = orderDetailService.getAllOrderDetailByOrder(order);
 
-        model.addAttribute("order", order);
-        model.addAttribute("ordersDetails", orderDetails);
+            model.addAttribute("order", order);
+            model.addAttribute("ordersDetails", orderDetails);
 
-        return "admin/order_detail";
+            return "admin/order-detail";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Không thể tải thông tin đơn hàng: " + e.getMessage());
+            return "redirect:/dashboard/order_management";
+        }
     }
 
 
@@ -67,7 +91,7 @@ public class AdminOrderController extends BaseController {
         Order order = orderService.getOrderById(id);
         orderService.setProcessingOrder(order);
 
-        return "redirect:/admin/orders_management/detail/" + id;
+        return "redirect:/dashboard/order_management/detail/" + id;
     }
 
 
@@ -76,7 +100,7 @@ public class AdminOrderController extends BaseController {
         Order order = orderService.getOrderById(id);
         orderService.setDeliveringOrder(order);
 
-        return "redirect:/admin/orders_management/detail/" + id;
+        return "redirect:/dashboard/order_management/detail/" + id;
     }
 
 
@@ -85,7 +109,7 @@ public class AdminOrderController extends BaseController {
         Order order = orderService.getOrderById(id);
         orderService.setDeliveredOrder(order);
 
-        return "redirect:/admin/orders_management/detail/" + id;
+        return "redirect:/dashboard/order_management/detail/" + id;
     }
 
 
@@ -94,7 +118,7 @@ public class AdminOrderController extends BaseController {
         Order order = orderService.getOrderById(id);
         orderService.cancelOrder(order);
 
-        return "redirect:/admin/orders_management/detail/" + id;
+        return "redirect:/dashboard/order_management/detail/" + id;
     }
 
 }

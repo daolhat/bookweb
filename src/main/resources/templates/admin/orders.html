@@ -24,10 +24,16 @@
         <h1>Đơn hàng</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/dashboard}">Trang chủ</a></li>
                 <li class="breadcrumb-item active">Đơn hàng</li>
             </ol>
         </nav>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
     <section class="section dashboard">
@@ -37,13 +43,13 @@
 
                 <div class="row mb-3">
                     <div class="col-md-3">
-                        <form th:action="@{/dashboard/orders}" method="get">
+                        <form th:action="@{/dashboard/order_management}" method="get">
                             <div class="input-group">
                                 <select class="form-select" name="status" id="statusFilter">
                                     <option value="">-- Tất cả trạng thái --</option>
                                     <option value="PENDING" th:selected="${param.status != null && param.status[0] == 'PENDING'}">Chờ xác nhận</option>
-                                    <option value="CONFIRMED" th:selected="${param.status != null && param.status[0] == 'CONFIRMED'}">Đã xác nhận</option>
-                                    <option value="SHIPPING" th:selected="${param.status != null && param.status[0] == 'SHIPPING'}">Đang giao hàng</option>
+                                    <option value="PROCESSING" th:selected="${param.status != null && param.status[0] == 'PROCESSING'}">Đang xử lý</option>
+                                    <option value="DELIVERING" th:selected="${param.status != null && param.status[0] == 'DELIVERING'}">Đang giao hàng</option>
                                     <option value="DELIVERED" th:selected="${param.status != null && param.status[0] == 'DELIVERED'}">Đã giao hàng</option>
                                     <option value="CANCELLED" th:selected="${param.status != null && param.status[0] == 'CANCELLED'}">Đã hủy</option>
                                 </select>
@@ -52,7 +58,7 @@
                         </form>
                     </div>
                     <div class="col-md-3">
-                        <form th:action="@{/dashboard/orders}" method="get">
+                        <form th:action="@{/dashboard/order_management}" method="get">
                             <div class="input-group">
                                 <input type="date" class="form-control" name="fromDate" th:value="${param.fromDate}">
                                 <input type="date" class="form-control" name="toDate" th:value="${param.toDate}">
@@ -96,20 +102,20 @@
                             </td>
                             <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + '₫'}"></td>
                             <td>
-                                <span th:if="${order.paymentMethod == 'COD'}">Thanh toán khi nhận hàng</span>
-                                <span th:if="${order.paymentMethod == 'ONLINE'}">Thanh toán trực tuyến</span>
+                                <span th:if="${order.paymentMethod != null && order.paymentMethod.name() == 'COD'}">Thanh toán khi nhận hàng</span>
+                                <span th:if="${order.paymentMethod != null && order.paymentMethod.name() == 'ONLINE'}">Thanh toán trực tuyến</span>
                             </td>
                             <td>
-                                <span th:if="${order.status == 'PENDING'}" class="badge bg-warning text-dark">Chờ xác nhận</span>
-                                <span th:if="${order.status == 'CONFIRMED'}" class="badge bg-info">Đã xác nhận</span>
-                                <span th:if="${order.status == 'SHIPPING'}" class="badge bg-primary">Đang giao hàng</span>
-                                <span th:if="${order.status == 'DELIVERED'}" class="badge bg-success">Đã giao hàng</span>
-                                <span th:if="${order.status == 'CANCELLED'}" class="badge bg-danger">Đã hủy</span>
+                                <span th:if="${order.status != null && order.status.name() == 'PENDING'}" class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                <span th:if="${order.status != null && order.status.name() == 'PROCESSING'}" class="badge bg-info">Đang xử lý</span>
+                                <span th:if="${order.status != null && order.status.name() == 'DELIVERING'}" class="badge bg-primary">Đang giao hàng</span>
+                                <span th:if="${order.status != null && order.status.name() == 'DELIVERED'}" class="badge bg-success">Đã giao hàng</span>
+                                <span th:if="${order.status != null && order.status.name() == 'CANCELLED'}" class="badge bg-danger">Đã hủy</span>
                             </td>
                             <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                             <td>
                                 <div class="d-flex justify-content-center align-items-center">
-                                    <a th:href="@{/dashboard/orders/detail/{id}(id=${order.id})}">
+                                    <a th:href="@{/dashboard/order_management/detail/{id}(id=${order.id})}">
                                         <button type="button" class="btn btn-outline-primary btn-sm border-0"><i
                                                 class="bi bi-eye me-2"></i>Chi tiết
                                         </button>
