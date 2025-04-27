@@ -42,6 +42,15 @@ public class Category implements Serializable {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Product> products = new ArrayList<>();
 
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
     @PrePersist
     public void prePersist() {
         if (this.code == null || this.code.isEmpty()) {

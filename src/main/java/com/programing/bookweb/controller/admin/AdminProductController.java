@@ -40,7 +40,6 @@ public class AdminProductController extends BaseController {
 //        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("createdAt").descending());
 //        Page<Product> products = productService.getAllProducts(pageable);
         List<Product> products;
-        
         if (categoryId != null && layout != null){
             products = productService.getProductByCategoryIdAndLayout(categoryId, layout);
         } else if (categoryId != null) {
@@ -54,7 +53,6 @@ public class AdminProductController extends BaseController {
 
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
-
         return "admin/products";
     }
 
@@ -63,7 +61,7 @@ public class AdminProductController extends BaseController {
     public String showAddProductForm(Model model) {
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
-        model.addAttribute("book", new Product());
+        model.addAttribute("product", new Product());
 
         return "admin/product-add";
     }
@@ -80,19 +78,16 @@ public class AdminProductController extends BaseController {
             List<Category> categories = categoryService.getAllCategories();
             model.addAttribute("categories", categories);
             model.addAttribute("error", "Nhập lại thông tin");
-
             return "admin/product-add";
         }
 
         try {
             productService.addProduct(product, imageProduct);
             redirectAttributes.addFlashAttribute("success", "Thêm thành công sản phẩm");
-
             return "redirect:/dashboard/product_management";
         } catch (SQLException | IOException e) {
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("error", "Lỗi tải file: " + e.getMessage());
-
             return "admin/product-add";
         }
     }
@@ -109,38 +104,113 @@ public class AdminProductController extends BaseController {
         return "admin/products-detail";
     }
 
+
     @PostMapping("/update/{id}")
     public String editProduct(
             @PathVariable Long id,
-            @Valid @ModelAttribute("product") Product product,
+            @ModelAttribute("product") Product productForm,
             BindingResult result,
-            @RequestParam(value = "imageProduct", required = false) MultipartFile imageProduct,
+            @RequestParam(value = "image", required = false) MultipartFile imageFile,
+            @RequestParam(value = "category", required = false) Long categoryId,
             Model model,
             RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
+
+        // Lấy sản phẩm hiện có từ database
+        Product existingProduct = productService.getProductById(id);
+        if (existingProduct == null) {
+            System.out.println("ERROR: Không tìm thấy sản phẩm với ID: " + id);
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy sản phẩm");
+            return "redirect:/dashboard/product_management";
+        }
+
+        System.out.println("--------- DEBUG INFO ---------");
+        System.out.println("ID sản phẩm: " + id);
+        System.out.println("CategoryId từ form: " + categoryId);
+        // Tránh in đối tượng Product trực tiếp vì có thể gây StackOverflowError
+        System.out.println("Thông tin cơ bản từ form: " + productForm.getTitle() + ", " + productForm.getAuthor());
+        System.out.println("Thông tin category hiện tại: " + (existingProduct.getCategory() != null ?
+                existingProduct.getCategory().getId() + " - " + existingProduct.getCategory().getName() : "NULL"));
+
+        try {
+            String currentImageName = existingProduct.getImageProduct();
+            System.out.println("Current image name: " + currentImageName);
+            // Cập nhật các trường dữ liệu cơ bản
+            existingProduct.setTitle(productForm.getTitle());
+            existingProduct.setAuthor(productForm.getAuthor());
+            existingProduct.setSupplier(productForm.getSupplier());
+            existingProduct.setPublisher(productForm.getPublisher());
+            existingProduct.setPublishingYear(productForm.getPublishingYear());
+            existingProduct.setIntroduction(productForm.getIntroduction());
+            existingProduct.setPrice(productForm.getPrice());
+            existingProduct.setDiscount(productForm.getDiscount());
+            existingProduct.setQuantitySold(productForm.getQuantitySold());
+            existingProduct.setWeight(productForm.getWeight());
+            existingProduct.setNumberOfPage(productForm.getNumberOfPage());
+            existingProduct.setQuantity(productForm.getQuantity());
+            existingProduct.setSize(productForm.getSize());
+            existingProduct.setLayout(productForm.getLayout());
+            existingProduct.setTranslator(productForm.getTranslator());
+            // Xử lý category
+            if (categoryId != null && categoryId > 0) {
+                Category category = categoryService.getCategoryById(categoryId);
+                if (category != null) {
+                    System.out.println("Gán category: " + category.getId() + " - " + category.getName());
+                    existingProduct.setCategory(category);
+                } else {
+                    System.out.println("WARNING: Không tìm thấy category với ID: " + categoryId);
+                }
+            } else {
+                // Nếu không có categoryId, giữ nguyên category hiện tại
+                System.out.println("Giữ nguyên category hiện tại");
+            }
+            // Kiểm tra nếu category vẫn null
+            if (existingProduct.getCategory() == null) {
+                System.out.println("ERROR: Category là null sau khi cập nhật!");
+                List<Category> categories = categoryService.getAllCategories();
+                model.addAttribute("categories", categories);
+                model.addAttribute("error", "Vui lòng chọn thể loại sách");
+                model.addAttribute("product", existingProduct);
+                return "admin/products-detail";
+            }
+
+            System.out.println("Đã cập nhật các trường và category thành công, chuẩn bị lưu vào DB");
+
+            // Xử lý file ảnh nếu được upload
+            if (imageFile != null && !imageFile.isEmpty()) {
+                System.out.println("Uploading new image: " + imageFile.getOriginalFilename());
+                Product updatedProduct = productService.updateProduct(existingProduct, imageFile);
+                if (updatedProduct != null) {
+                    redirectAttributes.addFlashAttribute("success", "Cập nhật sản phẩm thành công");
+                } else {
+                    redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật sản phẩm");
+                }
+            } else {
+                System.out.println("Keeping existing image: " + currentImageName);
+
+                // Đặt lại giá trị ảnh hiện tại - ĐÂY LÀ PHẦN QUAN TRỌNG
+                existingProduct.setImageProduct(currentImageName);
+                Product updatedProduct = productService.updateProduct(existingProduct, null);
+                if (updatedProduct != null) {
+                    redirectAttributes.addFlashAttribute("success", "Cập nhật sản phẩm thành công");
+                } else {
+                    redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật sản phẩm");
+                }
+            }
+
+            System.out.println("Update completed successfully");
+            return "redirect:/dashboard/product_management";
+
+        } catch (Exception e) {
+            System.out.println("ERROR during update: " + e.getMessage());
+            e.printStackTrace();
+
             List<Category> categories = categoryService.getAllCategories();
             model.addAttribute("categories", categories);
-            model.addAttribute("error", "Nhập lại thông tin");
+            model.addAttribute("error", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
+            model.addAttribute("product", existingProduct); // Giữ lại dữ liệu sản phẩm
 
             return "admin/products-detail";
         }
-        if (productService.getProductById(id) == null) {
-            return "redirect:/dashboard/product_management";
-        }
-        product.setId(id);
-        if (imageProduct == null || imageProduct.isEmpty()) {
-            Product existingProduct = productService.getProductById(id);
-            product.setImageProduct(existingProduct.getImageProduct());
-            redirectAttributes.addFlashAttribute("info", "Sản phẩm được cập nhật mà không thay đổi hình ảnh");
-        }
-        Product updatedProduct = productService.updateProduct(product, imageProduct);
-        if (updatedProduct != null) {
-            redirectAttributes.addFlashAttribute("success", "Cập nhật sản phẩm thành công");
-        } else {
-            redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật sản phẩm");
-        }
-
-        return "redirect:/admin/products";
     }
 
 

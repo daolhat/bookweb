@@ -48,7 +48,7 @@
                                         <p class="mb-1"><strong>Mã đơn hàng:</strong> <span th:text="${order.code}"></span></p>
                                         <p class="mb-1"><strong>Người nhận:</strong> <span th:text="${order.receiver}"></span></p>
                                         <p class="mb-1"><strong>Số điện thoại:</strong> <span th:text="${order.customerPhone}"></span></p>
-                                        <p class="mb-1"><strong>Email:</strong> <span th:text="${order.email}"></span></p>
+                                        <p class="mb-1"><strong>Email:</strong> <span th:text="${order.user.email}"></span></p>
                                         <p class="mb-1"><strong>Thời gian tạo:</strong> <span th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm:ss')}"></span>
                                         </p>
                                     </div>

@@ -29,4 +29,15 @@ public class OrderDetail implements Serializable {
 
     private double price;
 
+    @Override
+    public String toString() {
+        return "OrderDetail{" +
+                "id=" + id +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", productId=" + (product != null ? product.getId() : "null") +
+                ", orderId=" + (order != null ? order.getId() : "null") +
+                '}';
+    }
+
 }

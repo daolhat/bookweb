@@ -12,11 +12,9 @@
 
 <body>
 <!-- ======= Header ======= -->
-<header th:replace="admin/fragment/header :: header">
-</header>
+<header th:replace="admin/fragment/header :: header"></header>
 <!-- ======= Sidebar ======= -->
-<aside th:replace="admin/fragment/sidebar :: sidebar">
-</aside>
+<aside th:replace="admin/fragment/sidebar :: sidebar"></aside>
 
 <main id="main" class="main">
 
@@ -64,7 +62,7 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <select class="form-select" name="category" id="categoryFilter"
-                                        th:onchange="'window.location.href=\'' + @{/dashboard/product_management(categoryId=this.value, layout=${selectedLayout}} + '\''">
+                                        th:onchange="'window.location.href=\'' + @{/dashboard/product_management(categoryId=this.value, layout=${selectedLayout})} + '\''">
                                     <option value="">-- Chọn thể loại --</option>
                                     <option th:each="category : ${categories}"
                                             th:value="${category.id}"
@@ -115,9 +113,9 @@
                                     <td th:text="${product.category.name}"></td>
                                     <td th:text="${product.author}"></td>
                                     <td th:text="${product.quantity}"></td>
-                                    <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' Đ'"></td>
+                                    <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
                                     <td th:text="${product.quantitySold}"></td>
-                                    <td th:text="${#numbers.formatDecimal(product.price * (1 - product.discount / 100.0), 0, 'COMMA', 0, 'POINT')} + ' Đ'">
+                                    <td th:text="${#numbers.formatDecimal(product.price * (1 - product.discount / 100.0), 0, 'COMMA', 0, 'POINT')} + ' đ'">
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-center align-items-center">

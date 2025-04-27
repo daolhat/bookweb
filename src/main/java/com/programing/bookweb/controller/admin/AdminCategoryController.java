@@ -86,10 +86,8 @@ public class AdminCategoryController extends BaseController {
             if (category != null) {
                 // Lưu lại tên danh mục trước khi xóa
                 String categoryName = category.getName();
-
                 // Gọi phương thức xóa category có xử lý products
                 categoryService.safeDeleteCategory(id);
-
                 redirectAttributes.addFlashAttribute("success", "Xóa danh mục " + categoryName + " thành công");
             } else {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy danh mục");

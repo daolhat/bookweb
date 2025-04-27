@@ -100,7 +100,7 @@
                                 <div th:text="'Số ĐT: ' + ${order.customerPhone}"></div>
                                 <small class="text-muted" th:text="'Địa chỉ giao hàng: ' + ${order.addressShipping}"></small>
                             </td>
-                            <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT') + '₫'}"></td>
+                            <td th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
                             <td>
                                 <span th:if="${order.paymentMethod != null && order.paymentMethod.name() == 'COD'}">Thanh toán khi nhận hàng</span>
                                 <span th:if="${order.paymentMethod != null && order.paymentMethod.name() == 'ONLINE'}">Thanh toán trực tuyến</span>

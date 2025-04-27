@@ -95,6 +95,18 @@ public class Product implements Serializable {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", categoryId=" + (category != null ? category.getId() : "null") +
+                ", price=" + price +
+                '}';
+    }
+
     public Long getId() {
         return id;
     }
