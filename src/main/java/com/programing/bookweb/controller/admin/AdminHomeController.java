@@ -171,8 +171,9 @@ public class AdminHomeController extends BaseController {
 
         // Số người dùng mới trong tháng này
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startOfMonth = now.toLocalDate().withDayOfMonth(1).atStartOfDay();
-        long newUsersThisMonth = userService.countUsersByDateRange(startOfMonth, now);
+        //LocalDateTime startOfMonth = now.toLocalDate().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime oneWeekAgo = now.minusWeeks(1).toLocalDate().atStartOfDay();
+        long newUsersThisMonth = userService.countUsersByDateRange(oneWeekAgo, now);
         stats.put("newUsersThisMonth", newUsersThisMonth);
 
         // Số người dùng tháng trước

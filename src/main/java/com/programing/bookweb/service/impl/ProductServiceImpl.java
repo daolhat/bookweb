@@ -177,41 +177,91 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public Page<Product> getProductByKeywordUser(String keyword, Pageable pageable) {
-        String nKeyword = keyword.trim().replaceAll("\\s+", " ");
-        if (keyword.isEmpty()){
+        if (keyword == null || keyword.trim().isEmpty()) {
             return productRepository.findAll(pageable);
         }
+        String nKeyword = keyword.trim().replaceAll("\\s+", " ");
         return productRepository.findByTitleContaining(nKeyword, pageable);
     }
 
     @Override
     public Page<Product> getProductByCategoryIdUser(Long categoryId, Pageable pageable) {
+        if (categoryId == null) {
+            return productRepository.findAll(pageable);
+        }
         return productRepository.findByCategoryId(categoryId, pageable);
     }
 
     @Override
     public Page<Product> getProductByLayoutUser(String layout, Pageable pageable) {
+        if (layout == null || layout.trim().isEmpty()) {
+            return productRepository.findAll(pageable);
+        }
         return productRepository.findByLayout(layout, pageable);
     }
 
     @Override
     public Page<Product> getProductByCategoryIdAndKeywordUser(Long categoryId, String keyword, Pageable pageable) {
-        return productRepository.findByCategoryIdAndTitleContaining(categoryId, keyword, pageable);
+        if (categoryId == null || keyword == null || keyword.trim().isEmpty()) {
+            if (categoryId != null) {
+                return productRepository.findByCategoryId(categoryId, pageable);
+            } else if (keyword != null && !keyword.trim().isEmpty()) {
+                return getProductByKeywordUser(keyword, pageable);
+            } else {
+                return productRepository.findAll(pageable);
+            }
+        }
+        return productRepository.findByCategoryIdAndTitleContaining(categoryId, keyword.trim(), pageable);
     }
 
     @Override
     public Page<Product> getProductByCategoryIdAndKeywordAndLayoutUser(Long categoryId, String keyword, String layout, Pageable pageable) {
-        return productRepository.findByCategoryIdAndTitleContainingAndLayout(categoryId, keyword, layout, pageable);
+        if (categoryId == null || keyword == null || keyword.trim().isEmpty() || layout == null || layout.trim().isEmpty()) {
+            if (categoryId != null && layout != null && !layout.trim().isEmpty()) {
+                return getProductByCategoryIdAndLayoutUser(categoryId, layout, pageable);
+            } else if (categoryId != null && keyword != null && !keyword.trim().isEmpty()) {
+                return getProductByCategoryIdAndKeywordUser(categoryId, keyword, pageable);
+            } else if (layout != null && !layout.trim().isEmpty() && keyword != null && !keyword.trim().isEmpty()) {
+                return getProductByLayoutAndKeywordUser(layout, keyword, pageable);
+            } else if (categoryId != null) {
+                return getProductByCategoryIdUser(categoryId, pageable);
+            } else if (layout != null && !layout.trim().isEmpty()) {
+                return getProductByLayoutUser(layout, pageable);
+            } else if (keyword != null && !keyword.trim().isEmpty()) {
+                return getProductByKeywordUser(keyword, pageable);
+            } else {
+                return productRepository.findAll(pageable);
+            }
+        }
+        return productRepository.findByCategoryIdAndTitleContainingAndLayout(categoryId, keyword.trim(), layout, pageable);
     }
 
     @Override
     public Page<Product> getProductByCategoryIdAndLayoutUser(Long categoryId, String layout, Pageable pageable) {
+        if (categoryId == null || layout == null || layout.trim().isEmpty()) {
+            if (categoryId != null) {
+                return getProductByCategoryIdUser(categoryId, pageable);
+            } else if (layout != null && !layout.trim().isEmpty()) {
+                return getProductByLayoutUser(layout, pageable);
+            } else {
+                return productRepository.findAll(pageable);
+            }
+        }
         return productRepository.findByCategoryIdAndLayout(categoryId, layout, pageable);
     }
 
     @Override
     public Page<Product> getProductByLayoutAndKeywordUser(String layout, String keyword, Pageable pageable) {
-        return productRepository.findByLayoutAndTitleContaining(layout, keyword, pageable);
+        if (layout == null || layout.trim().isEmpty() || keyword == null || keyword.trim().isEmpty()) {
+            if (layout != null && !layout.trim().isEmpty()) {
+                return getProductByLayoutUser(layout, pageable);
+            } else if (keyword != null && !keyword.trim().isEmpty()) {
+                return getProductByKeywordUser(keyword, pageable);
+            } else {
+                return productRepository.findAll(pageable);
+            }
+        }
+        return productRepository.findByLayoutAndTitleContaining(layout, keyword.trim(), pageable);
     }
 
 

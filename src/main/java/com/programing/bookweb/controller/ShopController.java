@@ -5,6 +5,7 @@ import com.programing.bookweb.entity.Product;
 import com.programing.bookweb.service.ICategoryService;
 import com.programing.bookweb.service.IProductService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/shop")
 @AllArgsConstructor
+@Slf4j
 public class ShopController extends BaseController{
 
     private final IProductService productService;
@@ -33,6 +35,12 @@ public class ShopController extends BaseController{
             Model model) {
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
+
+        log.info("Filter parameters: keyword={}, categoryId={}, layout={}, sort={}, page={}",
+                keyword, categoryId, layout, sortBy, page);
+
+        // Xử lý keyword trước khi tìm kiếm
+        String normalizedKeyword = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : null;
 
         Pageable pageable;
         if (sortBy != null) {
@@ -55,43 +63,52 @@ public class ShopController extends BaseController{
 
         Page<Product> products;
 
-        if (keyword != null && !keyword.trim().isEmpty() && categoryId != null && layout != null) {
+        try {
+            // Áp dụng các bộ lọc theo trường hợp
+            if (normalizedKeyword != null && categoryId != null && layout != null) {
+                // Lọc theo cả 3 tiêu chí: từ khóa + danh mục + hình thức bìa
+                products = productService.getProductByCategoryIdAndKeywordAndLayoutUser(categoryId, normalizedKeyword, layout, pageable);
+                log.info("Filtering by all three criteria");
+            } else if (normalizedKeyword != null && categoryId != null) {
+                // Lọc theo từ khóa + danh mục
+                products = productService.getProductByCategoryIdAndKeywordUser(categoryId, normalizedKeyword, pageable);
+                log.info("Filtering by keyword and category");
+            } else if (normalizedKeyword != null && layout != null) {
+                // Lọc theo từ khóa + hình thức bìa
+                products = productService.getProductByLayoutAndKeywordUser(layout, normalizedKeyword, pageable);
+                log.info("Filtering by keyword and layout");
+            } else if (categoryId != null && layout != null) {
+                // Lọc theo danh mục + hình thức bìa
+                products = productService.getProductByCategoryIdAndLayoutUser(categoryId, layout, pageable);
+                log.info("Filtering by category and layout");
+            } else if (normalizedKeyword != null) {
+                // Chỉ lọc theo từ khóa
+                products = productService.getProductByKeywordUser(normalizedKeyword, pageable);
+                log.info("Filtering by keyword only");
+            } else if (categoryId != null) {
+                // Chỉ lọc theo danh mục
+                products = productService.getProductByCategoryIdUser(categoryId, pageable);
+                log.info("Filtering by category only: categoryId={}", categoryId);
+            } else if (layout != null) {
+                // Chỉ lọc theo hình thức bìa
+                products = productService.getProductByLayoutUser(layout, pageable);
+                log.info("Filtering by layout only: layout={}", layout);
+            } else {
+                // Không có bộ lọc nào
+                products = productService.getAllProducts(pageable);
+                log.info("No filters applied");
+            }
 
-            products = productService.getProductByCategoryIdAndKeywordAndLayoutUser(categoryId, keyword, layout, pageable);
-
-        } else if (keyword != null && !keyword.trim().isEmpty() && categoryId != null) {
-
-            products = productService.getProductByCategoryIdAndKeywordUser(categoryId, keyword, pageable);
-
-        } else if (keyword != null && !keyword.trim().isEmpty() && layout != null) {
-
-            products = productService.getProductByLayoutAndKeywordUser(layout, keyword, pageable);
-
-        } else if (categoryId != null && layout != null) {
-
-            products = productService.getProductByCategoryIdAndLayoutUser(categoryId, layout, pageable);
-
-        } else if (keyword != null && !keyword.trim().isEmpty()) {
-
-            products = productService.getProductByKeywordUser(keyword, pageable);
-
-        } else if (categoryId != null) {
-
-            products = productService.getProductByCategoryIdUser(categoryId, pageable);
-
-        } else if (layout != null) {
-
-            products = productService.getProductByLayoutUser(layout, pageable);
-
-        }else {
-
+            log.info("Query returned {} products", products.getContent().size());
+        } catch (Exception e) {
+            log.error("Error fetching products: ", e);
+            // Fallback to all products if there's an error
             products = productService.getAllProducts(pageable);
-
         }
         
         model.addAttribute("products", products);
         model.addAttribute("totalPages", products.getTotalPages());
-        model.addAttribute("currentPage", products.getNumber());
+        model.addAttribute("pageNumber", page);
         model.addAttribute("keyword", keyword);
         model.addAttribute("selectedCategoryId", categoryId);
         model.addAttribute("selectedLayout", layout);

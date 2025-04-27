@@ -14,6 +14,7 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
+
     Page<Product> findByTitleContaining(String keyword, Pageable pageable);
 
     Page<Product> findByLayout(String layout, Pageable pageable);
@@ -27,16 +28,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByCategoryIdAndLayout(Long categoryId, String layout, Pageable pageable);
 
     Page<Product> findByLayoutAndTitleContaining(String layout, String keyword, Pageable pageable);
-
-
-
-//    Page<Product> findByCategoryIdAndTitleContainingOrderByCreatedAtAsc(Long categoryId, String keyword, Pageable pageable);
-//
-//    Page<Product> findByCategoryIdAndTitleContainingOrderByCreatedAtDesc(Long categoryId, String keyword, Pageable pageable);
-//
-//    Page<Product> findByTitleContainingOrderByCreatedAtAsc(String title, Pageable pageable);
-//
-//    Page<Product> findByTitleContainingOrderByCreatedAtDesc(String title, Pageable pageable);
 
     @Query("SELECT p FROM Product p ORDER BY p.quantitySold DESC")
     List<Product> findTopByOrderByQuantitySoldDesc(Pageable pageable);
