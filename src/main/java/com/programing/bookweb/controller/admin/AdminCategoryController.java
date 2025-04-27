@@ -79,15 +79,22 @@ public class AdminCategoryController extends BaseController {
 
 
     @GetMapping("/delete/{id}")
-    @Transactional
     public String deleteCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             Category category = categoryService.getCategoryById(id);
             if (category != null) {
                 // Lưu lại tên danh mục trước khi xóa
                 String categoryName = category.getName();
-                // Gọi phương thức xóa category có xử lý products
-                categoryService.safeDeleteCategory(id);
+                // Kiểm tra số lượng sản phẩm
+                int productCount = category.getProducts().size();
+                if (productCount > 0) {
+                    redirectAttributes.addFlashAttribute("error",
+                            "Không thể xóa thể loại vì có " + productCount +
+                                    " sản phẩm đang sử dụng thể loại này. Vui lòng xóa các sản phẩm trước.");
+                    return "redirect:/dashboard/category_management";
+                }
+                // Thực hiện xóa khi không có sản phẩm
+                categoryService.deleteCategory(id);
                 redirectAttributes.addFlashAttribute("success", "Xóa danh mục " + categoryName + " thành công");
             } else {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy danh mục");

@@ -64,41 +64,41 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <label for="title" class="form-label">Tiêu đề</label>
-                                <input type="text" class="form-control" id="title" th:field="*{title}">
+                                <input type="text" class="form-control" id="title" th:field="*{title}" required>
                             </div>
                             <div class="col-md-6 ">
                                 <label for="author" class="form-label">Tác giả</label>
-                                <input type="text" class="form-control" id="author" th:field="*{author}">
+                                <input type="text" class="form-control" id="author" th:field="*{author}" required>
                             </div>
                             <div class="col-md-6 ">
                                 <label for="translator" class="form-label">Dịch giả</label>
-                                <input type="text" class="form-control" id="translator" th:field="*{translator}">
+                                <input type="text" class="form-control" id="translator" th:field="*{translator}" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="publisher" class="form-label">Nhà xuất bản</label>
-                                <input type="text" class="form-control" id="publisher" th:field="*{publisher}">
+                                <input type="text" class="form-control" id="publisher" th:field="*{publisher}" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="supplier" class="form-label">Nhà cung cấp</label>
-                                <input type="text" class="form-control" id="supplier" th:field="*{supplier}">
+                                <input type="text" class="form-control" id="supplier" th:field="*{supplier}" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="categoryId" class="form-label">Thể loại</label>
-                                <select class="form-select" id="categoryId" name="categoryId" required>
+                                <select class="form-select" id="categoryId" name="category" required>
                                     <option value="">-- Chọn thể loại --</option>
                                     <option th:each="category : ${categories}"
                                             th:value="${category.id}"
                                             th:text="${category.name}">
                                     </option>
                                 </select>
+                                <input type="hidden" name="_category" value="on"/>
                             </div>
                             <div class="col-md-2">
                                 <label for="publishingYear" class="form-label">Năm xuất bản</label>
-                                <input type="text" class="form-control" id="publishingYear" th:field="*{publishingYear}">
+                                <input type="text" class="form-control" id="publishingYear" th:field="*{publishingYear}" required>
                             </div>
                             <div class="col-md-4">
                                 <label for="layout" class="form-label">Hình thức bìa</label>
-<!--                                <input type="text" class="form-control" id="layout" th:field="*{layout}">-->
                                 <select th:field="*{layout}" class="form-select" id="layout" required>
                                     <option value="">-- Chọn hình thức bìa --</option>
                                     <option value="Bìa mềm">Bìa mềm</option>
@@ -107,39 +107,39 @@
                             </div>
                             <div class="col-md-2">
                                 <label for="numberOfPage" class="form-label">Số trang</label>
-                                <input type="number" class="form-control" id="numberOfPage" th:field="*{numberOfPage}">
+                                <input type="number" class="form-control" id="numberOfPage" th:field="*{numberOfPage}" required>
                             </div>
                             <div class="col-md-2">
                                 <label for="weight" class="form-label">Trọng lượng (gr)</label>
-                                <input type="text" class="form-control" id="weight" th:field="*{weight}">
+                                <input type="text" class="form-control" id="weight" th:field="*{weight}" required>
                             </div>
 
                             <div class="col-md-5">
                                 <label for="size" class="form-label">Kích thước bao bì</label>
-                                <input type="text" class="form-control" id="size" th:field="*{size}">
+                                <input type="text" class="form-control" id="size" th:field="*{size}" required>
                             </div>
 
                             <div class="col-md-3">
                                 <label for="quantity" class="form-label">Số lượng</label>
-                                <input type="number" class="form-control" id="quantity" min="0" th:field="*{quantity}">
+                                <input type="number" class="form-control" id="quantity" min="0" th:field="*{quantity}" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="price" class="form-label">Giá gốc</label>
                                 <div class="input-group">
                                     <input type="number" class="form-control" id="price" th:field="*{price}" min="0" required>
-                                    <span class="input-group-text">Đ</span>
+                                    <span class="input-group-text">đ</span>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <label for="discount" class="form-label">Giảm giá</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="discount" th:field="*{discount}" min="0" max="100" value="0">
+                                    <input type="number" class="form-control" id="discount" th:field="*{discount}" min="0" max="100" value="0" required>
                                     <span class="input-group-text">%</span>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <label for="introduction" class="form-label">Mô tả/ Giới thiệu về sách</label>
-                                <textarea class="form-control" id="introduction" th:field="*{introduction}" style="height: 200px;"></textarea>
+                                <textarea class="form-control" id="introduction" th:field="*{introduction}" style="height: 200px;" required></textarea>
                             </div>
                         </div>
                     </div>

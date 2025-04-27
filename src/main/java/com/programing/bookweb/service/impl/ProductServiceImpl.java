@@ -1,5 +1,6 @@
 package com.programing.bookweb.service.impl;
 
+import com.programing.bookweb.entity.OrderDetail;
 import com.programing.bookweb.entity.Product;
 import com.programing.bookweb.repository.CategoryRepository;
 import com.programing.bookweb.repository.ProductRepository;
@@ -20,7 +21,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -80,11 +83,27 @@ public class ProductServiceImpl implements IProductService {
 
 
     @Override
+    @Transactional
     public void deleteProduct(Long productId) {
-        if (!productRepository.existsById(productId)){
+        Product product = productRepository.findById(productId).orElse(null);
+        if (product == null) {
             throw new RuntimeException("Không có sản phẩm có id: " + productId);
         }
-        productRepository.deleteById(productId);
+
+        // Xóa an toàn bằng cách xóa các liên kết trước
+        if (product.getOrderDetails() != null && !product.getOrderDetails().isEmpty()) {
+            // Tạo một bản sao để tránh ConcurrentModificationException
+            Set<OrderDetail> orderDetailsCopy = new HashSet<>(product.getOrderDetails());
+
+            // Xóa liên kết hai chiều để tránh lỗi SQL constraint
+            for (OrderDetail orderDetail : orderDetailsCopy) {
+                orderDetail.setProduct(null); // Loại bỏ tham chiếu đến product
+                product.getOrderDetails().remove(orderDetail); // Loại bỏ orderDetail khỏi danh sách của product
+            }
+        }
+
+        // Sau khi đã xử lý các liên kết, an toàn để xóa sản phẩm
+        productRepository.delete(product);
     }
 
 

@@ -46,9 +46,14 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Long categoryId) {
         Category category = getCategoryById(categoryId);
         if (category != null) {
+            // Kiểm tra xem có sản phẩm nào liên quan không
+            if (!category.getProducts().isEmpty()) {
+                throw new IllegalStateException("Không thể xóa thể loại vì có sản phẩm đang sử dụng");
+            }
             categoryRepository.delete(category);
         }
     }

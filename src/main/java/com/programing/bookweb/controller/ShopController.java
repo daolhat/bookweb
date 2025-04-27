@@ -88,20 +88,7 @@ public class ShopController extends BaseController{
             products = productService.getAllProducts(pageable);
 
         }
-
-//        Page<Product> searchResult;
-//        if (keyword != null && !keyword.trim().isEmpty()) {
-//            searchResult = productService.searchProductByTitle(keyword, pageable);
-//        } else if (categoryId != null){
-//            searchResult = productService.getProductByCategoryId(categoryId, pageable);
-//        } else if (layout != null && !layout.trim().isEmpty()) {
-//            searchResult = productService.getProductByLayout(layout, pageable);
-//        } else {
-//            searchResult = productService.getAllProducts(pageable);
-//        }
-//        model.addAttribute("products", searchResult);
-//        model.addAttribute("totalPages", searchResult.getTotalPages());
-//        model.addAttribute("currentPage", searchResult.getNumber());
+        
         model.addAttribute("products", products);
         model.addAttribute("totalPages", products.getTotalPages());
         model.addAttribute("currentPage", products.getNumber());

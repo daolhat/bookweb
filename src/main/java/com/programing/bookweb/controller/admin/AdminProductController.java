@@ -68,26 +68,63 @@ public class AdminProductController extends BaseController {
 
     @PostMapping("/add")
     public String addNewProduct(
-            @Valid @ModelAttribute("product") Product product,
+            @ModelAttribute("product") Product product,
             BindingResult result,
             @RequestParam("imageProduct") MultipartFile imageProduct,
+            @RequestParam(value = "category", required = false) Long categoryId,
             Model model,
             RedirectAttributes redirectAttributes)
-    throws IOException {
-        if (result.hasErrors()) {
-            List<Category> categories = categoryService.getAllCategories();
-            model.addAttribute("categories", categories);
-            model.addAttribute("error", "Nhập lại thông tin");
-            return "admin/product-add";
-        }
-
+            throws IOException {
         try {
+            System.out.println("Adding new product: " + product.getTitle());
+            System.out.println("Category ID: " + categoryId);
+
+            // Kiểm tra các trường bắt buộc
+            if (product.getTitle() == null || product.getTitle().isEmpty() ||
+                    product.getAuthor() == null || product.getAuthor().isEmpty() ||
+                    product.getSupplier() == null || product.getSupplier().isEmpty() ||
+                    product.getPublisher() == null || product.getPublisher().isEmpty() ||
+                    product.getPrice() <= 0) {
+                List<Category> categories = categoryService.getAllCategories();
+                model.addAttribute("categories", categories);
+                model.addAttribute("error", "Vui lòng nhập đầy đủ thông tin cần thiết");
+                return "admin/product-add";
+            }
+
+            // Xử lý category
+            if (categoryId == null || categoryId <= 0) {
+                List<Category> categories = categoryService.getAllCategories();
+                model.addAttribute("categories", categories);
+                model.addAttribute("error", "Vui lòng chọn thể loại sách");
+                return "admin/product-add";
+            }
+
+            Category category = categoryService.getCategoryById(categoryId);
+            if (category == null) {
+                List<Category> categories = categoryService.getAllCategories();
+                model.addAttribute("categories", categories);
+                model.addAttribute("error", "Thể loại không tồn tại");
+                return "admin/product-add";
+            }
+
+            // Gán category cho product
+            product.setCategory(category);
+
+            // Xử lý các giá trị mặc định
+            if (product.getQuantitySold() == 0) {
+                product.setQuantitySold(0);
+            }
+
+            // Thêm sản phẩm
             productService.addProduct(product, imageProduct);
             redirectAttributes.addFlashAttribute("success", "Thêm thành công sản phẩm");
             return "redirect:/dashboard/product_management";
-        } catch (SQLException | IOException e) {
-            model.addAttribute("categories", categoryService.getAllCategories());
-            model.addAttribute("error", "Lỗi tải file: " + e.getMessage());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            List<Category> categories = categoryService.getAllCategories();
+            model.addAttribute("categories", categories);
+            model.addAttribute("error", "Lỗi khi thêm sản phẩm: " + e.getMessage());
             return "admin/product-add";
         }
     }
@@ -216,9 +253,22 @@ public class AdminProductController extends BaseController {
 
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        if (productService.getProductById(id) != null) {
-            productService.deleteProduct(id);
-            redirectAttributes.addFlashAttribute("success", "Xoá sản phẩm thành công");
+        try {
+            Product product = productService.getProductById(id);
+            if (product != null) {
+                // Lưu lại thông tin sản phẩm trước khi xóa để hiển thị trong thông báo
+                String productTitle = product.getTitle();
+
+                // Xóa sản phẩm
+                productService.deleteProduct(id);
+
+                redirectAttributes.addFlashAttribute("success", "Xoá sản phẩm \"" + productTitle + "\" thành công");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy sản phẩm");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi xóa sản phẩm: " + e.getMessage());
         }
         return "redirect:/dashboard/product_management";
     }
