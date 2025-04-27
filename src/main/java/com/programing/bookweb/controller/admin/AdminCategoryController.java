@@ -62,6 +62,7 @@ public class AdminCategoryController extends BaseController {
     }
 
 
+    @Transactional
     @PostMapping("/update/{id}")
     public String editCategory(@PathVariable Long id,
                                  @Valid @ModelAttribute("category") Category category,

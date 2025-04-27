@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @AllArgsConstructor
@@ -92,11 +93,19 @@ public class CartController extends BaseController{
 
 
     @GetMapping("/checkout")
-    public String getCheckOut(Model model) {
+    public String getCheckOut(Model model, RedirectAttributes redirectAttributes) {
         CartDTO cart = cartService.getCart(session);
 
         if (cart.getCartItems().isEmpty()) {
             return "redirect:/cart?error=empty_cart";
+        }
+
+        for (CartItemDTO itemDTO : cart.getCartItems()){
+            Product product = productService.getProductById(itemDTO.getProductId());
+            if(itemDTO.getQuantity() > product.getQuantity()){
+                redirectAttributes.addAttribute("error", "Vượt quá số lượng trong kho");
+                return "redirect:/cart?error=insufficient_quantity&productId=" + itemDTO.getProductId();
+            }
         }
 
         model.addAttribute("cart", cart);
