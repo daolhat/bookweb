@@ -13,10 +13,8 @@ public class CodeGenerator {
         if (categoryName == null || categoryName.isEmpty()) {
             return "X" + String.format("%03d", random.nextInt(1000));
         }
-
         String firstChar = categoryName.trim().substring(0, 2).toUpperCase();
         int randomNum = random.nextInt(1000);
-
         return firstChar + String.format("%03d", randomNum);
     }
 
@@ -25,32 +23,44 @@ public class CodeGenerator {
         if (categoryCode == null || categoryCode.length() != 5) {
             categoryCode = "XX" + String.format("%03d", random.nextInt(1000));
         }
-
         int randomNum = random.nextInt(1000000);
-
         return categoryCode + String.format("%06d", randomNum);
     }
+
 
     public static String generateOrderCode(String userName, LocalDateTime orderDateTime, int productCount) {
         StringBuilder randomPrefix = new StringBuilder();
         for (int i = 0; i < 2; i++) {
             randomPrefix.append(ALPHA.charAt(random.nextInt(ALPHA.length())));
         }
-
         String userPrefix;
         if (userName == null || userName.length() < 2) {
             userPrefix = "XX";
         } else {
             userPrefix = userName.trim().substring(0, 2).toUpperCase();
         }
-
         String dateString = orderDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
-
         String countString = String.format("%02d", Math.min(productCount, 99));
-
         int randomNum = random.nextInt(99);
-
         return randomPrefix.toString() + userPrefix + dateString + countString + String.format("%02d", randomNum);
     }
+
+
+//    public static String generateUserCode(String name, LocalDateTime registrationDate) {
+//        String namePrefix;
+//        if (name == null || name.length() < 2) {
+//            namePrefix = "XX";
+//        } else {
+//            namePrefix = name.trim().substring(0, 2).toUpperCase();
+//        }
+//        int registrationYear = registrationDate.getYear();
+//        int registrationMonth = registrationDate.getMonthValue();
+//        String monthStr = String.format("%02d", registrationMonth);
+//        StringBuilder randomPrefix = new StringBuilder();
+//        for (int i = 0; i < 7; i++) {
+//            randomPrefix.append(ALPHA.charAt(random.nextInt(ALPHA.length())));
+//        }
+//        return namePrefix + registrationYear + monthStr + randomPrefix.toString();
+//    }
 
 }

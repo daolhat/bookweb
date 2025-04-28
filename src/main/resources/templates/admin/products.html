@@ -61,27 +61,30 @@
 
                         <div class="row mb-3">
                             <div class="col-md-3">
-                                <select class="form-select" name="category" id="categoryFilter"
-                                        th:onchange="'window.location.href=\'' + @{/dashboard/product_management(categoryId=this.value, layout=${selectedLayout})} + '\''">
+                                <select class="form-select" name="categoryId" id="categoryFilter"
+                                        onchange="window.location.href = this.options[this.selectedIndex].getAttribute('data-url')">
                                     <option value="">-- Chọn thể loại --</option>
                                     <option th:each="category : ${categories}"
                                             th:value="${category.id}"
                                             th:text="${category.name}"
-                                            th:selected="${selectedCategoryId != null && selectedCategoryId == category.id}">
+                                            th:selected="${selectedCategoryId != null && selectedCategoryId == category.id}"
+                                            th:attr="data-url=@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${category.id}, layout=${selectedLayout}, sort=${selectedSort})}">
                                 </select>
                             </div>
 
                             <div class="col-md-3">
                                 <select class="form-select" name="layout" id="layoutFilter"
-                                        th:onchange="'window.location.href=\'' + @{/dashboard/product_management(categoryId=${selectedCategoryId}, layout=this.value)} + '\''">
+                                    onchange="window.location.href = this.options[this.selectedIndex].getAttribute('data-url')">
                                     <option value="">-- Chọn hình thức bìa --</option>
                                     <option value="Bìa mềm"
-                                            th:selected="${selectedLayout != null && selectedLayout == 'Bìa mềm'}">Bìa
-                                        mềm
+                                            th:selected="${selectedLayout != null && selectedLayout == 'Bìa mềm'}"
+                                            th:attr="data-url=@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout='Bìa mềm', sort=${selectedSort})}">
+                                        Bìa mềm
                                     </option>
                                     <option value="Bìa cứng"
-                                            th:selected="${selectedLayout != null && selectedLayout == 'Bìa cứng'}">Bìa
-                                        cứng
+                                            th:selected="${selectedLayout != null && selectedLayout == 'Bìa cứng'}"
+                                            th:attr="data-url=@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout='Bìa cứng', sort=${selectedSort})}">
+                                        Bìa cứng
                                     </option>
                                 </select>
                             </div>
@@ -91,19 +94,19 @@
                                     <span class="me-2 small"><i class="bi bi-filter"></i> Sắp xếp theo:</span>
                                     <div class="d-flex gap-2">
                                         <a type="button"
-                                           th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout})}"
+                                           th:href="@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout})}"
                                            th:class="${selectedSort == null ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">Mặc
                                             định</a>
                                         <a type="button"
-                                           th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='newest')}"
+                                           th:href="@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='newest')}"
                                            th:class="${selectedSort != null && selectedSort == 'newest' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">Sách
                                             mới</a>
                                         <a type="button"
-                                           th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='price_asc')}"
+                                           th:href="@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='price_asc')}"
                                            th:class="${selectedSort != null && selectedSort == 'price_asc' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">Giá
                                             thấp - cao</a>
                                         <a type="button"
-                                           th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='price_desc')}"
+                                           th:href="@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='price_desc')}"
                                            th:class="${selectedSort != null && selectedSort == 'price_desc' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">Giá
                                             cao - thấp</a>
                                     </div>
@@ -112,7 +115,7 @@
 
                             <div class="col-md-6 search-bar d-flex align-items-center mx-auto">
 
-                                <form class="d-flex w-100" th:action="@{/shop}" method="get">
+                                <form class="d-flex w-100" th:action="@{/dashboard/product_management}" method="get">
                                     <div class="input-group">
                                         <input type="text" class="form-control" name="keyword"
                                                placeholder="Nhập từ khóa"
@@ -217,7 +220,7 @@
                                 <ul class="pagination">
                                     <li class="page-item" th:classappend="${pageNumber <= 1 ? 'disabled' : ''}">
                                         <a class="page-link"
-                                           th:href="@{/shop(page=${pageNumber - 1}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                           th:href="@{/dashboard/product_management(page=${pageNumber - 1}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
                                            aria-label="Previous">
                                             <span aria-hidden="true">&laquo;</span>
                                         </a>
@@ -225,12 +228,12 @@
                                     <li class="page-item" th:each="i : ${#numbers.sequence(1, products.totalPages)}"
                                         th:classappend="${i == pageNumber ? 'active' : ''}">
                                         <a class="page-link"
-                                           th:href="@{/shop(page=${i}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                           th:href="@{/dashboard/product_management(page=${i}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
                                            th:text="${i}">1</a>
                                     </li>
                                     <li class="page-item" th:classappend="${pageNumber >= products.totalPages ? 'disabled' : ''}">
                                         <a class="page-link"
-                                           th:href="@{/shop(page=${pageNumber + 1}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                           th:href="@{/dashboard/product_management(page=${pageNumber + 1}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
                                            aria-label="Next">
                                             <span aria-hidden="true">&raquo;</span>
                                         </a>
@@ -263,6 +266,45 @@
 <script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
 <!-- Template Main JS File -->
 <script th:src="@{/assets/js/main.js}"></script>
+
+<!--<script th:inline="javascript">-->
+<!--    function filterByCategory() {-->
+<!--        var categoryId = document.getElementById('categoryFilter').value;-->
+<!--        var url = /*[[@{/dashboard/product_management(-->
+<!--                        page=${pageNumber},-->
+<!--                        keyword=${#strings.defaultString(keyword, '')},-->
+<!--                        categoryId='__CATEGORY_ID__',-->
+<!--                        layout=${#strings.defaultString(selectedLayout, '')},-->
+<!--                        sort=${#strings.defaultString(selectedSort, '')}-->
+<!--                   )}]]*/ '';-->
+
+<!--        url = url.replace('__CATEGORY_ID__', categoryId);-->
+<!--        window.location.href = url;-->
+<!--    }-->
+<!--</script>-->
+
+<script>
+    function filterByCategory(select) {
+        // Lấy giá trị categoryId từ select
+        const categoryId = select.value;
+
+        // Lấy các tham số khác từ biến được truyền vào Thymeleaf
+        const page = [[${pageNumber}]];
+        const keyword = [[${keyword != null ? keyword : ''}]];
+        const layout = [[${selectedLayout != null ? selectedLayout : ''}]];
+        const sort = [[${selectedSort != null ? selectedSort : ''}]];
+
+        // Tạo URL động
+        let url = '/dashboard/product_management?page=' + page +
+                  '&keyword=' + encodeURIComponent(keyword) +
+                  '&categoryId=' + categoryId +
+                  '&layout=' + encodeURIComponent(layout) +
+                  '&sort=' + encodeURIComponent(sort);
+
+        // Chuyển hướng đến URL
+        window.location.href = url;
+    }
+</script>
 
 </body>
 
