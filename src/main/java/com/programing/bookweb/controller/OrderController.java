@@ -5,11 +5,15 @@ import com.programing.bookweb.entity.OrderDetail;
 import com.programing.bookweb.service.IOrderDetailService;
 import com.programing.bookweb.service.IOrderService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -22,10 +26,17 @@ public class OrderController extends BaseController{
     private final IOrderDetailService orderDetailService;
 
     @GetMapping
-    public String getAllOrders(Model model) {
+    public String getAllOrders(@RequestParam(name = "page", defaultValue = "1") int page,
+                               Model model) {
 
-        List<Order> orders = orderService.getAllOrdersByUser(getCurrentUser());
+        Pageable pageable = PageRequest.of(page - 1, 3);
+
+        Page<Order> orders = orderService.getAllOrdersByUserPage(getCurrentUser(), pageable);
+
+        //List<Order> orders = orderService.getAllOrdersByUser(getCurrentUser());
         model.addAttribute("orders", orders);
+        model.addAttribute("totalPages", orders.getTotalPages());
+        model.addAttribute("pageNumber", page);
 
         Long countOrder = orderService.countOrderByUser(getCurrentUser());
         model.addAttribute("countOrder", countOrder);

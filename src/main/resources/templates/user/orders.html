@@ -157,23 +157,32 @@
                     </div>
 
                     <!-- Phân trang -->
-                    <nav th:if="${totalPages > 1}" aria-label="Phân trang">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                                <a class="page-link" th:href="@{/orders(page=${currentPage - 1}" aria-label="Trước">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i ? 'active' : ''}">
-                                <a class="page-link" th:href="@{/orders(page=${i}" th:text="${i + 1}">1</a>
-                            </li>
-                            <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
-                                <a class="page-link" th:href="@{/orders(page=${currentPage + 1}" aria-label="Sau">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+                    <div class="row g-3 mt-4">
+                        <nav aria-label="Page navigation" class="d-flex justify-content-center" th:if="${orders.totalPages > 1}">
+                            <ul class="pagination">
+                                <li class="page-item" th:classappend="${pageNumber <= 1 ? 'disabled' : ''}">
+                                    <a class="page-link"
+                                       th:href="@{/order(page=${pageNumber - 1})}"
+                                       aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(1, orders.totalPages)}"
+                                    th:classappend="${i == pageNumber ? 'active' : ''}">
+                                    <a class="page-link"
+                                       th:href="@{order(page=${i})}"
+                                       th:text="${i}">1</a>
+                                </li>
+                                <li class="page-item" th:classappend="${pageNumber >= orders.totalPages ? 'disabled' : ''}">
+                                    <a class="page-link"
+                                       th:href="@{/order(page=${pageNumber + 1})}"
+                                       aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
 
                 </section>
             </div>

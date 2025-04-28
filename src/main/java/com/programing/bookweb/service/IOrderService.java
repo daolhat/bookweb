@@ -17,6 +17,8 @@ public interface IOrderService {
 
     List<Order> getAllOrdersByUser(User user);
 
+    Page<Order> getAllOrdersByUserPage(User user, Pageable pageable);
+
     Long countOrder();
 
     Order getOrderById(Long orderId);

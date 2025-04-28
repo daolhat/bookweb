@@ -205,4 +205,9 @@ public class OrderServiceImpl implements IOrderService {
     public List<Order> getAllOrdersByUser(User user) {
         return orderRepository.findByUserOrderByCreatedAtDesc(user);
     }
+
+    @Override
+    public Page<Order> getAllOrdersByUserPage(User user, Pageable pageable) {
+        return orderRepository.findByUserOrderByCreatedAtDesc(user, pageable);
+    }
 }

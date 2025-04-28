@@ -85,6 +85,7 @@ public class ProfileController extends BaseController{
         try {
             userService.changePassword(user, newPassword);
             redirectAttributes.addFlashAttribute("message", "Đổi mật khẩu thành công!");
+            return "redirect:/login";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
         }

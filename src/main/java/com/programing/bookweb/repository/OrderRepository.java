@@ -19,6 +19,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByUserOrderByCreatedAtDesc(User user);
 
+    Page<Order> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
+
     Page<Order> findByStatus(String status, Pageable pageable);
 
     @Query("SELECT o FROM Order o WHERE o.createdAt BETWEEN :startDate AND :endDate")
