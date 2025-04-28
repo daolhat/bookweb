@@ -21,10 +21,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Page<Order> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
 
-    Page<Order> findByStatus(String status, Pageable pageable);
-
     @Query("SELECT o FROM Order o WHERE o.createdAt BETWEEN :startDate AND :endDate")
-    List<Order> findByCreatedAtBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    Page<Order> findByCreatedAtBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
 
     @Query("SELECT SUM(o.totalPrice) FROM Order o where  o.status = 'DELIVERED'")
     BigDecimal sumTotalPrice();
@@ -39,6 +37,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o.user as user, SUM(o.totalPrice) as totalSpending FROM Order o WHERE o.createdAt BETWEEN :startDate AND :endDate AND o.status = 'DELIVERED' GROUP BY o.user ORDER BY totalSpending DESC")
     List<Object[]> findTopSpendingUsers(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
 
-    List<Order> findByStatus(OrderStatus status, Pageable pageable);
+    Page<Order> findByStatus(OrderStatus status, Pageable pageable);
 
+    @Query("SELECT o FROM Order o WHERE o.status = :status AND o.createdAt BETWEEN :startDate AND :endDate")
+    Page<Order> findByStatusAndCreatedAtBetween(
+            @Param("status") OrderStatus status,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            Pageable pageable);
+
+    @Query("SELECT o FROM Order o WHERE o.code = :search OR o.receiver LIKE %:search% OR o.customerPhone = :search")
+    Page<Order> findByCodeOrReceiverContainingOrCustomerPhone(@Param("search") String search, Pageable pageable);
 }

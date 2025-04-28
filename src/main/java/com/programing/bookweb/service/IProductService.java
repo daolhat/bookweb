@@ -25,28 +25,13 @@ public interface IProductService {
 
     Page<Product> getAllProducts(Pageable pageable);
 
-    List<Product> getAllProductByList();
-
-    Page<Product> getProductByCategoryId(Long categoryId, Pageable pageable);
-
-    Page<Product> getProductByLayout(String layout, Pageable pageable);
-
     List<Product> getBestSeller(Pageable pageable);
 
     List<Product> getNewProducts(Pageable pageable);
 
     List<Product> getProductsByCategory(Long categoryId, Pageable pageable);
 
-
     List<Product> getTopSellingProductsByDateRange(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
-
-    //Admin
-    List<Product> getProductByCategoryId(Long categoryId);
-
-    List<Product> getProductByLayout(String layout);
-
-    List<Product> getProductByCategoryIdAndLayout(Long categoryId, String layout);
-
 
     //User
     Page<Product> getProductByKeywordUser(String keyword, Pageable pageable);

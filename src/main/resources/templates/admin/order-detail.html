@@ -60,7 +60,7 @@
                                             <span th:if="${order.status != null && order.status.name() == 'PENDING'}">Đang chờ xử lý</span>
                                             <span th:if="${order.status != null && order.status.name() == 'PROCESSING'}">Đang xử lý</span>
                                             <span th:if="${order.status != null && order.status.name() == 'DELIVERING'}">Đang giao hàng</span>
-                                            <span th:if="${order.status != null && order.status.name() == 'DELIVERED'}">Đã giao thành công</span>
+                                            <span th:if="${order.status != null && order.status.name() == 'DELIVERED'}">Đã giao hàng</span>
                                             <span th:if="${order.status != null && order.status.name() == 'CANCELLED'}">Đã hủy</span>
                                         </p>
                                         <p class="mb-1"><strong>Phương thức thanh toán: </strong>

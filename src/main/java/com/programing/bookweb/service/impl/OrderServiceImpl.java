@@ -35,11 +35,13 @@ public class OrderServiceImpl implements IOrderService {
     private final OrderDetailRepository orderDetailRepository;
     private final ProductRepository productRepository;
 
+    //lấy toàn bộ đơn hàng
     @Override
     public Page<Order> getAllOrders(Pageable pageable) {
         return orderRepository.findAll(pageable);
     }
 
+    //huỷ một đơn hàng
     @Transactional
     @Override
     public void cancelOrder(Order order) {
@@ -58,11 +60,13 @@ public class OrderServiceImpl implements IOrderService {
         orderRepository.save(order);
     }
 
+    //đếm số lượng đơn hàng theo từng người dùng
     @Override
     public Long countOrderByUser(User user) {
         return orderRepository.countByUser(user);
     }
 
+    //cập nhật trạng thái cho đơn hàng
     @Override
     public void setProcessingOrder(Order order) {
         order.setStatus(OrderStatus.PROCESSING);
@@ -104,8 +108,42 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public List<Order> getOrdersByStatus(OrderStatus status, Pageable pageable) {
+    public Page<Order> getOrdersByStatus(OrderStatus status, Pageable pageable) {
+        if (status == null) {
+            return orderRepository.findAll(pageable);
+        }
         return orderRepository.findByStatus(status, pageable);
+    }
+
+    @Override
+    public Page<Order> getOrdersBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
+            return orderRepository.findAll(pageable);
+        }
+        return orderRepository.findByCreatedAtBetween(startDate, endDate, pageable);
+    }
+
+    @Override
+    public Page<Order> getOrdersByStatusAndBetween(OrderStatus status, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        if (status == null || startDate == null || endDate == null || startDate.isAfter(endDate)){
+            if (status != null) {
+                return getOrdersByStatus(status, pageable);
+            } else if (startDate != null && endDate != null && startDate.isBefore(endDate)) {
+                return getOrdersBetween(startDate, endDate, pageable);
+            } else {
+                return orderRepository.findAll(pageable);
+            }
+        }
+        return orderRepository.findByStatusAndCreatedAtBetween(status, startDate, endDate, pageable);
+    }
+
+    @Override
+    public Page<Order> getOrderSearch(String search, Pageable pageable) {
+        if (search != null && !search.trim().isEmpty()) {
+            String searchNew = search.trim();
+            return orderRepository.findByCodeOrReceiverContainingOrCustomerPhone(searchNew, pageable);
+        }
+        return orderRepository.findAll(pageable);
     }
 
     @Override
@@ -128,7 +166,6 @@ public class OrderServiceImpl implements IOrderService {
         if (userOrder == null) {
             throw new IllegalArgumentException("Thông tin người nhận không được null");
         }
-
         Order order = new Order();
         order.setUser(user);
         order.setReceiver(userOrder.getFullName());
@@ -159,35 +196,29 @@ public class OrderServiceImpl implements IOrderService {
                     .collect(Collectors.toList());
             throw new IllegalStateException("Không tìm thấy sản phẩm với ID: " + missingProductIds);
         }
-
         List<OrderDetail> orderDetails = new ArrayList<>();
         List<Product> productsToUpdate = new ArrayList<>();
-
         for (CartItemDTO cartItem : cartItems) {
             Product product = productMap.get(cartItem.getProductId());
             if (product == null) {
                 throw new IllegalStateException("Sản phẩm với ID " + cartItem.getProductId() + " không tồn tại");
             }
-
             double discountRate = product.getDiscount() / 100.0;
             double salePrice = product.getPrice() * (1 - discountRate);
-
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setProduct(product);
             orderDetail.setQuantity(cartItem.getQuantity());
             orderDetail.setPrice(salePrice);
             orderDetail.setOrder(order);
             orderDetails.add(orderDetail);
-
+            //Cập nhật lại sô lượng của sản phẩm trong kho
             product.setQuantitySold(product.getQuantitySold() + cartItem.getQuantity());
             product.setQuantity(product.getQuantity() - cartItem.getQuantity());
             productsToUpdate.add(product);
         }
         order.setOrderDetails(orderDetails);
-
         Order savedOrder = orderRepository.save(order);
         productRepository.saveAll(productsToUpdate);
-
         return savedOrder;
     }
 
@@ -199,11 +230,6 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public Long countOrder() {
         return orderRepository.count();
-    }
-
-    @Override
-    public List<Order> getAllOrdersByUser(User user) {
-        return orderRepository.findByUserOrderByCreatedAtDesc(user);
     }
 
     @Override

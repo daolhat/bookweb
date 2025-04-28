@@ -89,19 +89,16 @@ public class ProductServiceImpl implements IProductService {
         if (product == null) {
             throw new RuntimeException("Không có sản phẩm có id: " + productId);
         }
-
         // Xóa an toàn bằng cách xóa các liên kết trước
         if (product.getOrderDetails() != null && !product.getOrderDetails().isEmpty()) {
             // Tạo một bản sao để tránh ConcurrentModificationException
             Set<OrderDetail> orderDetailsCopy = new HashSet<>(product.getOrderDetails());
-
             // Xóa liên kết hai chiều để tránh lỗi SQL constraint
             for (OrderDetail orderDetail : orderDetailsCopy) {
                 orderDetail.setProduct(null); // Loại bỏ tham chiếu đến product
                 product.getOrderDetails().remove(orderDetail); // Loại bỏ orderDetail khỏi danh sách của product
             }
         }
-
         // Sau khi đã xử lý các liên kết, an toàn để xóa sản phẩm
         productRepository.delete(product);
     }
@@ -118,37 +115,14 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public List<Product> getAllProductByList() {
-        return productRepository.findAll();
-    }
-
-
-    @Override
-    public Page<Product> getProductByCategoryId(Long categoryId, Pageable pageable) {
-        if (!categoryRepository.existsById(categoryId)){
-            throw new RuntimeException("Không có danh mục thể loại sách trên!");
-        }
-        return productRepository.findByCategoryId(categoryId, pageable);
-    }
-
-
-    @Override
-    public Page<Product> getProductByLayout(String layout, Pageable pageable) {
-        return productRepository.findByLayout(layout, pageable);
-    }
-
-
-    @Override
     public List<Product> getBestSeller(Pageable pageable) {
         return productRepository.findTopByOrderByQuantitySoldDesc(pageable);
     }
-
 
     @Override
     public List<Product> getNewProducts(Pageable pageable) {
         return productRepository.findTopByOrderByCreatedAtDesc(pageable);
     }
-
 
     @Override
     public List<Product> getProductsByCategory(Long categoryId, Pageable pageable) {
@@ -158,21 +132,6 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<Product> getTopSellingProductsByDateRange(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
         return List.of();
-    }
-
-    @Override
-    public List<Product> getProductByCategoryId(Long categoryId) {
-        return productRepository.findByCategoryId(categoryId);
-    }
-
-    @Override
-    public List<Product> getProductByLayout(String layout) {
-        return productRepository.findByLayout(layout);
-    }
-
-    @Override
-    public List<Product> getProductByCategoryIdAndLayout(Long categoryId, String layout) {
-        return productRepository.findByCategoryIdAndLayout(categoryId, layout);
     }
 
     @Override

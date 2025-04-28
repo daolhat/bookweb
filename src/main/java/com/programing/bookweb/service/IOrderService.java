@@ -15,8 +15,6 @@ import java.util.List;
 
 public interface IOrderService {
 
-    List<Order> getAllOrdersByUser(User user);
-
     Page<Order> getAllOrdersByUserPage(User user, Pageable pageable);
 
     Long countOrder();
@@ -49,5 +47,11 @@ public interface IOrderService {
 
     List<Object[]> getTopSpendingUsers(LocalDateTime startDate, LocalDateTime endDate, int limit);
 
-    List<Order> getOrdersByStatus(OrderStatus status, Pageable pageable);
+    Page<Order> getOrdersByStatus(OrderStatus status, Pageable pageable);
+
+    Page<Order> getOrdersBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+
+    Page<Order> getOrdersByStatusAndBetween(OrderStatus status, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+
+    Page<Order> getOrderSearch(String search, Pageable pageable);
 }

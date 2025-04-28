@@ -44,34 +44,44 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
 
-                        <select class="form-select" name="status" id="statusFilter">
+<!--                        <select class="form-select" name="status" id="statusFilter">-->
+<!--                            <option value="">&#45;&#45; Tất cả trạng thái &#45;&#45;</option>-->
+<!--                            <option value="PENDING"-->
+<!--                                    th:selected="${selectedStatus != null && param.status[0] == 'PENDING'}">Chờ xác nhận-->
+<!--                            </option>-->
+<!--                            <option value="PROCESSING"-->
+<!--                                    th:selected="${param.status != null && param.status[0] == 'PROCESSING'}">Đang xử lý-->
+<!--                            </option>-->
+<!--                            <option value="DELIVERING"-->
+<!--                                    th:selected="${param.status != null && param.status[0] == 'DELIVERING'}">Đang giao-->
+<!--                                hàng-->
+<!--                            </option>-->
+<!--                            <option value="DELIVERED"-->
+<!--                                    th:selected="${param.status != null && param.status[0] == 'DELIVERED'}">Đã giao hàng-->
+<!--                            </option>-->
+<!--                            <option value="CANCELLED"-->
+<!--                                    th:selected="${param.status != null && param.status[0] == 'CANCELLED'}">Đã hủy-->
+<!--                            </option>-->
+<!--                        </select>-->
+
+                        <select class="form-select" name="status" id="statusFilter"
+                                onchange="window.location.href = this.options[this.selectedIndex].getAttribute('data-url')">
                             <option value="">-- Tất cả trạng thái --</option>
-                            <option value="PENDING"
-                                    th:selected="${param.status != null && param.status[0] == 'PENDING'}">Chờ xác nhận
-                            </option>
-                            <option value="PROCESSING"
-                                    th:selected="${param.status != null && param.status[0] == 'PROCESSING'}">Đang xử lý
-                            </option>
-                            <option value="DELIVERING"
-                                    th:selected="${param.status != null && param.status[0] == 'DELIVERING'}">Đang giao
-                                hàng
-                            </option>
-                            <option value="DELIVERED"
-                                    th:selected="${param.status != null && param.status[0] == 'DELIVERED'}">Đã giao hàng
-                            </option>
-                            <option value="CANCELLED"
-                                    th:selected="${param.status != null && param.status[0] == 'CANCELLED'}">Đã hủy
+                            <option th:each="status : ${T(com.programing.bookweb.enums.OrderStatus).values()}"
+                                    th:value="${status.name()}"
+                                    th:text="${status.label}"
+                                    th:selected="${selectedStatus != null && selectedStatus == status.name()}"
+                                    th:attr="data-url=@{/dashboard/order_management(page=${pageNumber}, status=${selectedStatus}, fromDate=${startDate}, toDate=${endDate})}">
                             </option>
                         </select>
 
-                        </form>
                     </div>
 
                     <div class="col-md-6">
                         <form th:action="@{/dashboard/order_management}" method="get">
                             <div class="input-group">
-                                <input type="date" class="form-control" name="fromDate" th:value="${param.fromDate}">
-                                <input type="date" class="form-control" name="toDate" th:value="${param.toDate}">
+                                <input type="date" class="form-control" name="fromDate" required>
+                                <input type="date" class="form-control" name="toDate" required>
                                 <button class="btn btn-primary" type="submit">Lọc</button>
                             </div>
                         </form>
@@ -84,7 +94,7 @@
                     <div class="col-md-6 search-bar d-flex align-items-center mx-auto mt-4">
                         <form class="d-flex w-100" th:action="@{/dashboard/order_management}" method="get">
                             <div class="input-group">
-                                <input type="text" class="form-control" name="codeOrder"
+                                <input type="text" class="form-control" name="search"
                                        placeholder="Tìm theo mã đơn"
                                        title="">
                                 <button type="submit" class="btn btn-primary">Tìm</button>
@@ -125,7 +135,7 @@
                             </td>
                             <td>
                                 <span th:if="${order.status != null && order.status.name() == 'PENDING'}"
-                                      class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                      class="badge bg-warning text-dark">Đang chờ xử lý</span>
                                 <span th:if="${order.status != null && order.status.name() == 'PROCESSING'}"
                                       class="badge bg-info">Đang xử lý</span>
                                 <span th:if="${order.status != null && order.status.name() == 'DELIVERING'}"
@@ -156,7 +166,7 @@
                         <ul class="pagination">
                             <li class="page-item" th:classappend="${pageNumber <= 1 ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/dashboard/order_management(page=${pageNumber - 1}, status=${selectedStatus}, codeOrder=${code}, fromDate=${startDate}, toDate=${endDate})}"
+                                   th:href="@{/dashboard/order_management(page=${pageNumber - 1}, status=${selectedStatus}, fromDate=${startDate}, toDate=${endDate})}"
                                    aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
@@ -164,12 +174,12 @@
                             <li class="page-item" th:each="i : ${#numbers.sequence(1, orders.totalPages)}"
                                 th:classappend="${i == pageNumber ? 'active' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/dashboard/order_management(page=${i}, status=${selectedStatus}, codeOrder=${code},fromDate=${startDate}, toDate=${endDate})}"
+                                   th:href="@{/dashboard/order_management(page=${i}, status=${selectedStatus}, fromDate=${startDate}, toDate=${endDate})}"
                                    th:text="${i}">1</a>
                             </li>
                             <li class="page-item" th:classappend="${pageNumber >= orders.totalPages ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/dashboard/order_management(page=${pageNumber + 1}, status=${selectedStatus}, codeOrder=${code},fromDate=${startDate}, toDate=${endDate})}"
+                                   th:href="@{/dashboard/order_management(page=${pageNumber + 1}, status=${selectedStatus}, fromDate=${startDate}, toDate=${endDate})}"
                                    aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>

@@ -95,20 +95,20 @@
                                     <div class="d-flex gap-2">
                                         <a type="button"
                                            th:href="@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout})}"
-                                           th:class="${selectedSort == null ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">Mặc
-                                            định</a>
+                                           th:class="${selectedSort == null ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">
+                                            Mặc định</a>
                                         <a type="button"
                                            th:href="@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='newest')}"
-                                           th:class="${selectedSort != null && selectedSort == 'newest' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">Sách
-                                            mới</a>
+                                           th:class="${selectedSort != null && selectedSort == 'newest' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">
+                                            Sách mới</a>
                                         <a type="button"
                                            th:href="@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='price_asc')}"
-                                           th:class="${selectedSort != null && selectedSort == 'price_asc' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">Giá
-                                            thấp - cao</a>
+                                           th:class="${selectedSort != null && selectedSort == 'price_asc' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">
+                                            Giá thấp - cao</a>
                                         <a type="button"
                                            th:href="@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='price_desc')}"
-                                           th:class="${selectedSort != null && selectedSort == 'price_desc' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">Giá
-                                            cao - thấp</a>
+                                           th:class="${selectedSort != null && selectedSort == 'price_desc' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">
+                                            Giá cao - thấp</a>
                                     </div>
                                 </div>
                             </div>

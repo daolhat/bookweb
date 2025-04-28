@@ -32,44 +32,39 @@ public class AdminOrderController extends BaseController {
     @GetMapping
     public String showOrderPageManagement(@RequestParam(value = "page", defaultValue = "1") int page,
                                           @RequestParam(value = "status", required = false) String statusString,
-                                          @RequestParam(value = "codeOrder", required = false) String code,
-                                          @RequestParam(value = "formDate", required = false) LocalDateTime startDate,
+                                          @RequestParam(value = "search", required = false) String search,
+                                          @RequestParam(value = "fromDate", required = false) LocalDateTime startDate,
                                           @RequestParam(value = "toDate", required = false) LocalDateTime endDate,
                                           Model model) {
+        Pageable pageable = PageRequest.of(page - 1, 20, Sort.by("createdAt").descending());
+        Page<Order> orders;
+        String searchKeyword = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+        String statusTemp = (statusString != null && !statusString.trim().isEmpty()) ? statusString.trim() : null;
+        OrderStatus status = OrderStatus.valueOf(statusTemp);
+
         try {
-            Pageable pageable = PageRequest.of(page - 1, 20, Sort.by("createdAt").descending());
-
-            Page<Order> orders;
-            OrderStatus status = null;
-
-            // Chỉ chuyển đổi status khi statusString không null và không rỗng
-            if (statusString != null && !statusString.isEmpty()) {
-                try {
-                    status = OrderStatus.valueOf(statusString.toUpperCase());
-                    // orderPage = orderService.getOrdersByStatus(status, pageable);
-                } catch (IllegalArgumentException e) {
-                    // Xử lý khi statusString không khớp với bất kỳ giá trị enum nào
-                    // Chỉ log lỗi, không ném exception
-                    e.printStackTrace();
-                }
+            if (status != null ) {
+                orders = orderService.getOrderSearch(searchKeyword, pageable);
+            } else {
+                orders = orderService.getAllOrders(pageable);
             }
 
-            // Mặc định lấy tất cả đơn hàng
-            orders = orderService.getAllOrders(pageable);
 
-            model.addAttribute("orders", orders);
-            model.addAttribute("totalPages", orders.getTotalPages());
-            model.addAttribute("pageNumber", page);
-            model.addAttribute("selectedStatus", status);
-            model.addAttribute("code", code);
-            model.addAttribute("startDate", startDate);
-            model.addAttribute("endDate", endDate);
-            return "admin/orders";
         } catch (Exception e) {
             e.printStackTrace();
+            orders = orderService.getAllOrders(pageable);
             model.addAttribute("error", "Có lỗi xảy ra khi tải danh sách đơn hàng: " + e.getMessage());
-            return "admin/orders";
         }
+
+        model.addAttribute("orders", orders);
+        model.addAttribute("totalPages", orders.getTotalPages());
+        model.addAttribute("pageNumber", page);
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("searchKeyword", searchKeyword);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        return "admin/orders";
+
     }
 
 
