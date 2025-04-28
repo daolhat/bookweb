@@ -60,7 +60,7 @@
                         <h4 class="card-title">Danh sách sản phẩm</h4>
 
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <select class="form-select" name="category" id="categoryFilter"
                                         th:onchange="'window.location.href=\'' + @{/dashboard/product_management(categoryId=this.value, layout=${selectedLayout})} + '\''">
                                     <option value="">-- Chọn thể loại --</option>
@@ -71,22 +71,65 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <select class="form-select" name="layout" id="layoutFilter"
                                         th:onchange="'window.location.href=\'' + @{/dashboard/product_management(categoryId=${selectedCategoryId}, layout=this.value)} + '\''">
                                     <option value="">-- Chọn hình thức bìa --</option>
-                                    <option value="Bìa mềm" th:selected="${selectedLayout != null && selectedLayout == 'Bìa mềm'}">Bìa mềm</option>
-                                    <option value="Bìa cứng" th:selected="${selectedLayout != null && selectedLayout == 'Bìa cứng'}">Bìa cứng</option>
+                                    <option value="Bìa mềm"
+                                            th:selected="${selectedLayout != null && selectedLayout == 'Bìa mềm'}">Bìa
+                                        mềm
+                                    </option>
+                                    <option value="Bìa cứng"
+                                            th:selected="${selectedLayout != null && selectedLayout == 'Bìa cứng'}">Bìa
+                                        cứng
+                                    </option>
                                 </select>
                             </div>
 
-                            <div class="col-md-2 d-flex d-flex justify-content-center align-items-center">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center justify-content-end mb-4">
+                                    <span class="me-2 small"><i class="bi bi-filter"></i> Sắp xếp theo:</span>
+                                    <div class="d-flex gap-2">
+                                        <a type="button"
+                                           th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout})}"
+                                           th:class="${selectedSort == null ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">Mặc
+                                            định</a>
+                                        <a type="button"
+                                           th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='newest')}"
+                                           th:class="${selectedSort != null && selectedSort == 'newest' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">Sách
+                                            mới</a>
+                                        <a type="button"
+                                           th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='price_asc')}"
+                                           th:class="${selectedSort != null && selectedSort == 'price_asc' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">Giá
+                                            thấp - cao</a>
+                                        <a type="button"
+                                           th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='price_desc')}"
+                                           th:class="${selectedSort != null && selectedSort == 'price_desc' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">Giá
+                                            cao - thấp</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 search-bar d-flex align-items-center mx-auto">
+
+                                <form class="d-flex w-100" th:action="@{/shop}" method="get">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="keyword"
+                                               placeholder="Nhập từ khóa"
+                                               title="">
+                                        <button type="submit" class="btn btn-primary">Tìm</button>
+                                    </div>
+                                </form>
+
+                            </div>
+
+                            <div class="col-md-6 d-flex justify-content-end align-items-center">
                                 <a th:href="@{/dashboard/product_management}" class="btn btn-secondary">Xoá bộ lọc</a>
                             </div>
                         </div>
 
                         <div class="table-responsive mt-5">
-                            <table class="table datatable table-striped table-bordered table-hover">
+                            <table class="table table-striped table-bordered table-hover">
                                 <thead>
                                 <tr>
                                     <th scope="col">Mã sản phẩm</th>
@@ -106,7 +149,10 @@
                                     <td th:text="${product.code}"></td>
                                     <td th:text="${product.title}"></td>
                                     <td class="text-center">
-                                        <img th:src="@{'/assets/img/product/' + ${product.imageProduct}}"
+                                        <img th:if="${product.imageProduct}" th:src="@{'/assets/img/product/' + ${product.imageProduct}}"
+                                             style="height: 120px; width: 90px; object-fit: cover;"
+                                             alt="Ảnh sản phẩm">
+                                        <img th:unless="${product.imageProduct}" th:src="@{/assets/img/product-image-default.jpg}"
                                              style="height: 120px; width: 90px; object-fit: cover;"
                                              alt="Ảnh sản phẩm">
                                     </td>
@@ -164,6 +210,35 @@
                                 </tbody>
                             </table>
                         </div>
+
+
+                        <div class="row g-3 mt-4">
+                            <nav aria-label="Page navigation" class="d-flex justify-content-center" th:if="${products.totalPages > 1}">
+                                <ul class="pagination">
+                                    <li class="page-item" th:classappend="${pageNumber <= 1 ? 'disabled' : ''}">
+                                        <a class="page-link"
+                                           th:href="@{/shop(page=${pageNumber - 1}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                           aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item" th:each="i : ${#numbers.sequence(1, products.totalPages)}"
+                                        th:classappend="${i == pageNumber ? 'active' : ''}">
+                                        <a class="page-link"
+                                           th:href="@{/shop(page=${i}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                           th:text="${i}">1</a>
+                                    </li>
+                                    <li class="page-item" th:classappend="${pageNumber >= products.totalPages ? 'disabled' : ''}">
+                                        <a class="page-link"
+                                           th:href="@{/shop(page=${pageNumber + 1}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                           aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
                     </div>
                 </div>
             </div>

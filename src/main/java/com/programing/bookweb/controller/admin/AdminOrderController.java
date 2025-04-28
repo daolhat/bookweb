@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -28,17 +29,17 @@ public class AdminOrderController extends BaseController {
     private final IOrderService orderService;
     private final IOrderDetailService orderDetailService;
 
-
     @GetMapping
-    public String showOrderPageManagement(
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "status", required = false) String statusString,
-            Model model) {
+    public String showOrderPageManagement(@RequestParam(value = "page", defaultValue = "1") int page,
+                                          @RequestParam(value = "status", required = false) String statusString,
+                                          @RequestParam(value = "codeOrder", required = false) String code,
+                                          @RequestParam(value = "formDate", required = false) LocalDateTime startDate,
+                                          @RequestParam(value = "toDate", required = false) LocalDateTime endDate,
+                                          Model model) {
         try {
-            int pageSize = 100;
-            Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("createdAt").descending());
+            Pageable pageable = PageRequest.of(page - 1, 20, Sort.by("createdAt").descending());
 
-            Page<Order> orderPage;
+            Page<Order> orders;
             OrderStatus status = null;
 
             // Chỉ chuyển đổi status khi statusString không null và không rỗng
@@ -54,10 +55,15 @@ public class AdminOrderController extends BaseController {
             }
 
             // Mặc định lấy tất cả đơn hàng
-            orderPage = orderService.getAllOrders(pageable);
+            orders = orderService.getAllOrders(pageable);
 
-            model.addAttribute("orders", orderPage);
+            model.addAttribute("orders", orders);
+            model.addAttribute("totalPages", orders.getTotalPages());
+            model.addAttribute("pageNumber", page);
             model.addAttribute("selectedStatus", status);
+            model.addAttribute("code", code);
+            model.addAttribute("startDate", startDate);
+            model.addAttribute("endDate", endDate);
             return "admin/orders";
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,6 +1,8 @@
 package com.programing.bookweb.service;
 
 import com.programing.bookweb.entity.Contact;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
@@ -15,4 +17,5 @@ public interface IContactService {
 
     Contact getContactById(Long contactId);
 
+    Page<Contact> getAllContactPage(Pageable pageable);
 }

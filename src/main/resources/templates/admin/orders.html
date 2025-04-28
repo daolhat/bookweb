@@ -57,25 +57,32 @@
                             </div>
                         </form>
                     </div>
+
                     <div class="col-md-3">
                         <form th:action="@{/dashboard/order_management}" method="get">
                             <div class="input-group">
                                 <input type="date" class="form-control" name="fromDate" th:value="${param.fromDate}">
                                 <input type="date" class="form-control" name="toDate" th:value="${param.toDate}">
-                                <button class="btn btn-secondary" type="submit">Lọc</button>
+                                <button class="btn btn-primary" type="submit">Lọc</button>
                             </div>
                         </form>
                     </div>
-                    <div class="col-md-6">
-                        <form th:action="@{/dashboard/orders}" method="get">
+
+                    <div class="col-md-6 search-bar d-flex align-items-center mx-auto">
+                        <form class="d-flex w-100" th:action="@{/dashboard/order_management}" method="get">
                             <div class="input-group">
-                                <input type="text" class="form-control"
-                                       placeholder="Tìm theo mã đơn, tên khách hàng, SĐT..."
-                                       name="keyword" th:value="${param.keyword}">
-                                <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+                                <input type="text" class="form-control" name="codeOrder"
+                                       placeholder="Tìm theo mã đơn"
+                                       title="">
+                                <button type="submit" class="btn btn-primary">Tìm</button>
                             </div>
                         </form>
                     </div>
+
+                    <div class="col-md-12 d-flex justify-content-end align-items-center">
+                        <a th:href="@{/dashboard/order_management}" class="btn btn-secondary">Xoá bộ lọc</a>
+                    </div>
+
                 </div>
 
                 <div class="table-responsive mt-5">
@@ -126,6 +133,34 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="row g-3 mt-4">
+                    <nav aria-label="Page navigation" class="d-flex justify-content-center" th:if="${orders.totalPages > 1}">
+                        <ul class="pagination">
+                            <li class="page-item" th:classappend="${pageNumber <= 1 ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/dashboard/order_management(page=${pageNumber - 1}, status=${selectedStatus}, codeOrder=${code}, fromDate=${startDate}, toDate=${endDate})}"
+                                   aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(1, orders.totalPages)}"
+                                th:classappend="${i == pageNumber ? 'active' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/dashboard/order_management(page=${i}, status=${selectedStatus}, codeOrder=${code},fromDate=${startDate}, toDate=${endDate})}"
+                                   th:text="${i}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${pageNumber >= orders.totalPages ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/dashboard/order_management(page=${pageNumber + 1}, status=${selectedStatus}, codeOrder=${code},fromDate=${startDate}, toDate=${endDate})}"
+                                   aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
             </div>
         </div>
     </section>

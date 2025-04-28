@@ -1,6 +1,7 @@
 package com.programing.bookweb.controller.admin;
 
 import com.programing.bookweb.controller.BaseController;
+import com.programing.bookweb.entity.Product;
 import com.programing.bookweb.entity.User;
 import com.programing.bookweb.service.IRoleService;
 import com.programing.bookweb.service.IUserService;
@@ -30,9 +31,14 @@ public class AdminUserController extends BaseController {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
 
     @GetMapping
-    public String showUserPageManagement(Model model) {
-        List<User> users = userService.getAllUsers();
+    public String showUserPageManagement(@RequestParam(name = "page", defaultValue = "1") int page,
+                                         Model model) {
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        Page<User> users = userService.getAllUserPage(pageable);
+        //List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
+        model.addAttribute("totalPages", users.getTotalPages());
+        model.addAttribute("pageNumber", page);
         return "admin/users";
     }
 

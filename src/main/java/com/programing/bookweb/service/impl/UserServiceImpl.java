@@ -36,9 +36,9 @@ public class UserServiceImpl implements IUserService {
 
 
     @Override
-    public Page<User> getAllUserOrderByRoles(String roleName, Pageable pageable) {
-        Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy vai trò có tên: " + roleName));
+    public Page<User> getAllUserPage(Pageable pageable) {
+        Role role = roleRepository.findByName(DEFAULT_ROLE)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy vai trò có tên: " + DEFAULT_ROLE));
         return userRepository.findByRoles(role, pageable);
     }
 

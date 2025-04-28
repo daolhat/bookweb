@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IUserService  {
-    Page<User> getAllUserOrderByRoles(String roleName,Pageable pageable);
+    Page<User> getAllUserPage(Pageable pageable);
 
     User getUserById(Long userId);
 
