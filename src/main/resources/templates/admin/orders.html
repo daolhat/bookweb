@@ -71,7 +71,7 @@
                                     th:value="${status.name()}"
                                     th:text="${status.label}"
                                     th:selected="${selectedStatus != null && selectedStatus == status.name()}"
-                                    th:attr="data-url=@{/dashboard/order_management(page=${pageNumber}, status=${selectedStatus}, fromDate=${startDate}, toDate=${endDate})}">
+                                    th:attr="data-url=@{/dashboard/order_management(page=${pageNumber}, status=${status.name()}, fromDate=${startDate}, toDate=${endDate})}">
                             </option>
                         </select>
 

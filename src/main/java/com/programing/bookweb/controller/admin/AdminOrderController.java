@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Controller
@@ -33,17 +35,38 @@ public class AdminOrderController extends BaseController {
     public String showOrderPageManagement(@RequestParam(value = "page", defaultValue = "1") int page,
                                           @RequestParam(value = "status", required = false) String statusString,
                                           @RequestParam(value = "search", required = false) String search,
-                                          @RequestParam(value = "fromDate", required = false) LocalDateTime startDate,
-                                          @RequestParam(value = "toDate", required = false) LocalDateTime endDate,
+                                          @RequestParam(value = "fromDate", required = false) String fromDate,
+                                          @RequestParam(value = "toDate", required = false) String toDate,
                                           Model model) {
         Pageable pageable = PageRequest.of(page - 1, 20, Sort.by("createdAt").descending());
         Page<Order> orders;
         String searchKeyword = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
         String statusTemp = (statusString != null && !statusString.trim().isEmpty()) ? statusString.trim() : null;
-        OrderStatus status = OrderStatus.valueOf(statusTemp);
+        OrderStatus status = null;
+        if (statusTemp != null) {
+            status = OrderStatus.valueOf(statusTemp);
+        }
+
+        LocalDateTime startDate = null;
+        if (fromDate != null && !fromDate.trim().isEmpty()){
+            LocalDate localDate = LocalDate.parse(fromDate.trim());
+            startDate = localDate.atStartOfDay();
+        }
+
+        LocalDateTime endDate = null;
+        if (toDate != null && !toDate.trim().isEmpty()){
+            LocalDate localDate = LocalDate.parse(toDate.trim());
+            endDate = localDate.atTime(LocalTime.MAX);
+        }
 
         try {
-            if (status != null ) {
+            if (status != null && startDate != null && endDate != null && startDate.isBefore(endDate) && searchKeyword == null) {
+                orders = orderService.getOrdersByStatusAndBetween(status, startDate, endDate, pageable);
+            } else if (status != null) {
+                orders = orderService.getOrdersByStatus(status, pageable);
+            } else if (startDate != null && endDate != null && startDate.isBefore(endDate)) {
+                orders = orderService.getOrdersBetween(startDate, endDate, pageable);
+            } else if (searchKeyword != null) {
                 orders = orderService.getOrderSearch(searchKeyword, pageable);
             } else {
                 orders = orderService.getAllOrders(pageable);
@@ -59,10 +82,10 @@ public class AdminOrderController extends BaseController {
         model.addAttribute("orders", orders);
         model.addAttribute("totalPages", orders.getTotalPages());
         model.addAttribute("pageNumber", page);
-        model.addAttribute("selectedStatus", status);
+        model.addAttribute("selectedStatus", status != null ? status.toString() : null);
         model.addAttribute("searchKeyword", searchKeyword);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
+        model.addAttribute("startDate", fromDate);
+        model.addAttribute("endDate", toDate);
         return "admin/orders";
 
     }
