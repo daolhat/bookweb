@@ -1,5 +1,6 @@
 package com.programing.bookweb.service;
 
+import com.programing.bookweb.entity.Role;
 import com.programing.bookweb.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,8 +13,6 @@ public interface IUserService  {
     Page<User> getAllUserPage(Pageable pageable);
 
     User getUserById(Long userId);
-
-    List<User> getAllUsers();
 
     User updateUser(User user, MultipartFile avatar);
 
@@ -32,5 +31,7 @@ public interface IUserService  {
     long countUsersByDateRange(LocalDateTime startDate, LocalDateTime endDate);
 
     List<User> getLatestUsers(Pageable pageable);
+
+//    Page<User> getUserSearch(String search, Pageable pageable);
 
 }

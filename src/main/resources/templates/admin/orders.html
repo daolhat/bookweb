@@ -44,26 +44,6 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
 
-<!--                        <select class="form-select" name="status" id="statusFilter">-->
-<!--                            <option value="">&#45;&#45; Tất cả trạng thái &#45;&#45;</option>-->
-<!--                            <option value="PENDING"-->
-<!--                                    th:selected="${selectedStatus != null && param.status[0] == 'PENDING'}">Chờ xác nhận-->
-<!--                            </option>-->
-<!--                            <option value="PROCESSING"-->
-<!--                                    th:selected="${param.status != null && param.status[0] == 'PROCESSING'}">Đang xử lý-->
-<!--                            </option>-->
-<!--                            <option value="DELIVERING"-->
-<!--                                    th:selected="${param.status != null && param.status[0] == 'DELIVERING'}">Đang giao-->
-<!--                                hàng-->
-<!--                            </option>-->
-<!--                            <option value="DELIVERED"-->
-<!--                                    th:selected="${param.status != null && param.status[0] == 'DELIVERED'}">Đã giao hàng-->
-<!--                            </option>-->
-<!--                            <option value="CANCELLED"-->
-<!--                                    th:selected="${param.status != null && param.status[0] == 'CANCELLED'}">Đã hủy-->
-<!--                            </option>-->
-<!--                        </select>-->
-
                         <select class="form-select" name="status" id="statusFilter"
                                 onchange="window.location.href = this.options[this.selectedIndex].getAttribute('data-url')">
                             <option value="">-- Tất cả trạng thái --</option>
@@ -120,6 +100,9 @@
                         </tr>
                         </thead>
                         <tbody>
+                        <tr th:if="${#lists.isEmpty(orders)}">
+                            <td colspan="5" class="text-center">Không có đơn hàng nào</td>
+                        </tr>
                         <tr th:each="order : ${orders}">
                             <th th:text="${order.code}"></th>
                             <td th:text="${order.receiver}"></td>

@@ -86,6 +86,10 @@
                         </div>
                     </div>
                     <div class="row g-3">
+                        <div class="text-center py-5" th:if="${#lists.isEmpty(products)}">
+                            <h5 class="mt-3">Không có sản phẩm nào</h5>
+                            <a th:href="@{/shop}" class="btn btn-primary mt-2">Của hàng</a>
+                        </div>
 
                         <div class="col-md-3" th:each="product : ${products}">
                             <div class="product-card border rounded shadow-sm p-3 text-center position-relative d-flex flex-column h-100" style="min-height: 330px;">
@@ -148,7 +152,7 @@
             class="bi bi-arrow-up-short"></i></a>
 </div>
 <!-- JS Files -->
-<script src="https://task-mana-nestjs-grpc.vercel.app/notification.js"></script>
+<!--<script src="https://task-mana-nestjs-grpc.vercel.app/notification.js"></script>-->
 <script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
 <script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/assets/vendor/chart.js/chart.umd.js}"></script>
@@ -187,8 +191,8 @@
                 })
                 .then(data => {
                     if (data === "ok") {
-<!--                        alert("Đã thêm sản phẩm vào giỏ hàng!");-->
-                        showSuccess("Đã thêm sản phẩm vào giỏ hàng!");
+                        alert("Đã thêm sản phẩm vào giỏ hàng!");
+<!--                        showSuccess("Đã thêm sản phẩm vào giỏ hàng!");-->
                     } else {
                         alert("Bạn cần đăng nhập trước");
                         window.location.href = "/login";

@@ -1,5 +1,6 @@
 package com.programing.bookweb.repository;
 
+import com.programing.bookweb.entity.Order;
 import com.programing.bookweb.entity.Role;
 import com.programing.bookweb.entity.User;
 import org.springframework.data.domain.Page;
@@ -35,4 +36,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     long countByCreatedAtBefore(LocalDateTime date);
 
     long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+//    @Query("SELECT o FROM Order o WHERE o.fullName LIKE %:search% OR o.phoneNumber = :search AND o.role = :role")
+//    Page<User> findByIdOrFullNameContainingOrPhoneNumber(@Param("search") String search, @Param("role") Role role, Pageable pageable);
 }

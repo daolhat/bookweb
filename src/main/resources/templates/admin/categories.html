@@ -59,6 +59,9 @@
                     </tr>
                     </thead>
                     <tbody>
+                    <tr th:if="${#lists.isEmpty(categories)}">
+                        <td colspan="5" class="text-center">Không có danh mục nào</td>
+                    </tr>
                     <tr th:each="category : ${categories}">
                         <td th:text="${category.code}"></td>
                         <td th:text="${category.name}"></td>

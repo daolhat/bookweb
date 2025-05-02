@@ -62,7 +62,15 @@ public class SecurityConfig {
                 } catch (Exception e) {
                     throw new RuntimeException(e.getMessage());
                 }
-                response.sendRedirect("/");
+
+                // Kiểm tra nếu có tham số chuyển hướng checkout
+                boolean hasCheckoutRedirect = request.getSession().getAttribute("checkoutRedirect") != null;
+                if (hasCheckoutRedirect) {
+                    request.getSession().removeAttribute("checkoutRedirect");
+                    response.sendRedirect("/cart/checkout");
+                } else {
+                    response.sendRedirect("/");
+                }
             }
         };
     }
@@ -88,9 +96,10 @@ public class SecurityConfig {
                                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                                 .permitAll()
                                 .logoutSuccessUrl("/")
-                                .invalidateHttpSession(true)
-                                .deleteCookies("JSESSIONID")
-
+//                                .invalidateHttpSession(true)
+//                                .deleteCookies("JSESSIONID")
+                                .invalidateHttpSession(false)
+                                .clearAuthentication(true)
                 )
                 .exceptionHandling(
                         exceptionHandling -> exceptionHandling

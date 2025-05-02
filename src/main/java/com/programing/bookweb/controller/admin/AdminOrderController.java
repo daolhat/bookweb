@@ -72,7 +72,6 @@ public class AdminOrderController extends BaseController {
                 orders = orderService.getAllOrders(pageable);
             }
 
-
         } catch (Exception e) {
             e.printStackTrace();
             orders = orderService.getAllOrders(pageable);

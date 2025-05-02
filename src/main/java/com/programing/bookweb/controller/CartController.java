@@ -44,7 +44,14 @@ public class CartController extends BaseController{
     @PostMapping("/add-to-cart")
     public ResponseEntity<String> addToCart(@RequestBody ProductRequest request) {
 
-        if (getCurrentUser() != null) {
+        // Kiểm tra người dùng đã đăng nhập chưa
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+        }
+
+
+        try {
             long productId = request.getProductId();
             int quantity = request.getQuantity();
 
@@ -64,8 +71,8 @@ public class CartController extends BaseController{
             cartService.addProductToCart(session, addedItem);
 
             return ResponseEntity.ok("ok");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Người dùng chưa được xác thực");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
@@ -73,6 +80,12 @@ public class CartController extends BaseController{
     @PostMapping("/update-cart-item")
     @ResponseBody
     public ResponseEntity<String> updateCartItem(@RequestParam Long productId, @RequestParam int quantity) {
+        // Kiểm tra người dùng đã đăng nhập chưa
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Vui lòng đăng nhập để cập nhật giỏ hàng");
+        }
+
         cartService.updateProductQuantity(session, productId, quantity);
         return ResponseEntity.ok("Cart item updated.");
     }
@@ -80,6 +93,12 @@ public class CartController extends BaseController{
 
     @GetMapping("/remove-cart-item/{productId}")
     public String removeCartItem(@PathVariable Long productId) {
+
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
         cartService.removeProductFromCart(session, productId);
         return "redirect:/cart";
     }
@@ -88,12 +107,27 @@ public class CartController extends BaseController{
     @GetMapping("/cart-item-count")
     @ResponseBody
     public int getCartItemCount() {
+
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return 0;
+        }
+
         return cartService.getCart(session).getCartItems().size();
     }
 
 
     @GetMapping("/checkout")
     public String getCheckOut(Model model, RedirectAttributes redirectAttributes) {
+
+        // Kiểm tra người dùng đã đăng nhập chưa
+        User curUser = getCurrentUser();
+        if (curUser == null) {
+            // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
+            redirectAttributes.addFlashAttribute("checkoutRedirect", true);
+            return "redirect:/login";
+        }
+
         CartDTO cart = cartService.getCart(session);
 
         if (cart.getCartItems().isEmpty()) {
@@ -112,7 +146,7 @@ public class CartController extends BaseController{
         double totalCart = cart.totalPrice();
         model.addAttribute("totalCart", totalCart);
 
-        User curUser = getCurrentUser();
+//        User curUser = getCurrentUser();
         UserOrder orderPerson = new UserOrder();
         orderPerson.setFullName(curUser.getFullName());
         orderPerson.setEmail(curUser.getEmail());

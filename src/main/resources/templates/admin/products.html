@@ -148,6 +148,9 @@
                                 </tr>
                                 </thead>
                                 <tbody>
+                                <tr th:if="${#lists.isEmpty(products)}">
+                                    <td colspan="5" class="text-center">Không có sản phẩm nào</td>
+                                </tr>
                                 <tr class="text-center" th:each="product : ${products}">
                                     <td th:text="${product.code}"></td>
                                     <td th:text="${product.title}"></td>

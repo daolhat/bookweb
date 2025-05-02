@@ -48,13 +48,6 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        Role role = roleRepository.findByName(DEFAULT_ROLE)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy vai trò có tên:" + DEFAULT_ROLE));
-        return userRepository.findByRoles(role);
-    }
-
-    @Override
     public User updateUser(User user, MultipartFile avatar) {
         if (avatar != null && !avatar.isEmpty()){
             try {
@@ -163,6 +156,17 @@ public class UserServiceImpl implements IUserService {
     public List<User> getLatestUsers(Pageable pageable) {
         return userRepository.findByOrderByCreatedAtDesc(pageable);
     }
+
+//    @Override
+//    public Page<User> getUserSearch(String search, Pageable pageable) {
+//        Role role = roleRepository.findByName(DEFAULT_ROLE)
+//                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy vai trò có tên: " + DEFAULT_ROLE));
+//        if (search != null && !search.trim().isEmpty()) {
+//            String searchNew = search.trim();
+//            return userRepository.findByIdOrFullNameContainingOrPhoneNumber(searchNew, role, pageable);
+//        }
+//        return getAllUserPage(pageable);
+//    }
 
 
     private String generateUniqueFileName(String originalFileName) {

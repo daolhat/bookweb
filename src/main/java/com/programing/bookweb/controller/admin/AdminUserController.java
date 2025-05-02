@@ -32,13 +32,28 @@ public class AdminUserController extends BaseController {
 
     @GetMapping
     public String showUserPageManagement(@RequestParam(name = "page", defaultValue = "1") int page,
+//                                         @RequestParam(value = "search", required = false) String search,
                                          Model model) {
-        Pageable pageable = PageRequest.of(page - 1, 10);
-        Page<User> users = userService.getAllUserPage(pageable);
-        //List<User> users = userService.getAllUsers();
+        Pageable pageable = PageRequest.of(page - 1, 20);
+//        String searchKeyword = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+        Page<User> users = userService.getAllUserPage(pageable);;
+
+//        try {
+//            if (searchKeyword != null){
+//                users = userService.getUserSearch(searchKeyword, pageable);
+//            } else {
+//                users = userService.getAllUserPage(pageable);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            users = userService.getAllUserPage(pageable);
+//            model.addAttribute("error", "Có lỗi xảy ra khi tải danh sách đơn hàng: " + e.getMessage());
+//        }
+
         model.addAttribute("users", users);
         model.addAttribute("totalPages", users.getTotalPages());
         model.addAttribute("pageNumber", page);
+//        model.addAttribute("searchKeyword", searchKeyword);
         return "admin/users";
     }
 

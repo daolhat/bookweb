@@ -56,6 +56,9 @@
                         </tr>
                         </thead>
                         <tbody>
+                        <tr th:if="${#lists.isEmpty(contacts)}">
+                            <td colspan="5" class="text-center">Không có liên hệ nào</td>
+                        </tr>
                         <tr th:each="contact : ${contacts}">
                             <td th:text="${contact.id}"></td>
                             <td>
