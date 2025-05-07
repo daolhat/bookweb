@@ -1,5 +1,6 @@
 package com.programing.bookweb.entity;
 
+import com.programing.bookweb.enums.ContactStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,6 +27,9 @@ public class Contact implements Serializable {
 
     @Lob
     private String message;
+
+    @Enumerated(EnumType.STRING)
+    private ContactStatus status;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -69,6 +73,14 @@ public class Contact implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public ContactStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ContactStatus status) {
+        this.status = status;
     }
 
     public LocalDateTime getCreatedAt() {

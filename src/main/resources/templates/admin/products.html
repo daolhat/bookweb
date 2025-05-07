@@ -63,7 +63,8 @@
                             <div class="col-md-3">
                                 <select class="form-select" name="categoryId" id="categoryFilter"
                                         onchange="window.location.href = this.options[this.selectedIndex].getAttribute('data-url')">
-                                    <option value="">-- Chọn thể loại --</option>
+                                    <option value=""
+                                            th:attr="data-url=@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, layout=${selectedLayout}, sort=${selectedSort})}">-- Chọn thể loại --</option>
                                     <option th:each="category : ${categories}"
                                             th:value="${category.id}"
                                             th:text="${category.name}"
@@ -75,7 +76,8 @@
                             <div class="col-md-3">
                                 <select class="form-select" name="layout" id="layoutFilter"
                                     onchange="window.location.href = this.options[this.selectedIndex].getAttribute('data-url')">
-                                    <option value="">-- Chọn hình thức bìa --</option>
+                                    <option value=""
+                                            th:attr="data-url=@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, sort=${selectedSort})}">-- Chọn hình thức bìa --</option>
                                     <option value="Bìa mềm"
                                             th:selected="${selectedLayout != null && selectedLayout == 'Bìa mềm'}"
                                             th:attr="data-url=@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout='Bìa mềm', sort=${selectedSort})}">

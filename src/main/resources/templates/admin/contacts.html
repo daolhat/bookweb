@@ -43,6 +43,27 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Liên hệ</h4>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <select class="form-select" name="status" id="statusFilter"
+                                onchange="window.location.href = this.options[this.selectedIndex].getAttribute('data-url')">
+                            <option value=""
+                                    th:attr="data-url=@{/dashboard/contact_management(page=${pageNumber})}">-- Tất cả trạng thái --</option>
+                            <option th:each="status : ${T(com.programing.bookweb.enums.ContactStatus).values()}"
+                                    th:value="${status.name()}"
+                                    th:text="${status.label}"
+                                    th:selected="${selectedStatus != null && selectedStatus == status.name()}"
+                                    th:attr="data-url=@{/dashboard/contact_management(page=${pageNumber}, status=${status.name()})}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 d-flex justify-content-end align-items-center">
+                        <a th:href="@{/dashboard/contact_management}" class="btn btn-secondary">Xoá bộ lọc</a>
+                    </div>
+                </div>
+
                 <div class="table-responsive mt-5">
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
@@ -52,7 +73,8 @@
                             <th scope="col" style="width: 10rem">Ngày gửi</th>
                             <th scope="col" style="width: 12rem">Chủ đề</th>
                             <th scope="col">Nội dung</th>
-                            <th scope="col" style="width: 8rem"></th>
+                            <th scope="col" style="width: 8rem">Trạng thái</th>
+                            <th scope="col" style="width: 15rem"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -72,12 +94,40 @@
                             <td th:text="${contact.subject}"></td>
                             <td th:text="${#strings.abbreviate(contact.message, 120)}"></td>
                             <td>
+                                <span class="badge"
+                                      th:classappend="${contact.status != null ? (contact.status.name() == 'PENDING' ? 'bg-warning' : (contact.status.name() == 'PROCESSING' ? 'bg-info' : 'bg-success')) : 'bg-secondary'}"
+                                      th:text="${contact.status != null ? contact.status.getLabel() : 'Không xác định'}">Trạng thái</span>
+                            </td>
+                            <td>
                                 <div class="d-flex justify-content-center align-items-center">
-                                    <a th:href="@{/dashboard/contact_management/response/{id}(id=${contact.id})}">
+                                    <a th:href="@{/dashboard/contact_management/response/{id}(id=${contact.id})}" class="me-2">
                                         <button type="button" class="btn btn-primary btn-sm"><i
-                                                class="bi bi-reply me-2"></i>Phản hồi
+                                                class="bi bi-reply me-1"></i>Phản hồi
                                         </button>
                                     </a>
+
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle"
+                                                type="button"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                            Trạng thái
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li th:if="${contact.status == null || contact.status.name() == 'PENDING'}">
+                                                <form th:action="@{/dashboard/contact_management/update-status/{id}(id=${contact.id})}" method="post">
+                                                    <input type="hidden" name="status" value="PROCESSING">
+                                                    <button type="submit" class="dropdown-item btn btn-info">Đánh dấu đang xử lý</button>
+                                                </form>
+                                            </li>
+                                            <li th:if="${contact.status != null && contact.status.name() == 'PROCESSING'}">
+                                                <form th:action="@{/dashboard/contact_management/update-status/{id}(id=${contact.id})}" method="post">
+                                                    <input type="hidden" name="status" value="PROCESSED">
+                                                    <button type="submit" class="dropdown-item btn btn-success">Đánh dấu đã xử lý</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -91,7 +141,7 @@
                         <ul class="pagination">
                             <li class="page-item" th:classappend="${pageNumber <= 1 ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/dashboard/contact_management(page=${pageNumber - 1})}"
+                                   th:href="@{/dashboard/contact_management(page=${pageNumber - 1}, status=${selectedStatus})}"
                                    aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
@@ -99,13 +149,13 @@
                             <li class="page-item" th:each="i : ${#numbers.sequence(1, contacts.totalPages)}"
                                 th:classappend="${i == pageNumber ? 'active' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/dashboard/contact_management(page=${i})}"
+                                   th:href="@{/dashboard/contact_management(page=${i}, status=${selectedStatus})}"
                                    th:text="${i}">1</a>
                             </li>
                             <li class="page-item"
                                 th:classappend="${pageNumber >= contacts.totalPages ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/dashboard/contact_management(page=${pageNumber + 1})}"
+                                   th:href="@{/dashboard/contact_management(page=${pageNumber + 1}, status=${selectedStatus})}"
                                    aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>

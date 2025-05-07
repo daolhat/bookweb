@@ -46,7 +46,8 @@
 
                         <select class="form-select" name="status" id="statusFilter"
                                 onchange="window.location.href = this.options[this.selectedIndex].getAttribute('data-url')">
-                            <option value="">-- Tất cả trạng thái --</option>
+                            <option value=""
+                                    th:attr="data-url=@{/dashboard/order_management(page=${pageNumber}, fromDate=${startDate}, toDate=${endDate})}">-- Tất cả trạng thái --</option>
                             <option th:each="status : ${T(com.programing.bookweb.enums.OrderStatus).values()}"
                                     th:value="${status.name()}"
                                     th:text="${status.label}"
@@ -81,8 +82,6 @@
                             </div>
                         </form>
                     </div>
-
-
                 </div>
 
                 <div class="table-responsive mt-5">
