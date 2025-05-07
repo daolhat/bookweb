@@ -1,6 +1,5 @@
 package com.programing.bookweb.repository;
 
-import com.programing.bookweb.entity.Category;
 import com.programing.bookweb.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

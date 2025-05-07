@@ -30,7 +30,6 @@ public abstract class BaseController {
         if (cart == null || cart.getCartItems() == null || cart.getCartItems().isEmpty()){
             return 0;
         }
-
         return cart.getCartItems().size();
     }
 
@@ -45,7 +44,6 @@ public abstract class BaseController {
         if (authentication != null && authentication.getPrincipal() instanceof User) {
             return (User) authentication.getPrincipal();
         }
-
         return null;
     }
 }

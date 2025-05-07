@@ -1,6 +1,5 @@
 package com.programing.bookweb.service;
 
-import com.programing.bookweb.entity.Role;
 import com.programing.bookweb.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +31,6 @@ public interface IUserService  {
 
     List<User> getLatestUsers(Pageable pageable);
 
-//    Page<User> getUserSearch(String search, Pageable pageable);
+    Page<User> getUserSearch(String search, Pageable pageable);
 
 }

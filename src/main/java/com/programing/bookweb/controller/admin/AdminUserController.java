@@ -1,16 +1,13 @@
 package com.programing.bookweb.controller.admin;
 
 import com.programing.bookweb.controller.BaseController;
-import com.programing.bookweb.entity.Product;
 import com.programing.bookweb.entity.User;
 import com.programing.bookweb.service.IRoleService;
 import com.programing.bookweb.service.IUserService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -18,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -32,28 +28,28 @@ public class AdminUserController extends BaseController {
 
     @GetMapping
     public String showUserPageManagement(@RequestParam(name = "page", defaultValue = "1") int page,
-//                                         @RequestParam(value = "search", required = false) String search,
+                                         @RequestParam(value = "search", required = false) String search,
                                          Model model) {
         Pageable pageable = PageRequest.of(page - 1, 20);
-//        String searchKeyword = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
-        Page<User> users = userService.getAllUserPage(pageable);;
+        String searchKeyword = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+        Page<User> users;
 
-//        try {
-//            if (searchKeyword != null){
-//                users = userService.getUserSearch(searchKeyword, pageable);
-//            } else {
-//                users = userService.getAllUserPage(pageable);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            users = userService.getAllUserPage(pageable);
-//            model.addAttribute("error", "Có lỗi xảy ra khi tải danh sách đơn hàng: " + e.getMessage());
-//        }
+        try {
+            if (searchKeyword != null){
+                users = userService.getUserSearch(searchKeyword, pageable);
+            } else {
+                users = userService.getAllUserPage(pageable);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            users = userService.getAllUserPage(pageable);
+            model.addAttribute("error", "Có lỗi xảy ra khi tải danh sách đơn hàng: " + e.getMessage());
+        }
 
         model.addAttribute("users", users);
         model.addAttribute("totalPages", users.getTotalPages());
         model.addAttribute("pageNumber", page);
-//        model.addAttribute("searchKeyword", searchKeyword);
+        model.addAttribute("searchKeyword", searchKeyword);
         return "admin/users";
     }
 
@@ -80,7 +76,7 @@ public class AdminUserController extends BaseController {
     }
 
 
-    @PostMapping("/{id}/toggle-status")
+    @PostMapping("/toggle-status/{id}")
     public String toggleUserStatus(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             User user = userService.getUserById(id);
@@ -104,7 +100,7 @@ public class AdminUserController extends BaseController {
     }
 
 
-    @PostMapping("/{id}/delete")
+    @PostMapping("/delete/{id}")
     @Transactional
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

@@ -144,7 +144,7 @@
                                     <th scope="col">Giá gốc</th>
                                     <th scope="col">Số lượng đã bán</th>
                                     <th scope="col">Giá bán</th>
-                                    <th scope="col" style="width: 8rem"></th>
+                                    <th scope="col" style="width: 12rem"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -172,12 +172,10 @@
                                     <td>
                                         <div class="d-flex justify-content-center align-items-center">
                                             <a th:href="@{/dashboard/product_management/update/{id}(id=${product.id})}"
-                                               class="me-2">
-                                                <button type="button" class="btn btn-outline-warning btn-sm border-0">
-                                                    <i class="bi bi-pencil-square"></i> Sửa
-                                                </button>
+                                               class="me-2 btn btn-warning btn-sm">
+                                                <i class="bi bi-pencil-square"></i> Sửa
                                             </a>
-                                            <button type="button" class="btn btn-outline-danger btn-sm border-0"
+                                            <button type="button" class="btn btn-danger btn-sm"
                                                     data-bs-toggle="modal"
                                                     th:data-bs-target="'#deleteModal' + ${product.id}">
                                                 <i class="bi bi-trash"></i> Xoá

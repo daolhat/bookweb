@@ -124,7 +124,7 @@
                                 <div class="d-flex align-items-center">
                                     <span th:if="${user.enabled}" class="badge bg-success me-3">Đang kích hoạt</span>
                                     <span th:if="${!user.enabled}" class="badge bg-danger me-3">Đã vô hiệu hóa</span>
-                                    <form th:action="@{/dashboard/user_management/{id}/toggle-status(id=${user.id})}"
+                                    <form th:action="@{/dashboard/user_management/toggle-status/{id}(id=${user.id})}"
                                           method="post">
                                         <button type="submit" class="btn btn-sm"
                                                 th:classappend="${user.enabled ? 'btn-warning' : 'btn-success'}">
@@ -159,7 +159,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <a th:href="@{/dashboard/user_management/{id}/delete(id=${user.id})}" class="btn btn-danger">
+                    <a th:href="@{/dashboard/user_management/delete/{id}(id=${user.id})}" class="btn btn-danger">
                         Xóa
                     </a>
                 </div>

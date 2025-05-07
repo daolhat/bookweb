@@ -5,7 +5,6 @@ import com.programing.bookweb.entity.Category;
 import com.programing.bookweb.entity.Product;
 import com.programing.bookweb.service.ICategoryService;
 import com.programing.bookweb.service.IProductService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 @Controller
