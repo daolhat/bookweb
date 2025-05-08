@@ -9,6 +9,7 @@ import com.programing.bookweb.entity.Product;
 import com.programing.bookweb.entity.User;
 import com.programing.bookweb.enums.OrderStatus;
 import com.programing.bookweb.enums.PaymentMethod;
+import com.programing.bookweb.enums.PaymentStatus;
 import com.programing.bookweb.repository.OrderDetailRepository;
 import com.programing.bookweb.repository.OrderRepository;
 import com.programing.bookweb.repository.ProductRepository;
@@ -82,6 +83,7 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public void setDeliveredOrder(Order order) {
         order.setStatus(OrderStatus.DELIVERED);
+        order.setPaymentStatus(PaymentStatus.PAID);
         orderRepository.save(order);
     }
 
@@ -216,6 +218,7 @@ public class OrderServiceImpl implements IOrderService {
             product.setQuantity(product.getQuantity() - cartItem.getQuantity());
             productsToUpdate.add(product);
         }
+        order.setPaymentStatus(PaymentStatus.UNPAID);
         order.setOrderDetails(orderDetails);
         Order savedOrder = orderRepository.save(order);
         productRepository.saveAll(productsToUpdate);

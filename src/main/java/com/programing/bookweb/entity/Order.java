@@ -2,6 +2,7 @@ package com.programing.bookweb.entity;
 
 import com.programing.bookweb.enums.OrderStatus;
 import com.programing.bookweb.enums.PaymentMethod;
+import com.programing.bookweb.enums.PaymentStatus;
 import com.programing.bookweb.utils.CodeGenerator;
 import jakarta.persistence.*;
 import lombok.*;
@@ -62,8 +63,9 @@ public class Order implements Serializable {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
-    private Payment payment;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status")
+    private PaymentStatus paymentStatus;
 
     @PrePersist
     public void prePersist() {
@@ -190,11 +192,11 @@ public class Order implements Serializable {
         this.orderDetails = orderDetails;
     }
 
-    public Payment getPayment() {
-        return payment;
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
     }
 
-    public void setPayment(Payment payment) {
-        this.payment = payment;
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 }

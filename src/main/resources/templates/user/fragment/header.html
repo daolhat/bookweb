@@ -28,11 +28,45 @@
                            id="categoryMenu" role="button" data-bs-toggle="dropdown">
                             Thể loại
                         </a>
-                        <ul class="dropdown-menu">
-                            <li th:each="category : ${categories}">
-                                <a th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${category.id}, layout=${selectedLayout}, sort=${selectedSort})}"
-                                   class="dropdown-item" th:text="${category.name}"></a>
-                            </li>
+<!--                        <ul class="dropdown-menu">-->
+<!--                            <li th:each="category : ${categories}">-->
+<!--                                <a th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${category.id}, layout=${selectedLayout}, sort=${selectedSort})}"-->
+<!--                                   class="dropdown-item" th:text="${category.name}"></a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+                        <ul class="dropdown-menu dropdown-menu-category">
+                            <div class="row" style="min-width: 500px;">
+                                <th:block th:with="categoriesCount=${#lists.size(categories)}">
+                                    <th:block th:each="i : ${#numbers.sequence(0, categoriesCount - 1, 6)}">
+                                        <div class="col-6">
+                                            <li th:if="${i < categoriesCount}">
+                                                <a th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${categories[i].id}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                                   class="dropdown-item" th:text="${categories[i].name}"></a>
+                                            </li>
+                                            <li th:if="${i + 1 < categoriesCount}">
+                                                <a th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${categories[i+1].id}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                                   class="dropdown-item" th:text="${categories[i+1].name}"></a>
+                                            </li>
+                                            <li th:if="${i + 2 < categoriesCount}">
+                                                <a th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${categories[i+2].id}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                                   class="dropdown-item" th:text="${categories[i+2].name}"></a>
+                                            </li>
+                                            <li th:if="${i + 3 < categoriesCount}">
+                                                <a th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${categories[i+3].id}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                                   class="dropdown-item" th:text="${categories[i+3].name}"></a>
+                                            </li>
+                                            <li th:if="${i + 4 < categoriesCount}">
+                                                <a th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${categories[i+4].id}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                                   class="dropdown-item" th:text="${categories[i+4].name}"></a>
+                                            </li>
+                                            <li th:if="${i + 5 < categoriesCount}">
+                                                <a th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${categories[i+5].id}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                                   class="dropdown-item" th:text="${categories[i+5].name}"></a>
+                                            </li>
+                                        </div>
+                                    </th:block>
+                                </th:block>
+                            </div>
                         </ul>
                     </li>
                 </ul>
