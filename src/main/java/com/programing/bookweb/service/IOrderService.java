@@ -23,7 +23,7 @@ public interface IOrderService {
 
     Order createOrder(User user, CartDTO cart, UserOrder userOrder, PaymentMethod paymentMethod);
 
-    void deleteOrder(Long orderId);
+    void deleteOrder(Order order);
 
     BigDecimal getTotalRevenue();
 

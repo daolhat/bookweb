@@ -28,6 +28,11 @@
                         <h2 class="fw-bold mb-3">Đặt hàng thành công</h2>
                         <p class="text-muted mb-4">Cảm ơn bạn đã đặt hàng! Đơn hàng của bạn đã được tạo thành công.</p>
 
+                        <!-- Debug message display -->
+                        <div th:if="${message != null}" class="alert alert-info my-3">
+                            <strong>Debug:</strong> <span th:text="${message}"></span>
+                        </div>
+
                         <div class="mb-4">
                             <h5>Chi tiết đơn hàng:</h5>
                             <div class="d-flex justify-content-between mb-2">
@@ -42,6 +47,23 @@
                                 <span>Phương thức thanh toán:</span>
                                 <span class="fw-bold" th:text="${paymentMethod != null ? paymentMethod.label : 'Tiền mặt khi nhận hàng'}"></span>
                             </div>
+
+                            <!-- VNPAY Transaction Details -->
+                            <div th:if="${vnpayTransactionId != null}" class="mt-3 p-3 border rounded bg-light">
+                                <h6 class="text-primary mb-2"><i class="bi bi-credit-card me-2"></i>Chi tiết giao dịch VNPAY</h6>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Mã giao dịch:</span>
+                                    <span class="fw-bold" th:text="${vnpayTransactionId}"></span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Thời gian thanh toán:</span>
+                                    <span class="fw-bold" th:text="${vnpayPaymentTime}"></span>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <span class="badge bg-success">Đã thanh toán thành công</span>
+                                </div>
+                            </div>
+
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-center">

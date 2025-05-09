@@ -326,10 +326,8 @@ public class AdminProductController extends BaseController {
             if (product != null) {
                 // Lưu lại thông tin sản phẩm trước khi xóa để hiển thị trong thông báo
                 String productTitle = product.getTitle();
-
                 // Xóa sản phẩm
                 productService.deleteProduct(id);
-
                 redirectAttributes.addFlashAttribute("success", "Xoá sản phẩm \"" + productTitle + "\" thành công");
             } else {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy sản phẩm");

@@ -8,6 +8,8 @@ import com.programing.bookweb.entity.Order;
 import com.programing.bookweb.entity.Product;
 import com.programing.bookweb.entity.User;
 import com.programing.bookweb.enums.PaymentMethod;
+import com.programing.bookweb.enums.PaymentStatus;
+import com.programing.bookweb.repository.OrderRepository;
 import com.programing.bookweb.service.ICartService;
 import com.programing.bookweb.service.IOrderService;
 import com.programing.bookweb.service.IProductService;
@@ -15,12 +17,18 @@ import com.programing.bookweb.service.impl.VNPayServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -32,6 +40,7 @@ public class CartController extends BaseController{
     private final HttpSession session;
     private final IOrderService orderService;
     private final VNPayServiceImpl vnPayService;
+    private final OrderRepository orderRepository;
 
 
     @GetMapping
@@ -122,13 +131,10 @@ public class CartController extends BaseController{
             redirectAttributes.addFlashAttribute("checkoutRedirect", true);
             return "redirect:/login";
         }
-
         CartDTO cart = cartService.getCart(session);
-
         if (cart.getCartItems().isEmpty()) {
             return "redirect:/cart?error=empty_cart";
         }
-
         for (CartItemDTO itemDTO : cart.getCartItems()){
             Product product = productService.getProductById(itemDTO.getProductId());
             if(itemDTO.getQuantity() > product.getQuantity()){
@@ -136,12 +142,10 @@ public class CartController extends BaseController{
                 return "redirect:/cart?error=insufficient_quantity&productId=" + itemDTO.getProductId();
             }
         }
-
         model.addAttribute("cart", cart);
         double totalCart = cart.totalPrice();
         model.addAttribute("totalCart", totalCart);
-
-//        User curUser = getCurrentUser();
+        // User curUser = getCurrentUser();
         UserOrder orderPerson = new UserOrder();
         orderPerson.setFullName(curUser.getFullName());
         orderPerson.setEmail(curUser.getEmail());
@@ -150,14 +154,15 @@ public class CartController extends BaseController{
         model.addAttribute("orderPerson", orderPerson);
         // Thêm danh sách phương thức thanh toán vào model
         model.addAttribute("paymentMethods", PaymentMethod.values());
-
         return "user/checkout";
     }
 
 
     @PostMapping("/place-order")
     public String placeOrder(@ModelAttribute("orderPerson") UserOrder userOrder,
-                             @RequestParam("paymentMethod") String paymentMethod) {
+                             @RequestParam("paymentMethod") String paymentMethod,
+
+                             HttpServletRequest request) {
         try {
             PaymentMethod selectedPaymentMethod = PaymentMethod.valueOf(paymentMethod);
             User currentUser = getCurrentUser();
@@ -171,11 +176,28 @@ public class CartController extends BaseController{
                     return "redirect:/cart/checkout/order-result?success=false";
                 }
             } else if (selectedPaymentMethod == PaymentMethod.ONLINE) {
-                session.setAttribute("pendingOrder", userOrder);
-                session.setAttribute("paymentMethod", selectedPaymentMethod);
-                CartDTO cart = cartService.getCart(session);
-                double amount = cart.totalPrice();
-                return "redirect:/payment/create-payment?amount=" + amount + "&orderInfo=Thanh toan don hang Book.com";
+
+                try {
+                    session.setAttribute("pendingOrder", userOrder);
+                    session.setAttribute("paymentMethod", selectedPaymentMethod);
+                    CartDTO cart = cartService.getCart(session);
+                    int amount = (int) cart.totalPrice();
+
+                    Order order = orderService.createOrder(currentUser, cartService.getCart(session), userOrder, selectedPaymentMethod);
+
+                    String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+                    String orderInfo = "Thanh toan don hang #" + order.getId();
+                    String vnpayUrl = vnPayService.createOrder(amount, orderInfo, baseUrl);
+                    System.out.println("vnpayUrl: " + vnpayUrl);
+
+                    cartService.clearCart(session);
+
+                    return "redirect:" + vnpayUrl;
+
+                } catch (Exception e) {
+                    session.setAttribute("vnPayErrorMessage", e.getMessage());
+                    return "redirect:/cart/checkout/vnpay-payment?fail";
+                }
             } else {
                 session.setAttribute("orderErrorMessage", "Phương thức thanh toán không hợp lệ");
                 return "redirect:/cart/checkout/order-result?success=false";
@@ -189,21 +211,95 @@ public class CartController extends BaseController{
         }
     }
 
-    @GetMapping("checkout/vnpay-payment")
-    public String GetMapping(HttpServletRequest request, Model model){
-        int paymentStatus =vnPayService.orderReturn(request);
+    @GetMapping("/checkout/vnpay-payment")
+    public String vnpayPaymentCallback(HttpServletRequest request, Model model){
+        int paymentStatus = vnPayService.orderReturn(request);
 
         String orderInfo = request.getParameter("vnp_OrderInfo");
         String paymentTime = request.getParameter("vnp_PayDate");
         String transactionId = request.getParameter("vnp_TransactionNo");
         String totalPrice = request.getParameter("vnp_Amount");
 
-        model.addAttribute("orderId", orderInfo);
-        model.addAttribute("totalPrice", totalPrice);
-        model.addAttribute("paymentTime", paymentTime);
-        model.addAttribute("transactionId", transactionId);
+        // Get the most recent order for the current user
+        User currentUser = getCurrentUser();
+        if (currentUser != null) {
+            try {
+                // Find the user's most recent order
+                Pageable pageable = PageRequest.of(0, 1);
+                Page<Order> userOrders = orderService.getAllOrdersByUserPage(currentUser, pageable);
 
-        return paymentStatus == 1 ? "ordersuccess" : "orderfail";
+                if (!userOrders.isEmpty()) {
+                    Order recentOrder = userOrders.getContent().get(0);
+                    Long orderId = recentOrder.getId();
+
+                    if (paymentStatus == 1) {
+                        // Payment successful - update order payment status
+                        recentOrder.setPaymentStatus(PaymentStatus.PAID);
+                        orderRepository.save(recentOrder);
+
+                        // Store VNPAY transaction details in session for display
+                        session.setAttribute("vnpayTransactionId", transactionId);
+                        session.setAttribute("vnpayPaymentTime", paymentTime);
+
+                        return "redirect:/cart/checkout/order-result?success=true&orderId=" + orderId;
+                    } else {
+                        // Payment failed
+                        List<CartItemDTO> cartItemsToRestore = new ArrayList<>();
+
+                        // Get order details to restore cart items
+                        recentOrder.getOrderDetails().forEach(orderDetail -> {
+                            CartItemDTO item = new CartItemDTO();
+                            Product product = orderDetail.getProduct();
+
+                            item.setProductId(product.getId());
+                            item.setQuantity(orderDetail.getQuantity());
+                            item.setTitle(product.getTitle());
+                            item.setAuthor(product.getAuthor());
+                            item.setPrice(product.getPrice());
+
+                            double discountRate = product.getDiscount() / 100.0;
+                            double salePrice = product.getPrice() * (1 - discountRate);
+                            item.setSalePrice(salePrice);
+                            item.setImageProduct(product.getImageProduct());
+
+                            cartItemsToRestore.add(item);
+                        });
+
+
+                        // Delete the order
+                        try {
+                            orderService.deleteOrder(recentOrder);
+                        } catch (Exception e) {
+                            System.out.println("Failed to delete order: " + e.getMessage());
+                        }
+
+                        // Restore cart items
+                        CartDTO restoredCart = new CartDTO();
+                        restoredCart.setCartItems(cartItemsToRestore);
+                        session.setAttribute("cart", restoredCart);
+
+                        session.setAttribute("orderErrorMessage", "Thanh toán không thành công. Mã giao dịch: " +
+                                (transactionId != null ? transactionId : "N/A"));
+                        return "redirect:/cart/checkout/order-result?success=false&orderId=" + orderId;
+                    }
+                } else {
+                    System.out.println("VNPAY Callback - No recent orders found for user");
+                    session.setAttribute("orderErrorMessage", "Không tìm thấy thông tin đơn hàng gần đây");
+                    return "redirect:/cart/checkout/order-result?success=false";
+                }
+            } catch (Exception e) {
+                System.out.println("VNPAY Callback - Exception: " + e.getMessage());
+                e.printStackTrace();
+                session.setAttribute("orderErrorMessage", "Lỗi khi xử lý thanh toán: " + e.getMessage());
+                return "redirect:/cart/checkout/order-result?success=false";
+            }
+        } else {
+            System.out.println("VNPAY Callback - User not logged in");
+            session.setAttribute("orderErrorMessage", "Vui lòng đăng nhập để hoàn tất thanh toán");
+            return "redirect:/login";
+        }
+
+
     }
 
     @GetMapping("/checkout/order-result")
@@ -217,6 +313,17 @@ public class CartController extends BaseController{
                 model.addAttribute("orderId", orderId);
                 model.addAttribute("totalAmount", order.getTotalPrice());
                 model.addAttribute("paymentMethod", order.getPaymentMethod());
+
+                // Transfer VNPAY transaction details from session to model if they exist
+                if (session.getAttribute("vnpayTransactionId") != null) {
+                    model.addAttribute("vnpayTransactionId", session.getAttribute("vnpayTransactionId"));
+                    model.addAttribute("vnpayPaymentTime", session.getAttribute("vnpayPaymentTime"));
+
+                    // Clear the session attributes after transferring to model
+                    session.removeAttribute("vnpayTransactionId");
+                    session.removeAttribute("vnpayPaymentTime");
+                }
+
             } catch (Exception e) {
                 model.addAttribute("isSuccess", false);
                 model.addAttribute("errorMessage", "Không tìm thấy thông tin đơn hàng");

@@ -155,8 +155,17 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public void deleteOrder(Long orderId) {
-        orderRepository.deleteById(orderId);
+    public void deleteOrder(Order order) {
+        //Cập nhật lại số lượng sản phẩm
+        List<OrderDetail> orderDetails = orderDetailRepository.findByOrder(order);
+        for (OrderDetail orderDetail : orderDetails) {
+            Product product = orderDetail.getProduct();
+            product.setQuantitySold(product.getQuantitySold() - orderDetail.getQuantity());
+            product.setQuantity(product.getQuantity() + orderDetail.getQuantity());
+            productRepository.save(product);
+        }
+
+        orderRepository.deleteById(order.getId());
     }
 
     @Transactional

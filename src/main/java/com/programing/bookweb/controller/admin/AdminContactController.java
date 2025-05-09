@@ -29,7 +29,7 @@ public class AdminContactController extends BaseController {
                                             @RequestParam(name = "status", required = false) String statusParam,
                                             Model model){
         Pageable pageable = PageRequest.of(page - 1, 10);
-//        Page<Contact> contacts = contactService.getAllContactPage(pageable);
+        // Page<Contact> contacts = contactService.getAllContactPage(pageable);
         Page<Contact> contacts;
 
         String statusTemp = (statusParam != null && !statusParam.trim().isEmpty()) ? statusParam.trim() : null;
@@ -70,9 +70,8 @@ public class AdminContactController extends BaseController {
 
     @GetMapping("/response/{id}")
     public String response(@PathVariable Long id, Model model){
-        //String userEmail = contactService.getContactById(id).getEmail();
+        // String userEmail = contactService.getContactById(id).getEmail();
         Contact contact = contactService.getContactById(id);
-
         // Update status to PROCESSING when responding
         if (contact.getStatus() == null || contact.getStatus() == ContactStatus.PENDING) {
             contact.setStatus(ContactStatus.PROCESSING);

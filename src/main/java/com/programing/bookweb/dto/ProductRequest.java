@@ -11,4 +11,6 @@ public class ProductRequest {
 
     private Long productId;
     private int quantity;
+
 }
+

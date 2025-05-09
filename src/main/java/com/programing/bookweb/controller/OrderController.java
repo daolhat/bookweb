@@ -28,12 +28,9 @@ public class OrderController extends BaseController{
     @GetMapping
     public String getAllOrders(@RequestParam(name = "page", defaultValue = "1") int page,
                                Model model) {
-
         Pageable pageable = PageRequest.of(page - 1, 3);
-
         Page<Order> orders = orderService.getAllOrdersByUserPage(getCurrentUser(), pageable);
 
-        //List<Order> orders = orderService.getAllOrdersByUser(getCurrentUser());
         model.addAttribute("orders", orders);
         model.addAttribute("totalPages", orders.getTotalPages());
         model.addAttribute("pageNumber", page);

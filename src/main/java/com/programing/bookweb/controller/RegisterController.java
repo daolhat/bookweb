@@ -28,15 +28,12 @@ public class RegisterController extends BaseController{
     @GetMapping()
     public String showRegistrationForm(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if (authentication != null && authentication.getPrincipal() instanceof User) {
             return "redirect:/";
         }
-
         if (!model.containsAttribute("user")) {
             model.addAttribute("user", new User());
         }
-
         return "user/register";
     }
 
