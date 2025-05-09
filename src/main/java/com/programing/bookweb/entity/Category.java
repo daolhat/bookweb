@@ -2,6 +2,7 @@ package com.programing.bookweb.entity;
 
 import com.programing.bookweb.utils.CodeGenerator;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -23,6 +24,7 @@ public class Category implements Serializable {
     private Long id;
 
     @Column(nullable = false, unique = true, length = 5)
+    @Pattern(regexp = "^[A-Z]{2}\\d{3}$", message = "Category code must be in format AB123")
     private String code;
 
     @Column(nullable = false, unique = true)

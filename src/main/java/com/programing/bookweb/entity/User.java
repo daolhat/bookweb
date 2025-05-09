@@ -1,5 +1,6 @@
 package com.programing.bookweb.entity;
 
+import com.programing.bookweb.utils.CodeGenerator;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -23,6 +24,10 @@ public class User implements Serializable, UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true, length = 12)
+    @Pattern(regexp = "^\\d{4}[A-Z]{2}\\d{6}$", message = "User code must be in format 0000AB000000")
+    private String code;
 
     @Email
     @NotBlank
@@ -74,6 +79,13 @@ public class User implements Serializable, UserDetails {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.code == null || this.code.isEmpty()) {
+            this.code = CodeGenerator.generateUserCode(this.fullName, LocalDateTime.now());
+        }
+    }
 
     public Set<Role> getRoles() {
         if (roles == null) {

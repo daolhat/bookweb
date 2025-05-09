@@ -7,25 +7,26 @@ import java.util.Random;
 public class CodeGenerator {
 
     private static final Random random = new Random();
-    private static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    private static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    public static String generateCategoryCode(String categoryName) {
-        if (categoryName == null || categoryName.isEmpty()) {
-            return "X" + String.format("%03d", random.nextInt(1000));
-        }
-        String firstChar = categoryName.trim().substring(0, 2).toUpperCase();
-        int randomNum = random.nextInt(1000);
-        return firstChar + String.format("%03d", randomNum);
-    }
-
-
-    public static String generateProductCode(String categoryCode) {
-        if (categoryCode == null || categoryCode.length() != 5) {
-            categoryCode = "XX" + String.format("%03d", random.nextInt(1000));
-        }
-        int randomNum = random.nextInt(1000000);
-        return categoryCode + String.format("%06d", randomNum);
-    }
+//    public static String generateCategoryCode(String categoryName) {
+//        if (categoryName == null || categoryName.isEmpty()) {
+//            return "X" + String.format("%03d", random.nextInt(1000));
+//        }
+//        String firstChar = categoryName.trim().substring(0, 2).toUpperCase();
+//        int randomNum = random.nextInt(1000);
+//        return firstChar + String.format("%03d", randomNum);
+//    }
+//
+//
+//    public static String generateProductCode(String categoryCode) {
+//        if (categoryCode == null || categoryCode.length() != 5) {
+//            categoryCode = "XX" + String.format("%03d", random.nextInt(1000));
+//        }
+//        int randomNum = random.nextInt(1000000);
+//        return categoryCode + String.format("%06d", randomNum);
+//    }
 
 
     public static String generateOrderCode(String userName, LocalDateTime orderDateTime, int productCount) {
@@ -46,21 +47,75 @@ public class CodeGenerator {
     }
 
 
-//    public static String generateUserCode(String name, LocalDateTime registrationDate) {
-//        String namePrefix;
-//        if (name == null || name.length() < 2) {
-//            namePrefix = "XX";
-//        } else {
-//            namePrefix = name.trim().substring(0, 2).toUpperCase();
-//        }
-//        int registrationYear = registrationDate.getYear();
-//        int registrationMonth = registrationDate.getMonthValue();
-//        String monthStr = String.format("%02d", registrationMonth);
-//        StringBuilder randomPrefix = new StringBuilder();
-//        for (int i = 0; i < 7; i++) {
-//            randomPrefix.append(ALPHA.charAt(random.nextInt(ALPHA.length())));
-//        }
-//        return namePrefix + registrationYear + monthStr + randomPrefix.toString();
-//    }
+    /**
+     * Generates a category code with format AB123
+     * AB: first 2 characters of category name
+     * 123: random 3-digit number
+     * Total length: 5 characters
+     */
+    public static String generateCategoryCode(String categoryName) {
+        if (categoryName == null || categoryName.isEmpty()) {
+            return "XX" + String.format("%03d", random.nextInt(1000));
+        }
+
+        // Get first 2 characters of category name, convert to uppercase
+        String prefix = categoryName.trim().length() >= 2 ?
+                categoryName.trim().substring(0, 2).toUpperCase() :
+                categoryName.trim().toUpperCase() + "X";
+
+        int randomNum = random.nextInt(1000);
+        return prefix + String.format("%03d", randomNum);
+    }
+
+    /**
+     * Generates a product code with format AB123000000B
+     * AB123: category code
+     * 000000: random 6-digit number
+     * B: random letter
+     * Total length: 12 characters
+     */
+    public static String generateProductCode(String categoryCode) {
+        // If category code is invalid, generate a placeholder
+        if (categoryCode == null || categoryCode.length() != 5) {
+            categoryCode = "XX" + String.format("%03d", random.nextInt(1000));
+        }
+
+        // Generate random 6-digit number
+        int randomNum = random.nextInt(1000000);
+
+        // Generate random letter
+        char randomChar = ALPHA.charAt(random.nextInt(ALPHA.length()));
+
+        return categoryCode + String.format("%06d", randomNum) + randomChar;
+    }
+
+    /**
+     * Generates a user code with format 0000AB000000
+     * 00: registration month
+     * 00: last 2 digits of registration year
+     * AB: first 2 characters of user's name
+     * 000000: random 6-digit number
+     * Total length: 12 characters
+     */
+    public static String generateUserCode(String name, LocalDateTime registrationDate) {
+        // Extract month and year
+        String month = String.format("%02d", registrationDate.getMonthValue());
+        String year = String.format("%02d", registrationDate.getYear() % 100);
+
+        // Get first 2 characters of name
+        String namePrefix;
+        if (name == null || name.isEmpty()) {
+            namePrefix = "XX";
+        } else {
+            namePrefix = name.trim().length() >= 2 ?
+                    name.trim().substring(0, 2).toUpperCase() :
+                    name.trim().toUpperCase() + "X";
+        }
+
+        // Generate random 6-digit number
+        int randomNum = random.nextInt(1000000);
+
+        return month + year + namePrefix + String.format("%06d", randomNum);
+    }
 
 }

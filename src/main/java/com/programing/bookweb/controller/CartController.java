@@ -298,8 +298,6 @@ public class CartController extends BaseController{
             session.setAttribute("orderErrorMessage", "Vui lòng đăng nhập để hoàn tất thanh toán");
             return "redirect:/login";
         }
-
-
     }
 
     @GetMapping("/checkout/order-result")
@@ -310,7 +308,7 @@ public class CartController extends BaseController{
         if (isSuccess && orderId != null) {
             try {
                 Order order = orderService.getOrderById(orderId);
-                model.addAttribute("orderId", orderId);
+                model.addAttribute("orderId", order.getCode());
                 model.addAttribute("totalAmount", order.getTotalPrice());
                 model.addAttribute("paymentMethod", order.getPaymentMethod());
 

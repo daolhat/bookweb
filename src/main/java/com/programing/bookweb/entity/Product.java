@@ -2,6 +2,7 @@ package com.programing.bookweb.entity;
 
 import com.programing.bookweb.utils.CodeGenerator;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -21,7 +22,8 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 11)
+    @Column(nullable = false, unique = true, length = 12)
+    @Pattern(regexp = "^[A-Z]{2}\\d{3}\\d{6}[A-Z]$", message = "Product code must be in format AB123000000B")
     private String code;
 
     @Column(nullable = false)
