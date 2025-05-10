@@ -22,8 +22,8 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 12)
-    @Pattern(regexp = "^[A-Z]{2}\\d{3}\\d{6}[A-Z]$", message = "Product code must be in format AB123000000B")
+    @Column(unique = true, length = 12)
+    @Pattern(regexp = "^[A-Z]{2}\\d{3}\\d{6}[A-Z0-9]$", message = "Product code must be in format AB123000000B")
     private String code;
 
     @Column(nullable = false)
@@ -267,6 +267,14 @@ public class Product implements Serializable {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getTranslator() {
+        return translator;
+    }
+
+    public void setTranslator(String translator) {
+        this.translator = translator;
     }
 
     public Set<OrderDetail> getOrderDetails() {

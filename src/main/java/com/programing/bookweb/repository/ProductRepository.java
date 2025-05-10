@@ -40,16 +40,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId ORDER BY p.quantitySold DESC")
     List<Product> findTopByCategoryIdOrderByQuantitySoldDesc(@Param("categoryId") Long categoryId, Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId ORDER BY p.discount DESC")
-    Page<Product> findProductsWithDiscountOrderByDiscountDesc(Pageable pageable);
-
     @Query("SELECT p FROM Product p JOIN OrderDetail od ON p.id = od.product.id JOIN Order o ON od.order.id = o.id WHERE o.createdAt BETWEEN :startDate AND :endDate GROUP BY p ORDER BY p.quantitySold DESC")
     List<Product> findTopSellingProductsByDateRange(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
-
-    List<Product> findByCategoryId(Long categoryId);
-
-    List<Product> findByLayout(String layout);
-
-    List<Product> findByCategoryIdAndLayout(Long categoryId, String layout);
 
 }

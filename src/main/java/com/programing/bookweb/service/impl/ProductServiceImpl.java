@@ -129,7 +129,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public List<Product> getTopSellingProductsByDateRange(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
-        return List.of();
+        return productRepository.findTopSellingProductsByDateRange(startDate, endDate, pageable);
     }
 
     @Override

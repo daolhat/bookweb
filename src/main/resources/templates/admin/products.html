@@ -64,7 +64,7 @@
                                 <select class="form-select" name="categoryId" id="categoryFilter"
                                         onchange="window.location.href = this.options[this.selectedIndex].getAttribute('data-url')">
                                     <option value=""
-                                            th:attr="data-url=@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, layout=${selectedLayout}, sort=${selectedSort})}">-- Chọn thể loại --</option>
+                                            th:attr="data-url=@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, layout=${selectedLayout}, sort=${selectedSort})}">-- Tất cả thể loại --</option>
                                     <option th:each="category : ${categories}"
                                             th:value="${category.id}"
                                             th:text="${category.name}"
@@ -77,7 +77,7 @@
                                 <select class="form-select" name="layout" id="layoutFilter"
                                     onchange="window.location.href = this.options[this.selectedIndex].getAttribute('data-url')">
                                     <option value=""
-                                            th:attr="data-url=@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, sort=${selectedSort})}">-- Chọn hình thức bìa --</option>
+                                            th:attr="data-url=@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, sort=${selectedSort})}">-- Tất cả hình thức bìa --</option>
                                     <option value="Bìa mềm"
                                             th:selected="${selectedLayout != null && selectedLayout == 'Bìa mềm'}"
                                             th:attr="data-url=@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout='Bìa mềm', sort=${selectedSort})}">
@@ -142,9 +142,9 @@
                                     <th scope="col">Ảnh bìa</th>
                                     <th scope="col" style="width: 12rem">Thể loại</th>
                                     <th scope="col">Tác giả</th>
-                                    <th scope="col">Số lượng trong kho</th>
+                                    <th scope="col" style="width: 7rem">Số lượng trong kho</th>
                                     <th scope="col">Giá gốc</th>
-                                    <th scope="col">Số lượng đã bán</th>
+                                    <th scope="col" style="width: 7rem">Số lượng đã bán</th>
                                     <th scope="col">Giá bán</th>
                                     <th scope="col" style="width: 12rem"></th>
                                 </tr>

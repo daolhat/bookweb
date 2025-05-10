@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -159,9 +160,9 @@ public class CartController extends BaseController{
 
 
     @PostMapping("/place-order")
+    @Transactional
     public String placeOrder(@ModelAttribute("orderPerson") UserOrder userOrder,
                              @RequestParam("paymentMethod") String paymentMethod,
-
                              HttpServletRequest request) {
         try {
             PaymentMethod selectedPaymentMethod = PaymentMethod.valueOf(paymentMethod);
@@ -176,7 +177,6 @@ public class CartController extends BaseController{
                     return "redirect:/cart/checkout/order-result?success=false";
                 }
             } else if (selectedPaymentMethod == PaymentMethod.ONLINE) {
-
                 try {
                     session.setAttribute("pendingOrder", userOrder);
                     session.setAttribute("paymentMethod", selectedPaymentMethod);
@@ -191,9 +191,7 @@ public class CartController extends BaseController{
                     System.out.println("vnpayUrl: " + vnpayUrl);
 
                     cartService.clearCart(session);
-
                     return "redirect:" + vnpayUrl;
-
                 } catch (Exception e) {
                     session.setAttribute("vnPayErrorMessage", e.getMessage());
                     return "redirect:/cart/checkout/vnpay-payment?fail";
@@ -245,7 +243,6 @@ public class CartController extends BaseController{
                     } else {
                         // Payment failed
                         List<CartItemDTO> cartItemsToRestore = new ArrayList<>();
-
                         // Get order details to restore cart items
                         recentOrder.getOrderDetails().forEach(orderDetail -> {
                             CartItemDTO item = new CartItemDTO();
@@ -256,7 +253,6 @@ public class CartController extends BaseController{
                             item.setTitle(product.getTitle());
                             item.setAuthor(product.getAuthor());
                             item.setPrice(product.getPrice());
-
                             double discountRate = product.getDiscount() / 100.0;
                             double salePrice = product.getPrice() * (1 - discountRate);
                             item.setSalePrice(salePrice);
@@ -264,37 +260,30 @@ public class CartController extends BaseController{
 
                             cartItemsToRestore.add(item);
                         });
-
-
                         // Delete the order
                         try {
                             orderService.deleteOrder(recentOrder);
                         } catch (Exception e) {
                             System.out.println("Failed to delete order: " + e.getMessage());
                         }
-
                         // Restore cart items
                         CartDTO restoredCart = new CartDTO();
                         restoredCart.setCartItems(cartItemsToRestore);
                         session.setAttribute("cart", restoredCart);
-
                         session.setAttribute("orderErrorMessage", "Thanh toán không thành công. Mã giao dịch: " +
                                 (transactionId != null ? transactionId : "N/A"));
-                        return "redirect:/cart/checkout/order-result?success=false&orderId=" + orderId;
+                        return "redirect:/cart/checkout/order-result?success=false";
                     }
                 } else {
-                    System.out.println("VNPAY Callback - No recent orders found for user");
                     session.setAttribute("orderErrorMessage", "Không tìm thấy thông tin đơn hàng gần đây");
                     return "redirect:/cart/checkout/order-result?success=false";
                 }
             } catch (Exception e) {
-                System.out.println("VNPAY Callback - Exception: " + e.getMessage());
                 e.printStackTrace();
                 session.setAttribute("orderErrorMessage", "Lỗi khi xử lý thanh toán: " + e.getMessage());
                 return "redirect:/cart/checkout/order-result?success=false";
             }
         } else {
-            System.out.println("VNPAY Callback - User not logged in");
             session.setAttribute("orderErrorMessage", "Vui lòng đăng nhập để hoàn tất thanh toán");
             return "redirect:/login";
         }
@@ -311,7 +300,6 @@ public class CartController extends BaseController{
                 model.addAttribute("orderId", order.getCode());
                 model.addAttribute("totalAmount", order.getTotalPrice());
                 model.addAttribute("paymentMethod", order.getPaymentMethod());
-
                 // Transfer VNPAY transaction details from session to model if they exist
                 if (session.getAttribute("vnpayTransactionId") != null) {
                     model.addAttribute("vnpayTransactionId", session.getAttribute("vnpayTransactionId"));
@@ -321,7 +309,6 @@ public class CartController extends BaseController{
                     session.removeAttribute("vnpayTransactionId");
                     session.removeAttribute("vnpayPaymentTime");
                 }
-
             } catch (Exception e) {
                 model.addAttribute("isSuccess", false);
                 model.addAttribute("errorMessage", "Không tìm thấy thông tin đơn hàng");

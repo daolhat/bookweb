@@ -134,7 +134,7 @@
                             <img th:src="@{'/assets/img/product/' + ${relatedProduct.imageProduct}}" class="product-img img-fluid"
                                  style="max-height: 200px; object-fit: cover;" alt="Sản phẩm">
                         </div>
-                        <h6 class="mt-2 fw-semibold flex-grow-1" th:text="${relatedProduct.title}"></h6>
+                        <h6 class="mt-2 fw-semibold flex-grow-1" th:text="${#strings.abbreviate(relatedProduct.title, 40)}"></h6>
                         <p class="text-danger fw-bold" >
                             <span th:text="${#numbers.formatDecimal(relatedProduct.price * (1 - relatedProduct.discount / 100.0), 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
                             <del class="text-muted small" th:text="${#numbers.formatDecimal(relatedProduct.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></del>

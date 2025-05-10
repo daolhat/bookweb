@@ -7,26 +7,7 @@ import java.util.Random;
 public class CodeGenerator {
 
     private static final Random random = new Random();
-    private static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static final String ALPHANUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-//    public static String generateCategoryCode(String categoryName) {
-//        if (categoryName == null || categoryName.isEmpty()) {
-//            return "X" + String.format("%03d", random.nextInt(1000));
-//        }
-//        String firstChar = categoryName.trim().substring(0, 2).toUpperCase();
-//        int randomNum = random.nextInt(1000);
-//        return firstChar + String.format("%03d", randomNum);
-//    }
-//
-//
-//    public static String generateProductCode(String categoryCode) {
-//        if (categoryCode == null || categoryCode.length() != 5) {
-//            categoryCode = "XX" + String.format("%03d", random.nextInt(1000));
-//        }
-//        int randomNum = random.nextInt(1000000);
-//        return categoryCode + String.format("%06d", randomNum);
-//    }
+    private static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 
     public static String generateOrderCode(String userName, LocalDateTime orderDateTime, int productCount) {
@@ -47,6 +28,26 @@ public class CodeGenerator {
     }
 
 
+//    /**
+//     * Generates a category code with format AB123
+//     * AB: first 2 characters of category name
+//     * 123: random 3-digit number
+//     * Total length: 5 characters
+//     */
+//    public static String generateCategoryCode(String categoryName) {
+//        if (categoryName == null || categoryName.isEmpty()) {
+//            return "XX" + String.format("%03d", random.nextInt(1000));
+//        }
+//
+//        // Get first 2 characters of category name, convert to uppercase
+//        String prefix = categoryName.trim().length() >= 2 ?
+//                categoryName.trim().substring(0, 2).toUpperCase() :
+//                categoryName.trim().toUpperCase() + "X";
+//
+//        int randomNum = random.nextInt(1000);
+//        return prefix + String.format("%03d", randomNum);
+//    }
+
     /**
      * Generates a category code with format AB123
      * AB: first 2 characters of category name
@@ -54,18 +55,32 @@ public class CodeGenerator {
      * Total length: 5 characters
      */
     public static String generateCategoryCode(String categoryName) {
-        if (categoryName == null || categoryName.isEmpty()) {
+        if (categoryName == null || categoryName.trim().isEmpty()) {
             return "XX" + String.format("%03d", random.nextInt(1000));
         }
 
-        // Get first 2 characters of category name, convert to uppercase
-        String prefix = categoryName.trim().length() >= 2 ?
-                categoryName.trim().substring(0, 2).toUpperCase() :
-                categoryName.trim().toUpperCase() + "X";
+        String[] words = categoryName.trim().split("\\s+");
+        String firstWord = words[0].toLowerCase();
+        String prefix;
+
+        // Check if the first word is "Sách" or "Dạy"
+        if (firstWord.equals("sách") || firstWord.equals("dạy")) {
+            // Use the next word if available, otherwise fallback to first word
+            String targetWord = words.length > 1 ? words[1] : words[0];
+            prefix = targetWord.length() >= 2 ?
+                    targetWord.substring(0, 2).toUpperCase() :
+                    targetWord.toUpperCase() + "X";
+        } else {
+            // Use the first word
+            prefix = firstWord.length() >= 2 ?
+                    firstWord.substring(0, 2).toUpperCase() :
+                    firstWord.toUpperCase() + "X";
+        }
 
         int randomNum = random.nextInt(1000);
         return prefix + String.format("%03d", randomNum);
     }
+
 
     /**
      * Generates a product code with format AB123000000B

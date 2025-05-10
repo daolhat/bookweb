@@ -156,83 +156,14 @@
                         </div>
                     </div>
 
-<!--                    <div class="col-12">-->
-<!--                        <div class="card">-->
-<!--                            <div class="card-body">-->
-<!--                                <h5 class="card-title">Biểu đồ thống kê doanh thu <span>| 6 tháng gần nhất</span></h5>-->
-<!--                                <div id="monthlyChart"></div>-->
-<!--                                <script th:inline="javascript">-->
-<!--                                    document.addEventListener("DOMContentLoaded", () => {-->
-<!--                                      // Lấy dữ liệu từ controller-->
-<!--                                      const monthlyLabels = /*[[${monthlyChartLabels}]]*/ [];-->
-<!--                                      const monthlyRevenueData = /*[[${monthlyChartRevenueData}]]*/ [];-->
-<!--                                      const monthlyUserData = /*[[${monthlyChartUserData}]]*/ [];-->
-
-<!--                                      new ApexCharts(document.querySelector("#monthlyChart"), {-->
-<!--                                        series: [{-->
-<!--                                          name: 'Doanh thu (triệu đồng)',-->
-<!--                                          data: monthlyRevenueData,-->
-<!--                                          type: 'column'-->
-<!--                                        }, {-->
-<!--                                          name: 'Người dùng mới',-->
-<!--                                          data: monthlyUserData,-->
-<!--                                          type: 'line'-->
-<!--                                        }],-->
-<!--                                        chart: {-->
-<!--                                          height: 350,-->
-<!--                                          type: 'line',-->
-<!--                                          toolbar: {-->
-<!--                                            show: false-->
-<!--                                          },-->
-<!--                                        },-->
-<!--                                        plotOptions: {-->
-<!--                                          bar: {-->
-<!--                                            borderRadius: 5,-->
-<!--                                            columnWidth: '50%',-->
-<!--                                          }-->
-<!--                                        },-->
-<!--                                        colors: ['#2eca6a', '#ff771d'],-->
-<!--                                        dataLabels: {-->
-<!--                                          enabled: false-->
-<!--                                        },-->
-<!--                                        stroke: {-->
-<!--                                          width: [0, 3]-->
-<!--                                        },-->
-<!--                                        xaxis: {-->
-<!--                                          categories: monthlyLabels-->
-<!--                                        },-->
-<!--                                        yaxis: [-->
-<!--                                          {-->
-<!--                                            title: {-->
-<!--                                              text: 'Doanh thu (triệu đồng)',-->
-<!--                                            },-->
-<!--                                          },-->
-<!--                                          {-->
-<!--                                            opposite: true,-->
-<!--                                            title: {-->
-<!--                                              text: 'Người dùng mới'-->
-<!--                                            }-->
-<!--                                          }-->
-<!--                                        ],-->
-<!--                                        tooltip: {-->
-<!--                                          shared: true,-->
-<!--                                          intersect: false-->
-<!--                                        }-->
-<!--                                      }).render();-->
-<!--                                    });-->
-<!--                                </script>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-
-                    <div class="col-8">
+                    <div class="col-7">
                         <div class="card top-selling overflow-auto">
                             <div class="card-body pb-0">
                                 <h5 class="card-title">Top 10 sản phẩm bán chạy <span>| 3 tháng gần nhất</span></h5>
                                 <table class="table table-borderless">
                                     <thead>
                                     <tr>
+                                        <th scope="col">STT</th>
                                         <th scope="col">Ảnh sản phẩm</th>
                                         <th scope="col">Tiêu đề</th>
                                         <th scope="col">Giá bán</th>
@@ -244,21 +175,22 @@
                                     <tr th:if="${#lists.isEmpty(topSellingProducts)}">
                                         <td colspan="5" class="text-center">Không có dữ liệu</td>
                                     </tr>
-                                    <tr th:each="product : ${topSellingProducts}">
+                                    <tr th:each="product, productStat : ${topSellingProducts}">
+                                        <td th:text="${productStat.count}"></td>
                                         <th scope="row">
-                                            <a th:href="@{'/admin/products/' + ${product.id}}">
-                                                <img th:if="${product.imageProduct != null}" th:src="@{'/assets/img/product/' + ${product.imageProduct}}"
+                                            <a th:href="@{/dashboard/product_management/update/{id}(id=${product.id})}">
+                                                <img th:if="${product.imageProduct}" th:src="@{'/assets/img/product/' + ${product.imageProduct}}"
                                                      alt="" style="width: 60px; height: 60px; object-fit: cover;">
-                                                <img th:if="${product.imageProduct == null}" th:src="@{'/assets/img/product/no-image.jpg'}"
+                                                <img th:unless="${product.imageProduct}" th:src="@{'/assets/img/product-image-default.jpg'}"
                                                      alt="" style="width: 60px; height: 60px; object-fit: cover;">
                                             </a>
                                         </th>
                                         <td>
-                                            <a th:href="@{'/admin/products/' + ${product.id}}" class="text-primary fw-bold" th:text="${product.title}"></a>
+                                            <a th:href="@{/dashboard/product_management/update/{id}(id=${product.id})}" class="text-primary fw-bold" th:text="${product.title}"></a>
                                         </td>
                                         <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
-                                        <td class="fw-bold" th:text="${product.quantitySold}">0</td>
-                                        <td th:text="${#numbers.formatDecimal(product.revenue, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
+                                        <td class="fw-bold" th:text="${product.quantitySold}"></td>
+                                        <td th:text="${#numbers.formatDecimal(product.price * product.quantitySold, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -266,7 +198,7 @@
                         </div>
                     </div>
 
-                    <div class="col-4">
+                    <div class="col-5">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Top 5 khách hàng chi nhiều nhất <span>| 6 tháng gần nhất</span></h5>
@@ -286,7 +218,7 @@
                                         <tr th:each="user, userStat : ${topSpendingUsers}">
                                             <td th:text="${userStat.count}"></td>
                                             <td>
-                                                <a th:href="@{'/admin/users/' + ${user.id}}" class="text-primary fw-bold" th:text="${user.fullName}"></a>
+                                                <a th:href="@{/dashboard/user_management/{id}(id=${user.id})}" class="text-primary fw-bold" th:text="${user.fullName}"></a>
                                             </td>
                                             <td th:text="${#numbers.formatDecimal(user.totalSpending, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
                                         </tr>

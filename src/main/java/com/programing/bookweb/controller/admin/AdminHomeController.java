@@ -64,12 +64,12 @@ public class AdminHomeController extends BaseController {
             model.addAttribute("monthlyChartUserData", monthlyChartData.get("chartUserData"));
 
             // 10 Sản phẩm bán chạy nhất
-            List<Map<String, Object>> topSellingProducts = getTopSellingProducts(10);
+            List<Product> topSellingProducts = getTopSellingProducts(10);
             model.addAttribute("topSellingProducts", topSellingProducts != null ? topSellingProducts : new ArrayList<>());
 
             // 5 Khách hàng tiêu nhiều tiền nhất
-            List<Map<String, Object>> topSpendingUsers = getTopSpendingUsers(5);
-            model.addAttribute("topSpendingUsers", topSpendingUsers != null ? topSpendingUsers : new ArrayList<>());
+//            List<Map<String, Object>> topSpendingUsers = getTopSpendingUsers(5);
+//            model.addAttribute("topSpendingUsers", topSpendingUsers != null ? topSpendingUsers : new ArrayList<>());
 
             // Thông tin tổng quát
             BigDecimal totalRevenue = orderService.getTotalRevenue();
@@ -260,7 +260,7 @@ public class AdminHomeController extends BaseController {
     }
 
 
-    private List<Map<String, Object>> getTopSellingProducts(int limit) {
+    private List<Product> getTopSellingProducts(int limit) {
         // Mặc định lấy theo 3 tháng gần nhất
         LocalDateTime startDate = LocalDateTime.now().minusMonths(3);
         LocalDateTime endDate = LocalDateTime.now();
@@ -269,44 +269,45 @@ public class AdminHomeController extends BaseController {
         Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "quantitySold"));
         List<Product> topProducts = productService.getTopSellingProductsByDateRange(startDate, endDate, pageable);
 
-        return topProducts.stream().map(product -> {
-            Map<String, Object> productMap = new HashMap<>();
-            productMap.put("id", product.getId());
-            productMap.put("title", product.getTitle());
-            productMap.put("imageProduct", product.getImageProduct());
-            productMap.put("price", product.getPrice());
-            productMap.put("quantitySold", product.getQuantitySold());
-
-            BigDecimal revenue = BigDecimal.valueOf(product.getPrice()).multiply(new BigDecimal(product.getQuantitySold()));
-            if (product.getDiscount() > 0) {
-                BigDecimal discountRate = BigDecimal.valueOf(product.getDiscount()).divide(BigDecimal.valueOf(100));
-                BigDecimal discountAmount = revenue.multiply(discountRate);
-                revenue = revenue.subtract(discountAmount);
-            }
-            productMap.put("revenue", revenue);
-            return productMap;
-        }).collect(Collectors.toList());
+//        return topProducts.stream().map(product -> {
+//            Map<String, Object> productMap = new HashMap<>();
+//            productMap.put("id", product.getId());
+//            productMap.put("title", product.getTitle());
+//            productMap.put("imageProduct", product.getImageProduct());
+//            productMap.put("price", product.getPrice());
+//            productMap.put("quantitySold", product.getQuantitySold());
+//
+//            BigDecimal revenue = BigDecimal.valueOf(product.getPrice()).multiply(new BigDecimal(product.getQuantitySold()));
+//            if (product.getDiscount() > 0) {
+//                BigDecimal discountRate = BigDecimal.valueOf(product.getDiscount()).divide(BigDecimal.valueOf(100));
+//                BigDecimal discountAmount = revenue.multiply(discountRate);
+//                revenue = revenue.subtract(discountAmount);
+//            }
+//            productMap.put("revenue", revenue);
+//            return productMap;
+//        }).collect(Collectors.toList());
+        return topProducts;
     }
 
 
-    private List<Map<String, Object>> getTopSpendingUsers(int limit) {
-        // Mặc định lấy theo 6 tháng gần nhất
-        LocalDateTime startDate = LocalDateTime.now().minusMonths(6);
-        LocalDateTime endDate = LocalDateTime.now();
-
-        // Lấy top N khách hàng chi tiêu nhiều nhất
-        List<Object[]> topUsers = orderService.getTopSpendingUsers(startDate, endDate, limit);
-
-        return topUsers.stream().map(userArray -> {
-            Map<String, Object> userMap = new HashMap<>();
-            User user = (User) userArray[0];
-            BigDecimal totalSpending = (BigDecimal) userArray[1];
-
-            userMap.put("id", user.getId());
-            userMap.put("fullName", user.getFullName());
-            userMap.put("email", user.getEmail());
-            userMap.put("totalSpending", totalSpending);
-            return userMap;
-        }).collect(Collectors.toList());
-    }
+//    private List<Map<String, Object>> getTopSpendingUsers(int limit) {
+//        // Mặc định lấy theo 6 tháng gần nhất
+//        LocalDateTime startDate = LocalDateTime.now().minusMonths(6);
+//        LocalDateTime endDate = LocalDateTime.now();
+//
+//        // Lấy top N khách hàng chi tiêu nhiều nhất
+//        List<Object[]> topUsers = orderService.getTopSpendingUsers(startDate, endDate, limit);
+//
+//        return topUsers.stream().map(userArray -> {
+//            Map<String, Object> userMap = new HashMap<>();
+//            User user = (User) userArray[0];
+//            BigDecimal totalSpending = (BigDecimal) userArray[1];
+//
+//            userMap.put("id", user.getId());
+//            userMap.put("fullName", user.getFullName());
+//            userMap.put("email", user.getEmail());
+//            userMap.put("totalSpending", totalSpending);
+//            return userMap;
+//        }).collect(Collectors.toList());
+//    }
 }

@@ -139,7 +139,9 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public Long countUser() {
-        return userRepository.count();
+        Role role = roleRepository.findByName(DEFAULT_ROLE)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy vai trò có tên: " + DEFAULT_ROLE));
+        return userRepository.countByRoles(role);
     }
 
     @Override

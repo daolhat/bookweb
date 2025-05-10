@@ -17,8 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Page<User> findByRoles(Role roles, Pageable pageable);
 
-    List<User> findByRoles(Role roles);
-
     Page<User> findAllByOrderByCreatedAtAsc(Pageable pageable);
 
     List<User> findByOrderByCreatedAtDesc(Pageable pageable);
@@ -34,6 +32,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     long countByCreatedAtBefore(LocalDateTime date);
 
     long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+    long countByRoles(Role role);
 
     @Query("SELECT u FROM User u WHERE (CAST(u.id AS string) = :search OR u.fullName LIKE %:search% OR u.phoneNumber = :search OR u.email = :search) AND :role MEMBER OF u.roles")
     Page<User> findByIdOrFullNameContainingOrPhoneNumber(@Param("search") String search, @Param("role") Role role, Pageable pageable);

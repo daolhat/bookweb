@@ -74,7 +74,7 @@
                             <img th:src="@{'/assets/img/product/' + ${product.imageProduct}}" class="product-img img-fluid"
                                  style="max-height: 200px; object-fit: cover;" alt="Sản phẩm">
                         </div>
-                        <h6 class="mt-2 fw-semibold flex-grow-1" th:text="${product.title}"></h6>
+                        <h6 class="mt-2 fw-semibold flex-grow-1" th:text="${#strings.abbreviate(product.title, 40)}"></h6>
                         <p class="text-danger fw-bold" >
                             <span th:text="${#numbers.formatDecimal(product.price * (1 - product.discount / 100.0), 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
                             <del class="text-muted small" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></del>
@@ -102,7 +102,7 @@
                             <img th:src="@{'/assets/img/product/' + ${product.imageProduct}}" class="product-img img-fluid"
                                  style="max-height: 200px; object-fit: cover;" alt="Sản phẩm">
                         </div>
-                        <h6 class="mt-2 fw-semibold flex-grow-1" th:text="${product.title}"></h6>
+                        <h6 class="mt-2 fw-semibold flex-grow-1" th:text="${#strings.abbreviate(product.title, 40)}"></h6>
                         <p class="text-danger fw-bold" >
                             <span th:text="${#numbers.formatDecimal(product.price * (1 - product.discount / 100.0), 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
                             <del class="text-muted small" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></del>
