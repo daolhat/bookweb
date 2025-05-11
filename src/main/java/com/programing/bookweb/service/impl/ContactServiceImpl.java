@@ -1,6 +1,7 @@
 package com.programing.bookweb.service.impl;
 
 import com.programing.bookweb.entity.Contact;
+import com.programing.bookweb.entity.User;
 import com.programing.bookweb.enums.ContactStatus;
 import com.programing.bookweb.repository.ContactRepository;
 import com.programing.bookweb.service.IContactService;
@@ -18,7 +19,8 @@ public class ContactServiceImpl implements IContactService {
     private ContactRepository contactRepository;
 
     @Override
-    public Contact saveContact(Contact contact) {
+    public Contact saveContact(Contact contact, User user) {
+        contact.setUser(user);
         return contactRepository.save(contact);
     }
 
@@ -28,6 +30,11 @@ public class ContactServiceImpl implements IContactService {
         if (contact.isPresent()){
             contactRepository.deleteById(contactId);
         }
+    }
+
+    @Override
+    public Contact updateContact(Contact contact) {
+        return contactRepository.save(contact);
     }
 
     @Override

@@ -23,7 +23,6 @@ public abstract class BaseController {
     @Autowired
     private ICategoryService categoryService;
 
-
     @ModelAttribute("cartItemCount")
     public int cartItemCount(HttpSession session) {
         CartDTO cart = cartService.getCart(session);

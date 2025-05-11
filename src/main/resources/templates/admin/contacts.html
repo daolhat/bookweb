@@ -39,6 +39,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <section class="section dashboard">
         <div class="card">
             <div class="card-body">
@@ -69,16 +75,16 @@
                         <thead>
                         <tr>
                             <th scope="col" style="width: 2rem">ID</th>
-                            <th scope="col" style="width: 12rem">Người gửi</th>
-                            <th scope="col" style="width: 10rem">Ngày gửi</th>
-                            <th scope="col" style="width: 12rem">Chủ đề</th>
+                            <th scope="col" style="width: 16rem">Người gửi</th>
+                            <th scope="col" style="width: 12rem">Ngày gửi</th>
+                            <th scope="col" style="width: 12rem">Tiêu đề</th>
                             <th scope="col">Nội dung</th>
                             <th scope="col" style="width: 8rem">Trạng thái</th>
                             <th scope="col" style="width: 15rem"></th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:if="${#lists.isEmpty(contacts)}">
+                        <tr th:if="${#lists.isEmpty(contacts.content)}">
                             <td colspan="5" class="text-center">Không có liên hệ nào</td>
                         </tr>
                         <tr th:each="contact : ${contacts}">
@@ -111,8 +117,7 @@
                                                 type="button"
                                                 data-bs-toggle="dropdown"
                                                 aria-expanded="false">
-<!--                                            Trạng thái-->
-                                            <i class="bi bi-gear-fill me-1"></i>
+                                            <i class="bi bi-check me-1"></i>
                                         </button>
                                         <ul class="dropdown-menu">
                                             <li th:if="${contact.status == null || contact.status.name() == 'PENDING'}">
@@ -127,6 +132,9 @@
                                                     <button type="submit" class="dropdown-item btn btn-success">Đánh dấu đã xử lý</button>
                                                 </form>
                                             </li>
+                                            <li th:if="${contact.status != null && contact.status.name() == 'PROCESSED'}">
+                                                <span class="text-success">Đã hoàn thành xử lý</span>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -135,6 +143,35 @@
                         </tbody>
                     </table>
                 </div>
+
+<!--                <div class="row g-3 mt-4">-->
+<!--                    <nav aria-label="Page navigation" class="d-flex justify-content-center"-->
+<!--                         th:if="${contacts.totalPages > 1}">-->
+<!--                        <ul class="pagination">-->
+<!--                            <li class="page-item" th:classappend="${pageNumber <= 1 ? 'disabled' : ''}">-->
+<!--                                <a class="page-link"-->
+<!--                                   th:href="@{/dashboard/contact_management(page=${pageNumber - 1}, status=${selectedStatus})}"-->
+<!--                                   aria-label="Previous">-->
+<!--                                    <span aria-hidden="true">&laquo;</span>-->
+<!--                                </a>-->
+<!--                            </li>-->
+<!--                            <li class="page-item" th:each="i : ${#numbers.sequence(1, contacts.totalPages)}"-->
+<!--                                th:classappend="${i == pageNumber ? 'active' : ''}">-->
+<!--                                <a class="page-link"-->
+<!--                                   th:href="@{/dashboard/contact_management(page=${i}, status=${selectedStatus})}"-->
+<!--                                   th:text="${i}">1</a>-->
+<!--                            </li>-->
+<!--                            <li class="page-item"-->
+<!--                                th:classappend="${pageNumber >= contacts.totalPages ? 'disabled' : ''}">-->
+<!--                                <a class="page-link"-->
+<!--                                   th:href="@{/dashboard/contact_management(page=${pageNumber + 1}, status=${selectedStatus})}"-->
+<!--                                   aria-label="Next">-->
+<!--                                    <span aria-hidden="true">&raquo;</span>-->
+<!--                                </a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </nav>-->
+<!--                </div>-->
 
                 <div class="row g-3 mt-4">
                     <nav aria-label="Page navigation" class="d-flex justify-content-center"
@@ -147,12 +184,43 @@
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
-                            <li class="page-item" th:each="i : ${#numbers.sequence(1, contacts.totalPages)}"
+
+                            <!-- First page -->
+                            <li class="page-item" th:classappend="${pageNumber == 1 ? 'active' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/dashboard/contact_management(page=1, status=${selectedStatus})}"
+                                   th:text="1">1</a>
+                            </li>
+
+                            <!-- If current page > 3, show first ellipsis -->
+                            <li class="page-item disabled" th:if="${pageNumber > 3}">
+                                <span class="page-link">...</span>
+                            </li>
+
+                            <!-- Show page numbers around current page -->
+                            <li class="page-item"
+                                th:each="i : ${#numbers.sequence(pageNumber > 2 ? pageNumber - 1 : 2,
+                                                               pageNumber < contacts.totalPages - 1 ? pageNumber + 1 : contacts.totalPages - 1)}"
+                                th:if="${i > 1 && i < contacts.totalPages}"
                                 th:classappend="${i == pageNumber ? 'active' : ''}">
                                 <a class="page-link"
                                    th:href="@{/dashboard/contact_management(page=${i}, status=${selectedStatus})}"
-                                   th:text="${i}">1</a>
+                                   th:text="${i}"></a>
                             </li>
+
+                            <!-- If current page < totalPages-2, show second ellipsis -->
+                            <li class="page-item disabled" th:if="${pageNumber < contacts.totalPages - 2}">
+                                <span class="page-link">...</span>
+                            </li>
+
+                            <!-- Last page -->
+                            <li class="page-item" th:if="${contacts.totalPages > 1}"
+                                th:classappend="${pageNumber == contacts.totalPages ? 'active' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/dashboard/contact_management(page=${contacts.totalPages}, status=${selectedStatus})}"
+                                   th:text="${contacts.totalPages}"></a>
+                            </li>
+
                             <li class="page-item"
                                 th:classappend="${pageNumber >= contacts.totalPages ? 'disabled' : ''}">
                                 <a class="page-link"

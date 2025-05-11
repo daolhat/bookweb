@@ -1,6 +1,7 @@
 package com.programing.bookweb.controller;
 
 import com.programing.bookweb.entity.Contact;
+import com.programing.bookweb.entity.User;
 import com.programing.bookweb.enums.ContactStatus;
 import com.programing.bookweb.service.IContactService;
 import lombok.AllArgsConstructor;
@@ -28,8 +29,9 @@ public class ContactController extends BaseController{
     @PostMapping("/submit")
     public String submitContactForm(@ModelAttribute Contact contact,
                                     RedirectAttributes redirectAttributes) {
+        User user = getCurrentUser();
         contact.setStatus(ContactStatus.PENDING);
-        Contact savedContact = contactService.saveContact(contact);
+        Contact savedContact = contactService.saveContact(contact, user);
         redirectAttributes.addFlashAttribute("thankForContacting","Cảm ơn bạn đã liên hệ");
         return "redirect:/contact?success=true";
     }

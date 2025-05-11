@@ -39,7 +39,6 @@ public class AdminProductController extends BaseController {
                                             @RequestParam(name = "page", defaultValue = "1") int page,
                                             Model model) {
 
-
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
 
@@ -223,22 +222,22 @@ public class AdminProductController extends BaseController {
         // Lấy sản phẩm hiện có từ database
         Product existingProduct = productService.getProductById(id);
         if (existingProduct == null) {
-            System.out.println("ERROR: Không tìm thấy sản phẩm với ID: " + id);
+            //System.out.println("ERROR: Không tìm thấy sản phẩm với ID: " + id);
             redirectAttributes.addFlashAttribute("error", "Không tìm thấy sản phẩm");
             return "redirect:/dashboard/product_management";
         }
 
-        System.out.println("--------- DEBUG INFO ---------");
-        System.out.println("ID sản phẩm: " + id);
-        System.out.println("CategoryId từ form: " + categoryId);
-        // Tránh in đối tượng Product trực tiếp vì có thể gây StackOverflowError
-        System.out.println("Thông tin cơ bản từ form: " + productForm.getTitle() + ", " + productForm.getAuthor());
-        System.out.println("Thông tin category hiện tại: " + (existingProduct.getCategory() != null ?
-                existingProduct.getCategory().getId() + " - " + existingProduct.getCategory().getName() : "NULL"));
+//        System.out.println("--------- DEBUG INFO ---------");
+//        System.out.println("ID sản phẩm: " + id);
+//        System.out.println("CategoryId từ form: " + categoryId);
+//        // Tránh in đối tượng Product trực tiếp vì có thể gây StackOverflowError
+//        System.out.println("Thông tin cơ bản từ form: " + productForm.getTitle() + ", " + productForm.getAuthor());
+//        System.out.println("Thông tin category hiện tại: " + (existingProduct.getCategory() != null ?
+//                existingProduct.getCategory().getId() + " - " + existingProduct.getCategory().getName() : "NULL"));
 
         try {
             String currentImageName = existingProduct.getImageProduct();
-            System.out.println("Current image name: " + currentImageName);
+            //System.out.println("Current image name: " + currentImageName);
             // Cập nhật các trường dữ liệu cơ bản
             existingProduct.setTitle(productForm.getTitle());
             existingProduct.setAuthor(productForm.getAuthor());
@@ -259,7 +258,7 @@ public class AdminProductController extends BaseController {
             if (categoryId != null && categoryId > 0) {
                 Category category = categoryService.getCategoryById(categoryId);
                 if (category != null) {
-                    System.out.println("Gán category: " + category.getId() + " - " + category.getName());
+                    //System.out.println("Gán category: " + category.getId() + " - " + category.getName());
                     existingProduct.setCategory(category);
                 } else {
                     System.out.println("WARNING: Không tìm thấy category với ID: " + categoryId);
@@ -326,6 +325,13 @@ public class AdminProductController extends BaseController {
             if (product != null) {
                 // Lưu lại thông tin sản phẩm trước khi xóa để hiển thị trong thông báo
                 String productTitle = product.getTitle();
+                int productCount = product.getOrderDetails().size();
+                if (productCount > 0){
+                    redirectAttributes.addFlashAttribute("error",
+                            "Không thể xóa sản phẩm vì có " + productCount +
+                                    " đơn hàng đang có chứa sản phẩm này.");
+                    return "redirect:/dashboard/product_management";
+                }
                 // Xóa sản phẩm
                 productService.deleteProduct(id);
                 redirectAttributes.addFlashAttribute("success", "Xoá sản phẩm \"" + productTitle + "\" thành công");

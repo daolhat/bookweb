@@ -99,7 +99,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:if="${#lists.isEmpty(orders)}">
+                        <tr th:if="${#lists.isEmpty(orders.content)}">
                             <td colspan="5" class="text-center">Không có đơn hàng nào</td>
                         </tr>
                         <tr th:each="order : ${orders}">

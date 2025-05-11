@@ -28,7 +28,7 @@ public class AdminContactController extends BaseController {
     public String showContactPageManagement(@RequestParam(name = "page", defaultValue = "1") int page,
                                             @RequestParam(name = "status", required = false) String statusParam,
                                             Model model){
-        Pageable pageable = PageRequest.of(page - 1, 10);
+        Pageable pageable = PageRequest.of(page - 1, 1);
         // Page<Contact> contacts = contactService.getAllContactPage(pageable);
         Page<Contact> contacts;
 
@@ -69,13 +69,20 @@ public class AdminContactController extends BaseController {
 
 
     @GetMapping("/response/{id}")
-    public String response(@PathVariable Long id, Model model){
-        // String userEmail = contactService.getContactById(id).getEmail();
+    public String response(@PathVariable Long id,
+                           Model model,
+                           RedirectAttributes redirectAttributes){
         Contact contact = contactService.getContactById(id);
+
+        if (contact.getStatus() != null && contact.getStatus() == ContactStatus.PROCESSED){
+            redirectAttributes.addFlashAttribute("message", "Liên hệ đã được xử lý!");
+            return "redirect:/dashboard/contact_management";
+        }
+
         // Update status to PROCESSING when responding
         if (contact.getStatus() == null || contact.getStatus() == ContactStatus.PENDING) {
             contact.setStatus(ContactStatus.PROCESSING);
-            contactService.saveContact(contact);
+            contactService.updateContact(contact);
         }
 
         String userEmail = contact.getEmail();
@@ -108,7 +115,7 @@ public class AdminContactController extends BaseController {
             }
 
             contact.setStatus(status);
-            contactService.saveContact(contact);
+            contactService.updateContact(contact);
 
             redirectAttributes.addFlashAttribute("success", "Đã cập nhật trạng thái liên hệ thành " + status.getLabel());
             return "redirect:/dashboard/contact_management";

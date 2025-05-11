@@ -144,13 +144,13 @@
                                     <th scope="col">Tác giả</th>
                                     <th scope="col" style="width: 7rem">Số lượng trong kho</th>
                                     <th scope="col">Giá gốc</th>
-                                    <th scope="col" style="width: 7rem">Số lượng đã bán</th>
-                                    <th scope="col">Giá bán</th>
-                                    <th scope="col" style="width: 12rem"></th>
+                                    <th scope="col" style="width: 5rem">Số lượng đã bán</th>
+                                    <th scope="col" style="width: 7rem">Giá bán</th>
+                                    <th scope="col" style="width: 10rem"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr th:if="${#lists.isEmpty(products)}">
+                                <tr th:if="${#lists.isEmpty(products.content)}">
                                     <td colspan="5" class="text-center">Không có sản phẩm nào</td>
                                 </tr>
                                 <tr class="text-center" th:each="product : ${products}">

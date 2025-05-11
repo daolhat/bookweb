@@ -9,49 +9,42 @@ public class CodeGenerator {
     private static final Random random = new Random();
     private static final String ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-
+    /**
+     * Generates a order code with format XXAA1111111111110022
+     * XX: 2 random letter
+     * AA: first 2 characters of user fullname
+     * 111111111111: date order
+     * 00: total quantity product of order
+     * Total length: 20 characters
+     */
     public static String generateOrderCode(String userName, LocalDateTime orderDateTime, int productCount) {
+        // Generate 2 random letter
         StringBuilder randomPrefix = new StringBuilder();
         for (int i = 0; i < 2; i++) {
             randomPrefix.append(ALPHA.charAt(random.nextInt(ALPHA.length())));
         }
+
+
         String userPrefix;
         if (userName == null || userName.length() < 2) {
             userPrefix = "XX";
         } else {
             userPrefix = userName.trim().substring(0, 2).toUpperCase();
         }
+
         String dateString = orderDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+
         String countString = String.format("%02d", Math.min(productCount, 99));
+
         int randomNum = random.nextInt(99);
+
         return randomPrefix.toString() + userPrefix + dateString + countString + String.format("%02d", randomNum);
     }
 
-
-//    /**
-//     * Generates a category code with format AB123
-//     * AB: first 2 characters of category name
-//     * 123: random 3-digit number
-//     * Total length: 5 characters
-//     */
-//    public static String generateCategoryCode(String categoryName) {
-//        if (categoryName == null || categoryName.isEmpty()) {
-//            return "XX" + String.format("%03d", random.nextInt(1000));
-//        }
-//
-//        // Get first 2 characters of category name, convert to uppercase
-//        String prefix = categoryName.trim().length() >= 2 ?
-//                categoryName.trim().substring(0, 2).toUpperCase() :
-//                categoryName.trim().toUpperCase() + "X";
-//
-//        int randomNum = random.nextInt(1000);
-//        return prefix + String.format("%03d", randomNum);
-//    }
-
     /**
-     * Generates a category code with format AB123
-     * AB: first 2 characters of category name
-     * 123: random 3-digit number
+     * Generates a category code with format AA111
+     * AA: first 2 characters of category name
+     * 111: random 3-digit number
      * Total length: 5 characters
      */
     public static String generateCategoryCode(String categoryName) {
@@ -81,10 +74,9 @@ public class CodeGenerator {
         return prefix + String.format("%03d", randomNum);
     }
 
-
     /**
-     * Generates a product code with format AB123000000B
-     * AB123: category code
+     * Generates a product code with format AA1111000000B
+     * AA111: category code
      * 000000: random 6-digit number
      * B: random letter
      * Total length: 12 characters
@@ -105,10 +97,10 @@ public class CodeGenerator {
     }
 
     /**
-     * Generates a user code with format 0000AB000000
-     * 00: registration month
-     * 00: last 2 digits of registration year
-     * AB: first 2 characters of user's name
+     * Generates a user code with format 1111AA000000
+     * 11: registration month
+     * 11: last 2 digits of registration year
+     * AA: first 2 characters of user's name
      * 000000: random 6-digit number
      * Total length: 12 characters
      */
@@ -129,7 +121,6 @@ public class CodeGenerator {
 
         // Generate random 6-digit number
         int randomNum = random.nextInt(1000000);
-
         return month + year + namePrefix + String.format("%06d", randomNum);
     }
 
