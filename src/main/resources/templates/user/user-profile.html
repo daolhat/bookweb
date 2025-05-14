@@ -30,9 +30,9 @@
                         <div class="card">
                             <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
                                 <img th:if="${user.avatar}" th:src="@{'/assets/img/user/' + ${user.avatar}}"
-                                     alt="Profile" class="mb-2" style="width: 140px;">
+                                     alt="Profile" class="mb-2" style="width: 150px; height: 150px;">
                                 <img th:unless="${user.avatar}" th:src="@{/assets/img/avatar-default.jpg}"
-                                     alt="Profile" class="mb-2" style="width: 140px;">
+                                     alt="Profile" class="mb-2" style="width: 150px; height: 150px;">
                                 <span th:text="${user.fullName}"></span>
                                 <span th:text="${user.phoneNumber}"></span>
                                 <span th:text="${user.email}"></span>

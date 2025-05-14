@@ -2,8 +2,10 @@ package com.programing.bookweb.controller;
 
 import com.programing.bookweb.entity.Order;
 import com.programing.bookweb.entity.OrderDetail;
+import com.programing.bookweb.entity.User;
 import com.programing.bookweb.service.IOrderDetailService;
 import com.programing.bookweb.service.IOrderService;
+import com.programing.bookweb.service.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +26,7 @@ public class OrderController extends BaseController{
 
     private final IOrderService orderService;
     private final IOrderDetailService orderDetailService;
+    private final IUserService userService;
 
     @GetMapping
     public String getAllOrders(@RequestParam(name = "page", defaultValue = "1") int page,
@@ -37,6 +40,9 @@ public class OrderController extends BaseController{
 
         Long countOrder = orderService.countOrderByUser(getCurrentUser());
         model.addAttribute("countOrder", countOrder);
+
+        User user = userService.getUserById(getCurrentUser().getId());
+        model.addAttribute("user", user);
 
         return "user/orders";
     }
@@ -52,6 +58,9 @@ public class OrderController extends BaseController{
         List<OrderDetail> orderDetails = orderDetailService.getAllOrderDetailByOrder(order);
         model.addAttribute("order", order);
         model.addAttribute("ordersDetails", orderDetails);
+
+        User user = userService.getUserById(getCurrentUser().getId());
+        model.addAttribute("user", user);
 
         return "user/order-detail";
     }

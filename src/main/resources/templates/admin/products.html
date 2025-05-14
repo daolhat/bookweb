@@ -143,7 +143,7 @@
                                     <th scope="col" style="width: 12rem">Thể loại</th>
                                     <th scope="col">Tác giả</th>
                                     <th scope="col" style="width: 7rem">Số lượng trong kho</th>
-                                    <th scope="col">Giá gốc</th>
+                                    <th scope="col" style="width: 7rem">Giá gốc</th>
                                     <th scope="col" style="width: 5rem">Số lượng đã bán</th>
                                     <th scope="col" style="width: 7rem">Giá bán</th>
                                     <th scope="col" style="width: 10rem"></th>
@@ -217,9 +217,9 @@
                             </table>
                         </div>
 
-
                         <div class="row g-3 mt-4">
-                            <nav aria-label="Page navigation" class="d-flex justify-content-center" th:if="${products.totalPages > 1}">
+                            <nav aria-label="Page navigation" class="d-flex justify-content-center"
+                                 th:if="${products.totalPages > 1}">
                                 <ul class="pagination">
                                     <li class="page-item" th:classappend="${pageNumber <= 1 ? 'disabled' : ''}">
                                         <a class="page-link"
@@ -228,13 +228,45 @@
                                             <span aria-hidden="true">&laquo;</span>
                                         </a>
                                     </li>
-                                    <li class="page-item" th:each="i : ${#numbers.sequence(1, products.totalPages)}"
+
+                                    <!-- First page -->
+                                    <li class="page-item" th:classappend="${pageNumber == 1 ? 'active' : ''}">
+                                        <a class="page-link"
+                                           th:href="@{/dashboard/contact_management(page=1, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                           th:text="1">1</a>
+                                    </li>
+
+                                    <!-- If current page > 3, show first ellipsis -->
+                                    <li class="page-item disabled" th:if="${pageNumber > 3}">
+                                        <span class="page-link">...</span>
+                                    </li>
+
+                                    <!-- Show page numbers around current page -->
+                                    <li class="page-item"
+                                        th:each="i : ${#numbers.sequence(pageNumber > 2 ? pageNumber - 1 : 2,
+                                                               pageNumber < products.totalPages - 1 ? pageNumber + 1 : products.totalPages - 1)}"
+                                        th:if="${i > 1 && i < products.totalPages}"
                                         th:classappend="${i == pageNumber ? 'active' : ''}">
                                         <a class="page-link"
                                            th:href="@{/dashboard/product_management(page=${i}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
-                                           th:text="${i}">1</a>
+                                           th:text="${i}"></a>
                                     </li>
-                                    <li class="page-item" th:classappend="${pageNumber >= products.totalPages ? 'disabled' : ''}">
+
+                                    <!-- If current page < totalPages-2, show second ellipsis -->
+                                    <li class="page-item disabled" th:if="${pageNumber < products.totalPages - 2}">
+                                        <span class="page-link">...</span>
+                                    </li>
+
+                                    <!-- Last page -->
+                                    <li class="page-item" th:if="${products.totalPages > 1}"
+                                        th:classappend="${pageNumber == products.totalPages ? 'active' : ''}">
+                                        <a class="page-link"
+                                           th:href="@{/dashboard/product_management(page=${products.totalPages}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                           th:text="${products.totalPages}"></a>
+                                    </li>
+
+                                    <li class="page-item"
+                                        th:classappend="${pageNumber >= products.totalPages ? 'disabled' : ''}">
                                         <a class="page-link"
                                            th:href="@{/dashboard/product_management(page=${pageNumber + 1}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
                                            aria-label="Next">

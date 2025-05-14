@@ -4,6 +4,7 @@ import com.programing.bookweb.entity.Contact;
 import com.programing.bookweb.entity.User;
 import com.programing.bookweb.enums.ContactStatus;
 import com.programing.bookweb.service.IContactService;
+import com.programing.bookweb.service.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,10 +19,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/contact")
 public class ContactController extends BaseController{
 
-    private IContactService contactService;
+    private final IContactService contactService;
+    private final IUserService userService;
 
     @GetMapping
     public String getContactPage(Model model){
+
+        User user = userService.getUserById(getCurrentUser().getId());
+        model.addAttribute("user", user);
+
         model.addAttribute("contact", new Contact());
         return "user/contact";
     }

@@ -144,35 +144,6 @@
                     </table>
                 </div>
 
-<!--                <div class="row g-3 mt-4">-->
-<!--                    <nav aria-label="Page navigation" class="d-flex justify-content-center"-->
-<!--                         th:if="${contacts.totalPages > 1}">-->
-<!--                        <ul class="pagination">-->
-<!--                            <li class="page-item" th:classappend="${pageNumber <= 1 ? 'disabled' : ''}">-->
-<!--                                <a class="page-link"-->
-<!--                                   th:href="@{/dashboard/contact_management(page=${pageNumber - 1}, status=${selectedStatus})}"-->
-<!--                                   aria-label="Previous">-->
-<!--                                    <span aria-hidden="true">&laquo;</span>-->
-<!--                                </a>-->
-<!--                            </li>-->
-<!--                            <li class="page-item" th:each="i : ${#numbers.sequence(1, contacts.totalPages)}"-->
-<!--                                th:classappend="${i == pageNumber ? 'active' : ''}">-->
-<!--                                <a class="page-link"-->
-<!--                                   th:href="@{/dashboard/contact_management(page=${i}, status=${selectedStatus})}"-->
-<!--                                   th:text="${i}">1</a>-->
-<!--                            </li>-->
-<!--                            <li class="page-item"-->
-<!--                                th:classappend="${pageNumber >= contacts.totalPages ? 'disabled' : ''}">-->
-<!--                                <a class="page-link"-->
-<!--                                   th:href="@{/dashboard/contact_management(page=${pageNumber + 1}, status=${selectedStatus})}"-->
-<!--                                   aria-label="Next">-->
-<!--                                    <span aria-hidden="true">&raquo;</span>-->
-<!--                                </a>-->
-<!--                            </li>-->
-<!--                        </ul>-->
-<!--                    </nav>-->
-<!--                </div>-->
-
                 <div class="row g-3 mt-4">
                     <nav aria-label="Page navigation" class="d-flex justify-content-center"
                          th:if="${contacts.totalPages > 1}">

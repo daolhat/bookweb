@@ -38,13 +38,13 @@
                     <li class="nav-item">
                         <div class="card">
                             <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-                                <img th:if="${currentUser.avatar}" th:src="@{'/assets/img/user/' + ${currentUser.avatar}}"
-                                     alt="Profile" class="mb-2" style="width: 140px;">
-                                <img th:unless="${currentUser.avatar}" th:src="@{/assets/img/avatar-default.jpg}" alt="Profile"
-                                     class="mb-2" style="width: 140px;">
-                                <span th:text="${currentUser.fullName}"></span>
-                                <span th:text="${currentUser.phoneNumber}">Số điện thoại</span>
-                                <span th:text="${currentUser.email}">Email</span>
+                                <img th:if="${user.avatar}" th:src="@{'/assets/img/user/' + ${user.avatar}}"
+                                     alt="Profile" class="mb-2" style="width: 150px; height: 150px;">
+                                <img th:unless="${user.avatar}" th:src="@{/assets/img/avatar-default.jpg}" alt="Profile"
+                                     class="mb-2" style="width: 150px; height: 150px;">
+                                <span th:text="${user.fullName}"></span>
+                                <span th:text="${user.phoneNumber}"></span>
+                                <span th:text="${user.email}"></span>
                             </div>
                         </div>
                     </li>
@@ -158,7 +158,8 @@
 
                     <!-- Phân trang -->
                     <div class="row g-3 mt-4">
-                        <nav aria-label="Page navigation" class="d-flex justify-content-center" th:if="${orders.totalPages > 1}">
+                        <nav aria-label="Page navigation" class="d-flex justify-content-center"
+                             th:if="${orders.totalPages > 1}">
                             <ul class="pagination">
                                 <li class="page-item" th:classappend="${pageNumber <= 1 ? 'disabled' : ''}">
                                     <a class="page-link"
@@ -167,13 +168,45 @@
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 </li>
-                                <li class="page-item" th:each="i : ${#numbers.sequence(1, orders.totalPages)}"
+
+                                <!-- First page -->
+                                <li class="page-item" th:classappend="${pageNumber == 1 ? 'active' : ''}">
+                                    <a class="page-link"
+                                       th:href="@{/order(page=1)}"
+                                       th:text="1">1</a>
+                                </li>
+
+                                <!-- If current page > 3, show first ellipsis -->
+                                <li class="page-item disabled" th:if="${pageNumber > 3}">
+                                    <span class="page-link">...</span>
+                                </li>
+
+                                <!-- Show page numbers around current page -->
+                                <li class="page-item"
+                                    th:each="i : ${#numbers.sequence(pageNumber > 2 ? pageNumber - 1 : 2,
+                                                               pageNumber < orders.totalPages - 1 ? pageNumber + 1 : orders.totalPages - 1)}"
+                                    th:if="${i > 1 && i < orders.totalPages}"
                                     th:classappend="${i == pageNumber ? 'active' : ''}">
                                     <a class="page-link"
-                                       th:href="@{order(page=${i})}"
-                                       th:text="${i}">1</a>
+                                       th:href="@{/order(page=${i})}"
+                                       th:text="${i}"></a>
                                 </li>
-                                <li class="page-item" th:classappend="${pageNumber >= orders.totalPages ? 'disabled' : ''}">
+
+                                <!-- If current page < totalPages-2, show second ellipsis -->
+                                <li class="page-item disabled" th:if="${pageNumber < orders.totalPages - 2}">
+                                    <span class="page-link">...</span>
+                                </li>
+
+                                <!-- Last page -->
+                                <li class="page-item" th:if="${orders.totalPages > 1}"
+                                    th:classappend="${pageNumber == orders.totalPages ? 'active' : ''}">
+                                    <a class="page-link"
+                                       th:href="@{/order(page=${orders.totalPages})}"
+                                       th:text="${orders.totalPages}"></a>
+                                </li>
+
+                                <li class="page-item"
+                                    th:classappend="${pageNumber >= orders.totalPages ? 'disabled' : ''}">
                                     <a class="page-link"
                                        th:href="@{/order(page=${pageNumber + 1})}"
                                        aria-label="Next">

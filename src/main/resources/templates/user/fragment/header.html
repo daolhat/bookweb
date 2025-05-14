@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-        xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6" lang="en">
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6" lang="en">
 
 <!-- ======= Header ======= -->
 <header class="bg-white text-white text-center">
@@ -28,12 +28,6 @@
                            id="categoryMenu" role="button" data-bs-toggle="dropdown">
                             Thể loại
                         </a>
-<!--                        <ul class="dropdown-menu">-->
-<!--                            <li th:each="category : ${categories}">-->
-<!--                                <a th:href="@{/shop(page=${pageNumber}, keyword=${keyword}, categoryId=${category.id}, layout=${selectedLayout}, sort=${selectedSort})}"-->
-<!--                                   class="dropdown-item" th:text="${category.name}"></a>-->
-<!--                            </li>-->
-<!--                        </ul>-->
                         <ul class="dropdown-menu dropdown-menu-category">
                             <div class="row" style="min-width: 500px;">
                                 <th:block th:with="categoriesCount=${#lists.size(categories)}">

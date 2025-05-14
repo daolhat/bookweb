@@ -28,8 +28,7 @@ public class AdminContactController extends BaseController {
     public String showContactPageManagement(@RequestParam(name = "page", defaultValue = "1") int page,
                                             @RequestParam(name = "status", required = false) String statusParam,
                                             Model model){
-        Pageable pageable = PageRequest.of(page - 1, 1);
-        // Page<Contact> contacts = contactService.getAllContactPage(pageable);
+        Pageable pageable = PageRequest.of(page - 1, 10);
         Page<Contact> contacts;
 
         String statusTemp = (statusParam != null && !statusParam.trim().isEmpty()) ? statusParam.trim() : null;
@@ -37,20 +36,17 @@ public class AdminContactController extends BaseController {
         if (statusTemp != null) {
             status = ContactStatus.valueOf(statusTemp);
         }
-
         try {
             if (status != null) {
                 contacts = contactService.getContactsByStatus(status, pageable);
             } else {
                 contacts = contactService.getAllContactPage(pageable);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             contacts = contactService.getAllContactPage(pageable);
             model.addAttribute("error", "Có lỗi xảy ra khi tải danh sách đơn hàng: " + e.getMessage());
         }
-
         model.addAttribute("contacts", contacts);
         model.addAttribute("totalPages", contacts.getTotalPages());
         model.addAttribute("pageNumber", page);
@@ -90,6 +86,7 @@ public class AdminContactController extends BaseController {
         email.setTo(userEmail);
         model.addAttribute("newEmail", email);
         model.addAttribute("uid", id);
+        model.addAttribute("contact", contact);
         return "admin/contacts-response";
     }
 

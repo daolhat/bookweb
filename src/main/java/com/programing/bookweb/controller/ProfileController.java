@@ -57,6 +57,9 @@ public class ProfileController extends BaseController{
 
     @GetMapping("/change-password")
     public String showChangePasswordForm(Model model) {
+
+        User user = userService.getUserById(getCurrentUser().getId());
+        model.addAttribute("user", user);
         return "user/change-password";
     }
 

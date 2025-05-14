@@ -146,7 +146,7 @@ public class CartController extends BaseController{
         model.addAttribute("cart", cart);
         double totalCart = cart.totalPrice();
         model.addAttribute("totalCart", totalCart);
-        // User curUser = getCurrentUser();
+
         UserOrder orderPerson = new UserOrder();
         orderPerson.setFullName(curUser.getFullName());
         orderPerson.setEmail(curUser.getEmail());
