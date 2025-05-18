@@ -37,7 +37,7 @@
                             <h5>Chi tiết đơn hàng:</h5>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Mã đơn hàng:</span>
-                                <span class="fw-bold" th:text="${'#' + orderId}"></span>
+                                <span class="fw-bold" th:text="${'#' + orderCode}"></span>
                             </div>
                             <div th:if="${totalAmount != null}" class="d-flex justify-content-between mb-2">
                                 <span>Tổng tiền đơn hàng:</span>
@@ -67,7 +67,7 @@
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                            <a th:href="@{'/order/' + ${orderId}}" class="btn btn-sm btn-primary px-4 py-2" style="min-width: 130px;">Xem chi tiết đơn hàng</a>
+                            <a th:href="@{/order/{id}(id=${orderId})}" class="btn btn-sm btn-primary px-4 py-2" style="min-width: 130px;">Xem chi tiết đơn hàng</a>
                             <a th:href="@{/shop}" class="btn btn-sm btn-outline-secondary px-4 py-2" style="min-width: 130px;">Quay về trang chủ</a>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                             <i class="bi bi-x-circle text-danger" style="font-size: 5rem;"></i>
                         </div>
                         <h2 class="fw-bold mb-3">Đặt hàng thất bại</h2>
-                        <p class="text-muted mb-4" th:text="${errorMessage != null ? errorMessage : 'Đã xảy ra lỗi trong quá trình tạo đơn hàng.'}">Đã xảy ra lỗi trong quá trình tạo đơn hàng.</p>
+                        <p class="text-muted mb-4" th:text="${errorMessage != null ? errorMessage : 'Đã xảy ra lỗi trong quá trình tạo đơn hàng.'}"></p>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                             <a th:href="@{/cart}" class="btn btn-sm btn-outline-secondary px-4 py-2" style="min-width: 130px;">Quay lại giỏ hàng</a>

@@ -34,7 +34,7 @@ import java.util.List;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/cart")
-public class CartController extends BaseController{
+public class CartController extends BaseController {
 
     private final ICartService cartService;
     private final IProductService productService;
@@ -55,13 +55,12 @@ public class CartController extends BaseController{
 
 
     @PostMapping("/add-to-cart")
-    public ResponseEntity<String> addToCart(@RequestBody ProductRequest request) {
-        // Kiểm tra người dùng đã đăng nhập chưa
+    public ResponseEntity<String> addToCart(@RequestBody ProductRequest request,
+                                            RedirectAttributes redirectAttributes) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
         }
-
         try {
             long productId = request.getProductId();
             int quantity = request.getQuantity();
@@ -74,7 +73,7 @@ public class CartController extends BaseController{
             addedItem.setAuthor(existingBook.getAuthor());
 
             double discountRate = existingBook.getDiscount() / 100.0;
-            double salePrice = existingBook.getPrice() * ( 1 - discountRate);
+            double salePrice = existingBook.getPrice() * (1 - discountRate);
 
             addedItem.setPrice(existingBook.getPrice());
             addedItem.setSalePrice(salePrice);
@@ -91,7 +90,6 @@ public class CartController extends BaseController{
     @PostMapping("/update-cart-item")
     @ResponseBody
     public ResponseEntity<String> updateCartItem(@RequestParam Long productId, @RequestParam int quantity) {
-        // Kiểm tra người dùng đã đăng nhập chưa
         User currentUser = getCurrentUser();
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Vui lòng đăng nhập để cập nhật giỏ hàng");
@@ -101,13 +99,13 @@ public class CartController extends BaseController{
     }
 
 
-    @GetMapping("/remove-cart-item/{productId}")
-    public String removeCartItem(@PathVariable Long productId) {
+    @GetMapping("/remove-cart-item/{id}")
+    public String removeCartItem(@PathVariable Long id) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
             return "redirect:/login";
         }
-        cartService.removeProductFromCart(session, productId);
+        cartService.removeProductFromCart(session, id);
         return "redirect:/cart";
     }
 
@@ -125,10 +123,8 @@ public class CartController extends BaseController{
 
     @GetMapping("/checkout")
     public String getCheckOut(Model model, RedirectAttributes redirectAttributes) {
-        // Kiểm tra người dùng đã đăng nhập chưa
         User curUser = getCurrentUser();
         if (curUser == null) {
-            // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
             redirectAttributes.addFlashAttribute("checkoutRedirect", true);
             return "redirect:/login";
         }
@@ -136,9 +132,9 @@ public class CartController extends BaseController{
         if (cart.getCartItems().isEmpty()) {
             return "redirect:/cart?error=empty_cart";
         }
-        for (CartItemDTO itemDTO : cart.getCartItems()){
+        for (CartItemDTO itemDTO : cart.getCartItems()) {
             Product product = productService.getProductById(itemDTO.getProductId());
-            if(itemDTO.getQuantity() > product.getQuantity()){
+            if (itemDTO.getQuantity() > product.getQuantity()) {
                 redirectAttributes.addAttribute("error", "Vượt quá số lượng trong kho");
                 return "redirect:/cart?error=insufficient_quantity&productId=" + itemDTO.getProductId();
             }
@@ -169,7 +165,8 @@ public class CartController extends BaseController{
             User currentUser = getCurrentUser();
             if (selectedPaymentMethod == PaymentMethod.COD) {
                 try {
-                    Order order = orderService.createOrder(currentUser, cartService.getCart(session), userOrder, selectedPaymentMethod);
+                    Order order = orderService.createOrder(currentUser, cartService.getCart(session), userOrder, selectedPaymentMethod, PaymentStatus.UNPAID);
+                    session.setAttribute("orderResult", order);
                     cartService.clearCart(session);
                     return "redirect:/cart/checkout/order-result?success=true&orderId=" + order.getId();
                 } catch (Exception e) {
@@ -180,17 +177,16 @@ public class CartController extends BaseController{
                 try {
                     session.setAttribute("pendingOrder", userOrder);
                     session.setAttribute("paymentMethod", selectedPaymentMethod);
+                    session.setAttribute("payment", paymentMethod);
                     CartDTO cart = cartService.getCart(session);
                     int amount = (int) cart.totalPrice();
 
-                    Order order = orderService.createOrder(currentUser, cartService.getCart(session), userOrder, selectedPaymentMethod);
+                    String c = cart.toString();
 
                     String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-                    String orderInfo = "Thanh toan don hang #" + order.getId();
+                    String orderInfo = "Thanh toan don hang #" + c;
                     String vnpayUrl = vnPayService.createOrder(amount, orderInfo, baseUrl);
-                    System.out.println("vnpayUrl: " + vnpayUrl);
 
-                    cartService.clearCart(session);
                     return "redirect:" + vnpayUrl;
                 } catch (Exception e) {
                     session.setAttribute("vnPayErrorMessage", e.getMessage());
@@ -210,72 +206,34 @@ public class CartController extends BaseController{
     }
 
     @GetMapping("/checkout/vnpay-payment")
-    public String vnpayPaymentCallback(HttpServletRequest request, Model model){
+    public String vnpayPaymentCallback(HttpServletRequest request, Model model) {
         int paymentStatus = vnPayService.orderReturn(request);
 
-        String orderInfo = request.getParameter("vnp_OrderInfo");
         String paymentTime = request.getParameter("vnp_PayDate");
         String transactionId = request.getParameter("vnp_TransactionNo");
-        String totalPrice = request.getParameter("vnp_Amount");
 
-        // Get the most recent order for the current user
         User currentUser = getCurrentUser();
         if (currentUser != null) {
             try {
-                // Find the user's most recent order
-                Pageable pageable = PageRequest.of(0, 1);
-                Page<Order> userOrders = orderService.getAllOrdersByUserPage(currentUser, pageable);
+                if (paymentStatus == 1) {
+                    String paymentMethod = (String) session.getAttribute("payment");
+                    PaymentMethod selectedPaymentMethod = PaymentMethod.valueOf(paymentMethod);
+                    UserOrder userOrder = (UserOrder) session.getAttribute("pendingOrder");
+                    Order order = orderService.createOrder(currentUser, cartService.getCart(session), userOrder, selectedPaymentMethod, PaymentStatus.PAID);
 
-                if (!userOrders.isEmpty()) {
-                    Order recentOrder = userOrders.getContent().get(0);
-                    Long orderId = recentOrder.getId();
+                    session.removeAttribute("payment");
+                    session.removeAttribute("pendingOrder");
+                    session.removeAttribute("paymentMethod");
 
-                    if (paymentStatus == 1) {
-                        // Payment successful - update order payment status
-                        recentOrder.setPaymentStatus(PaymentStatus.PAID);
-                        orderRepository.save(recentOrder);
+                    session.setAttribute("vnpayTransactionId", transactionId);
+                    session.setAttribute("vnpayPaymentTime", paymentTime);
+                    session.setAttribute("orderResult", order);
 
-                        // Store VNPAY transaction details in session for display
-                        session.setAttribute("vnpayTransactionId", transactionId);
-                        session.setAttribute("vnpayPaymentTime", paymentTime);
-
-                        return "redirect:/cart/checkout/order-result?success=true&orderId=" + orderId;
-                    } else {
-                        // Payment failed
-                        List<CartItemDTO> cartItemsToRestore = new ArrayList<>();
-                        // Get order details to restore cart items
-                        recentOrder.getOrderDetails().forEach(orderDetail -> {
-                            CartItemDTO item = new CartItemDTO();
-                            Product product = orderDetail.getProduct();
-
-                            item.setProductId(product.getId());
-                            item.setQuantity(orderDetail.getQuantity());
-                            item.setTitle(product.getTitle());
-                            item.setAuthor(product.getAuthor());
-                            item.setPrice(product.getPrice());
-                            double discountRate = product.getDiscount() / 100.0;
-                            double salePrice = product.getPrice() * (1 - discountRate);
-                            item.setSalePrice(salePrice);
-                            item.setImageProduct(product.getImageProduct());
-
-                            cartItemsToRestore.add(item);
-                        });
-                        // Delete the order
-                        try {
-                            orderService.deleteOrder(recentOrder);
-                        } catch (Exception e) {
-                            System.out.println("Failed to delete order: " + e.getMessage());
-                        }
-                        // Restore cart items
-                        CartDTO restoredCart = new CartDTO();
-                        restoredCart.setCartItems(cartItemsToRestore);
-                        session.setAttribute("cart", restoredCart);
-                        session.setAttribute("orderErrorMessage", "Thanh toán không thành công. Mã giao dịch: " +
-                                (transactionId != null ? transactionId : "N/A"));
-                        return "redirect:/cart/checkout/order-result?success=false";
-                    }
+                    cartService.clearCart(session);
+                    return "redirect:/cart/checkout/order-result?success=true&orderId=" + order.getId();
                 } else {
-                    session.setAttribute("orderErrorMessage", "Không tìm thấy thông tin đơn hàng gần đây");
+                    session.setAttribute("orderErrorMessage", "Thanh toán không thành công. Mã giao dịch: " +
+                            (transactionId != null ? transactionId : "N/A"));
                     return "redirect:/cart/checkout/order-result?success=false";
                 }
             } catch (Exception e) {
@@ -297,7 +255,8 @@ public class CartController extends BaseController{
         if (isSuccess && orderId != null) {
             try {
                 Order order = orderService.getOrderById(orderId);
-                model.addAttribute("orderId", order.getCode());
+                model.addAttribute("orderCode", order.getCode());
+                model.addAttribute("orderId", order.getId());
                 model.addAttribute("totalAmount", order.getTotalPrice());
                 model.addAttribute("paymentMethod", order.getPaymentMethod());
                 // Transfer VNPAY transaction details from session to model if they exist
@@ -309,6 +268,7 @@ public class CartController extends BaseController{
                     session.removeAttribute("vnpayTransactionId");
                     session.removeAttribute("vnpayPaymentTime");
                 }
+                //cartService.clearCart(session);
             } catch (Exception e) {
                 model.addAttribute("isSuccess", false);
                 model.addAttribute("errorMessage", "Không tìm thấy thông tin đơn hàng");
@@ -317,6 +277,13 @@ public class CartController extends BaseController{
             String errorMessage = (String) session.getAttribute("orderErrorMessage");
             model.addAttribute("errorMessage", errorMessage);
             session.removeAttribute("orderErrorMessage");
+//            try {
+//                Order order = (Order) session.getAttribute("orderResult");
+//                orderService.deleteOrder(order);
+//            } catch (Exception e) {
+//                System.out.println("Failed to delete order: " + e.getMessage());
+//            }
+//            session.removeAttribute("orderResult");
         }
         return "user/order-result";
     }

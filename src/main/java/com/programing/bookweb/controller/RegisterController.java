@@ -57,16 +57,13 @@ public class RegisterController extends BaseController{
             boolean isRegistered = userService.registerUser(user);
             if (isRegistered) {
                 redirectAttributes.addFlashAttribute("success", "Đăng ký thành công!");
-
                 return "redirect:/login";
             } else {
                 model.addAttribute("error", "Đã có lỗi xảy ra trong quá trình đăng ký.");
-
                 return "user/register";
             }
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
-
             return "user/register";
         }
     }

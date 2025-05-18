@@ -14,18 +14,14 @@ public class CartServiceImpl implements ICartService {
 
     @Override
     public void addProductToCart(HttpSession session, CartItemDTO cartItem) {
-
         if (cartItem.getQuantity() <= 0){
             throw new IllegalArgumentException("Số lượng không hợp lệ");
         }
-
         CartDTO cart = getCart(session);
         List<CartItemDTO> cartItems = cart.getCartItems();
-
         Optional<CartItemDTO> existingItem = cartItems.stream()
                 .filter(item -> item.getProductId().equals(cartItem.getProductId()))
                 .findFirst();
-
         if (existingItem.isPresent()){
             CartItemDTO item = existingItem.get();
             item.setQuantity(item.getQuantity() + cartItem.getQuantity());
@@ -40,14 +36,11 @@ public class CartServiceImpl implements ICartService {
         if (quantity < 0){
             throw new IllegalArgumentException("Số lượng không phù hợp");
         }
-
         CartDTO cart = getCart(session);
         List<CartItemDTO> cartItems = cart.getCartItems();
-
         Optional<CartItemDTO> existingItem = cartItems.stream()
                 .filter(item -> item.getProductId().equals(productId))
                 .findFirst();
-
         existingItem.ifPresent(item -> {
             if (quantity == 0){
                 cartItems.remove(item);
@@ -55,7 +48,6 @@ public class CartServiceImpl implements ICartService {
                 item.setQuantity(quantity);
             }
         });
-
         session.setAttribute("cart", cart);
     }
 

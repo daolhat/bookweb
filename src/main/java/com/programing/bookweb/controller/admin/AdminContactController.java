@@ -23,7 +23,6 @@ public class AdminContactController extends BaseController {
     private final IContactService contactService;
     private final IEmailService emailService;
 
-
     @GetMapping
     public String showContactPageManagement(@RequestParam(name = "page", defaultValue = "1") int page,
                                             @RequestParam(name = "status", required = false) String statusParam,
@@ -75,7 +74,6 @@ public class AdminContactController extends BaseController {
             return "redirect:/dashboard/contact_management";
         }
 
-        // Update status to PROCESSING when responding
         if (contact.getStatus() == null || contact.getStatus() == ContactStatus.PENDING) {
             contact.setStatus(ContactStatus.PROCESSING);
             contactService.updateContact(contact);

@@ -35,7 +35,6 @@ public class ProfileController extends BaseController{
             @RequestParam(value = "avatar", required = false) MultipartFile avatar,
             RedirectAttributes redirectAttributes) {
 
-        // Lấy thông tin người dùng hiện tại từ DB
         User existingUser = userService.getUserById(user.getId());
         if (existingUser == null) {
             redirectAttributes.addFlashAttribute("error", "Người dùng không tồn tại!");

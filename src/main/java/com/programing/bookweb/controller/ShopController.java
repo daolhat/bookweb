@@ -39,7 +39,6 @@ public class ShopController extends BaseController{
         log.info("Filter parameters: keyword={}, categoryId={}, layout={}, sort={}, page={}",
                 keyword, categoryId, layout, sortBy, page);
 
-        // Xử lý keyword trước khi tìm kiếm
         String normalizedKeyword = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : null;
 
         Pageable pageable;
@@ -64,7 +63,6 @@ public class ShopController extends BaseController{
         Page<Product> products;
 
         try {
-            // Áp dụng các bộ lọc theo trường hợp
             if (normalizedKeyword != null && categoryId != null && layout != null) {
                 // Lọc theo cả 3 tiêu chí: từ khóa + danh mục + hình thức bìa
                 products = productService.getProductByCategoryIdAndKeywordAndLayoutUser(categoryId, normalizedKeyword, layout, pageable);
@@ -102,7 +100,6 @@ public class ShopController extends BaseController{
             log.info("Query returned {} products", products.getContent().size());
         } catch (Exception e) {
             log.error("Error fetching products: ", e);
-            // Fallback to all products if there's an error
             products = productService.getAllProducts(pageable);
         }
         

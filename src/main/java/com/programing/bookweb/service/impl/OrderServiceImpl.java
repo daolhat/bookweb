@@ -170,7 +170,7 @@ public class OrderServiceImpl implements IOrderService {
 
     @Transactional
     @Override
-    public Order createOrder(User user, CartDTO cart, UserOrder userOrder, PaymentMethod paymentMethod) {
+    public Order createOrder(User user, CartDTO cart, UserOrder userOrder, PaymentMethod paymentMethod, PaymentStatus paymentStatus) {
         if (cart == null || cart.getCartItems().isEmpty()) {
             throw new IllegalArgumentException("Giỏ hàng không được rỗng hoặc null");
         }
@@ -227,7 +227,7 @@ public class OrderServiceImpl implements IOrderService {
             product.setQuantity(product.getQuantity() - cartItem.getQuantity());
             productsToUpdate.add(product);
         }
-        order.setPaymentStatus(PaymentStatus.UNPAID);
+        order.setPaymentStatus(paymentStatus);
         order.setOrderDetails(orderDetails);
         Order savedOrder = orderRepository.save(order);
         productRepository.saveAll(productsToUpdate);

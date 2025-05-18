@@ -102,7 +102,7 @@
                     <div class="card mb-3" th:each="order : ${orders}" th:if="${!#lists.isEmpty(orders)}">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center p-3">
                             <div>
-                                <span class="fw-bold">Đơn hàng <span th:text="${order.code}"></span></span>
+                                <span class="fw-bold">Đơn hàng: <span th:text="'#' + ${order.code}"></span></span>
                                 <span class="mx-2">|</span>
                                 <span class="text-muted" th:text="${#temporals.format(order.createdAt, 'HH:mm dd/MM/yyyy')}"></span>
                             </div>
@@ -139,17 +139,38 @@
                                         <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
                                     </p>
                                     <div>
-                                        <a class="btn btn-outline-primary btn-sm" th:href="@{'/order/' + ${order.id}}">
+                                        <a class="btn btn-outline-primary btn-sm" th:href="@{/order/{id}=${order.id})}">
                                             Xem chi tiết
                                         </a>
 
                                         <!-- Nút hủy đơn hàng - chỉ hiển thị khi đơn hàng đang ở trạng thái PENDING hoặc PROCESSING -->
                                         <a th:if="${order.status.name() == 'PENDING' || order.status.name() == 'PROCESSING'}"
-                                           th:href="@{'/order/cancel/' + ${order.id}}"
-                                           class="btn btn-outline-danger btn-sm ms-1"
-                                           onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
-                                            Hủy
+                                           data-bs-toggle="modal" th:data-bs-target="'#deleteModal' + ${order.id}"
+                                           class="btn btn-outline-danger btn-sm ms-1">
+                                            Hủy đơn hàng
                                         </a>
+
+                                        <!-- Modal Xác nhận huỷ -->
+                                        <div class="modal fade" th:id="'deleteModal' + ${order.id}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Xác nhận xóa</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body text-start">
+                                                        <p>Bạn có chắc chắn muốn huỷ đơn hàng <strong th:text="${order.code}"></strong>?</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                        <a th:href="@{/order/cancel/{id}(id=${order.id})}" class="btn btn-danger">
+                                                            Xóa
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>

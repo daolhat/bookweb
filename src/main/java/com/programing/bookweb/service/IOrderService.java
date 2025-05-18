@@ -6,6 +6,7 @@ import com.programing.bookweb.entity.Order;
 import com.programing.bookweb.entity.User;
 import com.programing.bookweb.enums.OrderStatus;
 import com.programing.bookweb.enums.PaymentMethod;
+import com.programing.bookweb.enums.PaymentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -21,7 +22,7 @@ public interface IOrderService {
 
     Order getOrderById(Long orderId);
 
-    Order createOrder(User user, CartDTO cart, UserOrder userOrder, PaymentMethod paymentMethod);
+    Order createOrder(User user, CartDTO cart, UserOrder userOrder, PaymentMethod paymentMethod, PaymentStatus paymentStatus);
 
     void deleteOrder(Order order);
 

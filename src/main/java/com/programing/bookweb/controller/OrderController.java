@@ -50,7 +50,6 @@ public class OrderController extends BaseController{
     @GetMapping("{id}")
     public String details(Model model, @PathVariable Long id) {
         Order order = orderService.getOrderById(id);
-
         if (order == null) {
             return "redirect:/order?error=order_not_found";
         }
@@ -66,17 +65,18 @@ public class OrderController extends BaseController{
     }
 
     @GetMapping("cancel/{id}")
-    public String cancel(@PathVariable Long id){
+    public String cancel(@PathVariable Long id, Model model){
         Order order = orderService.getOrderById(id);
-
         if (order == null) {
             return "redirect:/order?error=order_not_found";
         }
 
         try {
             orderService.cancelOrder(order);
+            model.addAttribute("message", "Huỷ đơn hàng thành công!");
             return "redirect:/order/" + id + "?success=order_cancelled";
         } catch (IllegalStateException e) {
+            model.addAttribute("message", "Huỷ đơn hàng không thành công!");
             return "redirect:/order/" + id + "?error=" + e.getMessage();
         }
     }

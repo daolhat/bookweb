@@ -114,32 +114,6 @@
 
                     </div>
 
-<!--                    <div class="row g-3 mt-4">-->
-<!--                        <nav aria-label="Page navigation" class="d-flex justify-content-center" th:if="${products.totalPages > 1}">-->
-<!--                            <ul class="pagination">-->
-<!--                                <li class="page-item" th:classappend="${pageNumber <= 1 ? 'disabled' : ''}">-->
-<!--                                    <a class="page-link"-->
-<!--                                       th:href="@{/shop(page=${pageNumber - 1}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"-->
-<!--                                       aria-label="Previous">-->
-<!--                                        <span aria-hidden="true">&laquo;</span>-->
-<!--                                    </a>-->
-<!--                                </li>-->
-<!--                                <li class="page-item" th:each="i : ${#numbers.sequence(1, products.totalPages)}"-->
-<!--                                    th:classappend="${i == pageNumber ? 'active' : ''}">-->
-<!--                                    <a class="page-link"-->
-<!--                                       th:href="@{/shop(page=${i}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"-->
-<!--                                       th:text="${i}">1</a>-->
-<!--                                </li>-->
-<!--                                <li class="page-item" th:classappend="${pageNumber >= products.totalPages ? 'disabled' : ''}">-->
-<!--                                    <a class="page-link"-->
-<!--                                       th:href="@{/shop(page=${pageNumber + 1}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"-->
-<!--                                       aria-label="Next">-->
-<!--                                        <span aria-hidden="true">&raquo;</span>-->
-<!--                                    </a>-->
-<!--                                </li>-->
-<!--                            </ul>-->
-<!--                        </nav>-->
-<!--                    </div>-->
 
                     <div class="row g-3 mt-4">
                         <nav aria-label="Page navigation" class="d-flex justify-content-center"
