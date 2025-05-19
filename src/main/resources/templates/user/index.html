@@ -116,6 +116,33 @@
         </div>
     </div>
 
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <!-- Success Toast -->
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="bi bi-check-circle me-2"></i>
+                <strong class="me-auto">Thông báo</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="successToastBody">
+                Đã thêm sản phẩm vào giỏ hàng!
+            </div>
+        </div>
+
+        <!-- Error Toast -->
+        <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-warning text-white">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong class="me-auto">Lỗi</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="errorToastBody">
+                Bạn cần đăng nhập trước
+            </div>
+        </div>
+    </div>
+
     <!-- ======= Footer ======= -->
     <footer th:replace="user/fragment/footer :: footer"></footer>
 
@@ -137,6 +164,18 @@
     document.addEventListener("DOMContentLoaded", function () {
         const addToCartBtns = document.querySelectorAll(".addToCartBtn");
 
+        // Function to show toast
+        function showToast(type, message) {
+            const toastElement = document.getElementById(type + 'Toast');
+            const toastBody = document.getElementById(type + 'ToastBody');
+            toastBody.textContent = message;
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+            setTimeout(() => {
+                toast.hide();
+            }, 2000);
+        }
+
         // Thêm vào giỏ hàng
         addToCartBtns.forEach(function(btn) {
             btn.addEventListener("click", function () {
@@ -157,19 +196,21 @@
                     if (response.ok) {
                         return response.text();
                     }
-                    throw new Error("Có lỗi xảy ra khi thêm vào giỏ hàng");
+                    showToast('error', 'Có lỗi xảy ra khi thêm vào giỏ hàng');
+                    return Promise.reject();
                 })
                 .then(data => {
                     if (data === "ok") {
-                        alert("Đã thêm sản phẩm vào giỏ hàng!");
+                        showToast('success', 'Đã thêm sản phẩm vào giỏ hàng!');
                     } else {
-                        alert("Bạn cần đăng nhập trước");
-                        window.location.href = "/login";
+                        showToast('error', 'Bạn cần đăng nhập trước');
+                        setTimeout(() => {
+                            window.location.href = "/login";
+                        }, 2000);
                     }
                 })
                 .catch(error => {
-                    console.error("Error:", error);
-                    alert(error.message);
+                    showToast('error', error.message);
                 });
             });
         });

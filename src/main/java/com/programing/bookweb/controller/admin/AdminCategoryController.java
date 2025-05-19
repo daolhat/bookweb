@@ -51,7 +51,7 @@ public class AdminCategoryController extends BaseController {
         }
         categoryService.addCategory(category);
         redirectAttributes.addFlashAttribute("success", "Category added successfully");
-        return "redirect:/dashboard/category_management";
+        return "redirect:/dashboard/category_management/add";
     }
 
 

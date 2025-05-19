@@ -185,7 +185,7 @@ public class AdminProductController extends BaseController {
             // Thêm sản phẩm
             productService.addProduct(product, imageProduct);
             redirectAttributes.addFlashAttribute("success", "Thêm thành công sản phẩm");
-            return "redirect:/dashboard/product_management";
+            return "redirect:/dashboard/product_management/add";
 
         } catch (Exception e) {
             e.printStackTrace();

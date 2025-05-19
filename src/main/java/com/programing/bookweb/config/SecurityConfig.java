@@ -96,11 +96,14 @@ public class SecurityConfig {
                                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                                 .permitAll()
                                 .logoutSuccessUrl("/")
-//                                .invalidateHttpSession(true)
-//                                .deleteCookies("JSESSIONID")
                                 .invalidateHttpSession(false)
                                 .clearAuthentication(true)
                 )
+//                .sessionManagement(session -> session
+//                        .sessionFixation().newSession()
+//                        .maximumSessions(1)
+//                        .maxSessionsPreventsLogin(false)
+//                )
                 .exceptionHandling(
                         exceptionHandling -> exceptionHandling
                                 .accessDeniedHandler((request, response, accessDeniedException) -> {

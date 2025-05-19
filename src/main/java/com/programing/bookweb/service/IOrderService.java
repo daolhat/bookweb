@@ -22,7 +22,7 @@ public interface IOrderService {
 
     Order getOrderById(Long orderId);
 
-    Order createOrder(User user, CartDTO cart, UserOrder userOrder, PaymentMethod paymentMethod, PaymentStatus paymentStatus);
+    Order createOrder(User user, CartDTO cart, UserOrder userOrder, PaymentMethod paymentMethod);
 
     void deleteOrder(Order order);
 
@@ -39,6 +39,8 @@ public interface IOrderService {
     void setDeliveringOrder(Order order);
 
     void setDeliveredOrder(Order order);
+
+    void setPaidOrder(Order order);
 
     void setReceivedToOrder(Order order);
 

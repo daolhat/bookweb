@@ -83,6 +83,14 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public void setDeliveredOrder(Order order) {
         order.setStatus(OrderStatus.DELIVERED);
+        if (order.getPaymentStatus() == PaymentStatus.UNPAID) {
+            order.setPaymentStatus(PaymentStatus.PAID);
+        }
+        orderRepository.save(order);
+    }
+
+    @Override
+    public void setPaidOrder(Order order) {
         order.setPaymentStatus(PaymentStatus.PAID);
         orderRepository.save(order);
     }
@@ -170,7 +178,7 @@ public class OrderServiceImpl implements IOrderService {
 
     @Transactional
     @Override
-    public Order createOrder(User user, CartDTO cart, UserOrder userOrder, PaymentMethod paymentMethod, PaymentStatus paymentStatus) {
+    public Order createOrder(User user, CartDTO cart, UserOrder userOrder, PaymentMethod paymentMethod) {
         if (cart == null || cart.getCartItems().isEmpty()) {
             throw new IllegalArgumentException("Giỏ hàng không được rỗng hoặc null");
         }
@@ -227,7 +235,7 @@ public class OrderServiceImpl implements IOrderService {
             product.setQuantity(product.getQuantity() - cartItem.getQuantity());
             productsToUpdate.add(product);
         }
-        order.setPaymentStatus(paymentStatus);
+        order.setPaymentStatus(PaymentStatus.UNPAID);
         order.setOrderDetails(orderDetails);
         Order savedOrder = orderRepository.save(order);
         productRepository.saveAll(productsToUpdate);

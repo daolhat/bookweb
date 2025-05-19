@@ -39,6 +39,12 @@ public class Contact implements Serializable {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+
+    private String respondent;
+
+    @Column(name = "responded_at")
+    private LocalDateTime respondedAt;
+
     public Long getId() {
         return id;
     }
@@ -101,5 +107,21 @@ public class Contact implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public LocalDateTime getRespondedAt() {
+        return respondedAt;
+    }
+
+    public void setRespondedAt(LocalDateTime respondedAt) {
+        this.respondedAt = respondedAt;
+    }
+
+    public String getRespondent() {
+        return respondent;
+    }
+
+    public void setRespondent(String respondent) {
+        this.respondent = respondent;
     }
 }

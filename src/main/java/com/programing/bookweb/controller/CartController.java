@@ -9,7 +9,6 @@ import com.programing.bookweb.entity.Product;
 import com.programing.bookweb.entity.User;
 import com.programing.bookweb.enums.PaymentMethod;
 import com.programing.bookweb.enums.PaymentStatus;
-import com.programing.bookweb.repository.OrderRepository;
 import com.programing.bookweb.service.ICartService;
 import com.programing.bookweb.service.IOrderService;
 import com.programing.bookweb.service.IProductService;
@@ -17,9 +16,6 @@ import com.programing.bookweb.service.impl.VNPayServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,9 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -41,7 +34,6 @@ public class CartController extends BaseController {
     private final HttpSession session;
     private final IOrderService orderService;
     private final VNPayServiceImpl vnPayService;
-    private final OrderRepository orderRepository;
 
 
     @GetMapping
@@ -165,9 +157,9 @@ public class CartController extends BaseController {
             User currentUser = getCurrentUser();
             if (selectedPaymentMethod == PaymentMethod.COD) {
                 try {
-                    Order order = orderService.createOrder(currentUser, cartService.getCart(session), userOrder, selectedPaymentMethod, PaymentStatus.UNPAID);
+                    Order order = orderService.createOrder(currentUser, cartService.getCart(session), userOrder, selectedPaymentMethod);
                     session.setAttribute("orderResult", order);
-                    cartService.clearCart(session);
+                    //cartService.clearCart(session);
                     return "redirect:/cart/checkout/order-result?success=true&orderId=" + order.getId();
                 } catch (Exception e) {
                     session.setAttribute("orderErrorMessage", e.getMessage());
@@ -219,7 +211,7 @@ public class CartController extends BaseController {
                     String paymentMethod = (String) session.getAttribute("payment");
                     PaymentMethod selectedPaymentMethod = PaymentMethod.valueOf(paymentMethod);
                     UserOrder userOrder = (UserOrder) session.getAttribute("pendingOrder");
-                    Order order = orderService.createOrder(currentUser, cartService.getCart(session), userOrder, selectedPaymentMethod, PaymentStatus.PAID);
+                    Order order = orderService.createOrder(currentUser, cartService.getCart(session), userOrder, selectedPaymentMethod);
 
                     session.removeAttribute("payment");
                     session.removeAttribute("pendingOrder");
@@ -229,7 +221,9 @@ public class CartController extends BaseController {
                     session.setAttribute("vnpayPaymentTime", paymentTime);
                     session.setAttribute("orderResult", order);
 
-                    cartService.clearCart(session);
+                    //session.setAttribute("paymentMethod", paymentMethod);
+
+                    //cartService.clearCart(session);
                     return "redirect:/cart/checkout/order-result?success=true&orderId=" + order.getId();
                 } else {
                     session.setAttribute("orderErrorMessage", "Thanh toán không thành công. Mã giao dịch: " +
@@ -254,12 +248,19 @@ public class CartController extends BaseController {
         model.addAttribute("isSuccess", isSuccess);
         if (isSuccess && orderId != null) {
             try {
+                cartService.clearCart(session);
                 Order order = orderService.getOrderById(orderId);
                 model.addAttribute("orderCode", order.getCode());
                 model.addAttribute("orderId", order.getId());
                 model.addAttribute("totalAmount", order.getTotalPrice());
                 model.addAttribute("paymentMethod", order.getPaymentMethod());
-                // Transfer VNPAY transaction details from session to model if they exist
+
+                PaymentMethod selectedPaymentMethod = (PaymentMethod) session.getAttribute("paymentMethod");
+                if (selectedPaymentMethod == PaymentMethod.ONLINE){
+                    orderService.setPaidOrder(order);
+                }
+                session.removeAttribute("paymentMethod");
+
                 if (session.getAttribute("vnpayTransactionId") != null) {
                     model.addAttribute("vnpayTransactionId", session.getAttribute("vnpayTransactionId"));
                     model.addAttribute("vnpayPaymentTime", session.getAttribute("vnpayPaymentTime"));
@@ -268,7 +269,7 @@ public class CartController extends BaseController {
                     session.removeAttribute("vnpayTransactionId");
                     session.removeAttribute("vnpayPaymentTime");
                 }
-                //cartService.clearCart(session);
+
             } catch (Exception e) {
                 model.addAttribute("isSuccess", false);
                 model.addAttribute("errorMessage", "Không tìm thấy thông tin đơn hàng");
@@ -277,13 +278,14 @@ public class CartController extends BaseController {
             String errorMessage = (String) session.getAttribute("orderErrorMessage");
             model.addAttribute("errorMessage", errorMessage);
             session.removeAttribute("orderErrorMessage");
-//            try {
-//                Order order = (Order) session.getAttribute("orderResult");
-//                orderService.deleteOrder(order);
-//            } catch (Exception e) {
-//                System.out.println("Failed to delete order: " + e.getMessage());
-//            }
-//            session.removeAttribute("orderResult");
+            Order order = orderService.getOrderById(orderId);
+            try {
+                //Order order = (Order) session.getAttribute("orderResult");
+                orderService.deleteOrder(order);
+            } catch (Exception e) {
+                System.out.println("Failed to delete order: " + e.getMessage());
+            }
+            session.removeAttribute("orderResult");
         }
         return "user/order-result";
     }

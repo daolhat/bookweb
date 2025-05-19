@@ -139,7 +139,7 @@
                                         <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
                                     </p>
                                     <div>
-                                        <a class="btn btn-outline-primary btn-sm" th:href="@{/order/{id}=${order.id})}">
+                                        <a class="btn btn-outline-primary btn-sm" th:href="@{'/order/' + ${order.id}}">
                                             Xem chi tiết
                                         </a>
 

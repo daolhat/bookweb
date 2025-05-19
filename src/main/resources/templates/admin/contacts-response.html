@@ -29,38 +29,39 @@
         </nav>
     </div>
 
-    <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle me-1"></i>
-        <span th:text="${message}">Email đã được gửi thành công!</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<!--    <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">-->
+<!--        <i class="bi bi-check-circle me-1"></i>-->
+<!--        <span th:text="${message}">Email đã được gửi thành công!</span>-->
+<!--        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
+<!--    </div>-->
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <!-- Success Toast -->
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="bi bi-check-circle me-2"></i>
+                <strong class="me-auto">Thông báo</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" th:text="${message}">
+                Email đã được gửi thành công!
+            </div>
+        </div>
+
+        <!-- Error Toast -->
+        <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-danger text-white">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong class="me-auto">Lỗi</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" th:text="${error}">
+                Đã xảy ra lỗi!
+            </div>
+        </div>
     </div>
 
-<!--    <section class="section dashboard">-->
-<!--        <div class="card">-->
-<!--            <div class="card-body">-->
-<!--                <h4 class="card-title">Phản hồi</h4>-->
-<!--                <form class="row g-3" th:action="@{/dashboard/contact_management/submit_email}" method="post" th:object="${newEmail}">-->
-<!--                    <input type="hidden" name="uid" th:value="${uid}">-->
-<!--                    <div class="col-md-8">-->
-<!--                        <label for="to" class="form-label">Email người nhận</label>-->
-<!--                        <input type="email" class="form-control" id="to" th:field="*{to}" readonly>-->
-<!--                    </div>-->
-<!--                    <div class="col-md-8">-->
-<!--                        <label for="subject" class="form-label">Tiêu đề</label>-->
-<!--                        <input type="text" class="form-control" id="subject" th:field="*{subject}" required>-->
-<!--                    </div>-->
-<!--                    <div class="col-12">-->
-<!--                        <label for="message" class="form-label">Nội dung</label>-->
-<!--                        <textarea class="form-control" id="message" th:field="*{message}" style="height: 200px;" required></textarea>-->
-<!--                    </div>-->
-<!--                    <div class="d-flex align-items-center justify-content-center mt-4">-->
-<!--                        <button type="submit" class="btn btn-primary me-2">Gửi phản hồi</button>-->
-<!--                        <a th:href="@{/dashboard/contact_management}" class="btn btn-secondary">Quay lại</a>-->
-<!--                    </div>-->
-<!--                </form>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </section>-->
 
     <section class="section dashboard">
         <div class="card">
@@ -100,8 +101,29 @@
                         <div class="p-3 bg-light rounded" th:text="${contact.message}">Nội dung liên hệ</div>
                     </div>
                 </div>
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <label class="col-sm-1 col-form-label">Trạng thái: </label>
+                        <span class="badge"
+                              th:classappend="${contact.status != null ? (contact.status.name() == 'PENDING' ? 'bg-warning' : (contact.status.name() == 'PROCESSING' ? 'bg-info' : 'bg-success')) : 'bg-secondary'}"
+                              th:text="${contact.status != null ? contact.status.getLabel() : 'Không xác định'}">Trạng thái</span>
+
+                    </div>
+                </div>
+
+                <div th:if="${contact.status.name() == 'PROCESSED'}" class="col-12">
+                    <div class="alert alert-info">
+                        <p><strong>Người phản hồi:</strong> <span th:text="${contact.respondent}"></span></p>
+                        <p><strong>Thời gian phản hồi:</strong> <span
+                                th:text="${#temporals.format(contact.respondedAt, 'dd-MM-yyyy HH:mm:ss')}"></span></p>
+                    </div>
+                </div>
+
                 <div class="d-flex align-items-center justify-content-center">
-                    <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#replyEmailModal">Gửi phản hồi</button>
+                    <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal"
+                            data-bs-target="#replyEmailModal">Gửi phản hồi
+                    </button>
                     <a th:href="@{/dashboard/contact_management}" class="btn btn-secondary">Quay lại</a>
                 </div>
             </div>
@@ -110,7 +132,8 @@
 
 
     <!-- Modal gửi phản hồi -->
-    <div class="modal fade" id="replyEmailModal" tabindex="-1" aria-labelledby="replyEmailModalLabel" aria-hidden="true">
+    <div class="modal fade" id="replyEmailModal" tabindex="-1" aria-labelledby="replyEmailModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -118,8 +141,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="emailReplyForm" th:action="@{/dashboard/contact_management/submit_email}" method="post" th:object="${newEmail}">
-                        <input type="hidden" name="uid" th:value="${uid}">
+                    <form id="emailReplyForm" th:action="@{/dashboard/contact_management/submit_email}" method="post"
+                          th:object="${newEmail}">
+                        <input type="hidden" name="id" th:value="${id}">
 
                         <div class="mb-3">
                             <label for="to" class="form-label">Email người nhận:</label>
@@ -133,8 +157,14 @@
 
                         <div class="mb-3">
                             <label for="message" class="form-label">Nội dung:</label>
-                            <textarea class="form-control" id="message" th:field="*{message}" rows="10" required></textarea>
+                            <textarea class="form-control" id="message" th:field="*{message}" rows="10"
+                                      required></textarea>
                         </div>
+
+                        <input type="hidden" id="respondent" name="respondent"
+                               th:value="${#authentication.principal.fullName}">
+                        <input type="hidden" id="respondedAt" name="respondedAt"
+                               th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}">
 
                     </form>
                 </div>
@@ -165,6 +195,32 @@
 <script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
 <!-- Template Main JS File -->
 <script th:src="@{/assets/js/main.js}"></script>
+
+<!-- Custom Toast Script -->
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check for success message
+        const successMessage = /*[[${message}]]*/ null;
+        if (successMessage) {
+            const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+            successToast.show();
+            setTimeout(() => {
+                successToast.hide();
+            }, 3000);
+        }
+
+        // Check for error message
+        const errorMessage = /*[[${error}]]*/ null;
+        if (errorMessage) {
+            const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+            errorToast.show();
+            setTimeout(() => {
+                errorToast.hide();
+            }, 3000);
+        }
+    });
+</script>
+
 
 </body>
 

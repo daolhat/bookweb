@@ -15,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
+
 @Controller
 @AllArgsConstructor
 @RequestMapping("/dashboard/contact_management")
@@ -69,10 +71,10 @@ public class AdminContactController extends BaseController {
                            RedirectAttributes redirectAttributes){
         Contact contact = contactService.getContactById(id);
 
-        if (contact.getStatus() != null && contact.getStatus() == ContactStatus.PROCESSED){
-            redirectAttributes.addFlashAttribute("message", "Liên hệ đã được xử lý!");
-            return "redirect:/dashboard/contact_management";
-        }
+//        if (contact.getStatus() != null && contact.getStatus() == ContactStatus.PROCESSED){
+//            redirectAttributes.addFlashAttribute("message", "Liên hệ đã được xử lý!");
+//            return "redirect:/dashboard/contact_management";
+//        }
 
         if (contact.getStatus() == null || contact.getStatus() == ContactStatus.PENDING) {
             contact.setStatus(ContactStatus.PROCESSING);
@@ -83,7 +85,7 @@ public class AdminContactController extends BaseController {
         Email email = new Email();
         email.setTo(userEmail);
         model.addAttribute("newEmail", email);
-        model.addAttribute("uid", id);
+        model.addAttribute("id", id);
         model.addAttribute("contact", contact);
         return "admin/contacts-response";
     }
@@ -91,11 +93,28 @@ public class AdminContactController extends BaseController {
 
     @PostMapping("/submit_email")
     public String responseTo(@ModelAttribute Email email,
-                             @RequestParam Long uid,
+                             @RequestParam Long id,
+                             @RequestParam(required = false) String respondent,
                              RedirectAttributes redirectAttributes){
-        emailService.sendEmail(email.getTo(),email.getSubject(),email.getMessage());
-        redirectAttributes.addFlashAttribute("message","Gửi mail thành công!");
-        return "redirect:/dashboard/contact_management/response/" + uid + "?success=true";
+
+        try {
+            emailService.sendEmail(email.getTo(),email.getSubject(),email.getMessage());
+
+            Contact contact = contactService.getContactById(id);
+            if (contact != null){
+                contact.setRespondent(respondent);
+                contact.setRespondedAt(LocalDateTime.now());
+                contact.setStatus(ContactStatus.PROCESSED);
+                contactService.updateContact(contact);
+            }
+
+            redirectAttributes.addFlashAttribute("message","Gửi mail thành công!");
+            return "redirect:/dashboard/contact_management/response/" + id + "?success=true";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi gửi email: " + e.getMessage());
+            return "redirect:/dashboard/contact_management/response/" + id;
+        }
     }
 
     @PostMapping("/update-status/{id}")
