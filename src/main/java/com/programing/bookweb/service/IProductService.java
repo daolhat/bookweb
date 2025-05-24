@@ -1,5 +1,6 @@
 package com.programing.bookweb.service;
 
+import com.programing.bookweb.dto.TopProductDTO;
 import com.programing.bookweb.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,6 @@ public interface IProductService {
 
     List<Product> getTopSellingProductsByDateRange(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
-    //User
     Page<Product> getProductByKeywordUser(String keyword, Pageable pageable);
 
     Page<Product> getProductByCategoryIdUser(Long categoryId, Pageable pageable);
@@ -46,4 +46,8 @@ public interface IProductService {
     Page<Product> getProductByCategoryIdAndLayoutUser(Long categoryId, String layout, Pageable pageable);
 
     Page<Product> getProductByLayoutAndKeywordUser(String layout, String keyword, Pageable pageable);
+
+    List<Product> getProductsWithOldestDateAndMaxQuantity();
+
+    List<TopProductDTO> getTopSellingProducts(LocalDateTime startDate, LocalDateTime endDate);
 }

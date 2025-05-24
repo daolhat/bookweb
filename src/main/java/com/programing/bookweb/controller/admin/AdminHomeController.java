@@ -1,6 +1,8 @@
 package com.programing.bookweb.controller.admin;
 
 import com.programing.bookweb.controller.BaseController;
+import com.programing.bookweb.dto.TopProductDTO;
+import com.programing.bookweb.dto.TopUserDTO;
 import com.programing.bookweb.entity.Product;
 import com.programing.bookweb.entity.User;
 import com.programing.bookweb.service.IOrderService;
@@ -63,13 +65,17 @@ public class AdminHomeController extends BaseController {
             model.addAttribute("monthlyChartRevenueData", monthlyChartData.get("chartRevenueData"));
             model.addAttribute("monthlyChartUserData", monthlyChartData.get("chartUserData"));
 
-            // 10 Sản phẩm bán chạy nhất
-            List<Product> topSellingProducts = getTopSellingProducts(10);
+            //Sản phẩm bán chạy nhất
+            List<TopProductDTO> topSellingProducts = getTopSellingProducts();
             model.addAttribute("topSellingProducts", topSellingProducts != null ? topSellingProducts : new ArrayList<>());
 
-            // 5 Khách hàng tiêu nhiều tiền nhất
-//            List<Map<String, Object>> topSpendingUsers = getTopSpendingUsers(5);
-//            model.addAttribute("topSpendingUsers", topSpendingUsers != null ? topSpendingUsers : new ArrayList<>());
+            //Khách hàng mua hàng nhiều nhất
+            List<TopUserDTO> topSpendingUsers = orderService.getTopUsers();
+            model.addAttribute("topSpendingUsers", topSpendingUsers != null ? topSpendingUsers : new ArrayList<>());
+
+            //Sản phẩm tồn kho
+            List<Product> inventory = productService.getProductsWithOldestDateAndMaxQuantity();
+            model.addAttribute("inventory", inventory != null ? inventory : new ArrayList<>());
 
             // Thông tin tổng quát
             BigDecimal totalRevenue = orderService.getTotalRevenue();
@@ -260,14 +266,16 @@ public class AdminHomeController extends BaseController {
     }
 
 
-    private List<Product> getTopSellingProducts(int limit) {
+    private List<TopProductDTO> getTopSellingProducts() {
         // Mặc định lấy theo 3 tháng gần nhất
         LocalDateTime startDate = LocalDateTime.now().minusMonths(3);
         LocalDateTime endDate = LocalDateTime.now();
 
-        // Lấy top N sản phẩm bán chạy
-        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "quantitySold"));
-        List<Product> topProducts = productService.getTopSellingProductsByDateRange(startDate, endDate, pageable);
+//        // Lấy top N sản phẩm bán chạy
+//        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "quantitySold"));
+//        List<Product> topProducts = productService.getTopSellingProductsByDateRange(startDate, endDate, pageable);
+
+        List<TopProductDTO> topProducts = productService.getTopSellingProducts(startDate, endDate);
 
 //        return topProducts.stream().map(product -> {
 //            Map<String, Object> productMap = new HashMap<>();
@@ -289,25 +297,4 @@ public class AdminHomeController extends BaseController {
         return topProducts;
     }
 
-
-//    private List<Map<String, Object>> getTopSpendingUsers(int limit) {
-//        // Mặc định lấy theo 6 tháng gần nhất
-//        LocalDateTime startDate = LocalDateTime.now().minusMonths(6);
-//        LocalDateTime endDate = LocalDateTime.now();
-//
-//        // Lấy top N khách hàng chi tiêu nhiều nhất
-//        List<Object[]> topUsers = orderService.getTopSpendingUsers(startDate, endDate, limit);
-//
-//        return topUsers.stream().map(userArray -> {
-//            Map<String, Object> userMap = new HashMap<>();
-//            User user = (User) userArray[0];
-//            BigDecimal totalSpending = (BigDecimal) userArray[1];
-//
-//            userMap.put("id", user.getId());
-//            userMap.put("fullName", user.getFullName());
-//            userMap.put("email", user.getEmail());
-//            userMap.put("totalSpending", totalSpending);
-//            return userMap;
-//        }).collect(Collectors.toList());
-//    }
 }

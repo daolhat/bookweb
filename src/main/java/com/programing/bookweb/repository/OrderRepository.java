@@ -1,5 +1,6 @@
 package com.programing.bookweb.repository;
 
+import com.programing.bookweb.dto.TopUserDTO;
 import com.programing.bookweb.entity.Order;
 import com.programing.bookweb.entity.User;
 import com.programing.bookweb.enums.OrderStatus;
@@ -16,8 +17,6 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-
-    List<Order> findByUserOrderByCreatedAtDesc(User user);
 
     Page<Order> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);
 
@@ -48,4 +47,16 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT o FROM Order o WHERE o.code = :search OR o.receiver LIKE %:search% OR o.customerPhone = :search")
     Page<Order> findByCodeOrReceiverContainingOrCustomerPhone(@Param("search") String search, Pageable pageable);
+
+    @Query("""
+        SELECT new com.programing.bookweb.dto.TopUserDTO(u.id, u.fullName, u.email, u.phoneNumber, SUM(o.totalPrice)) 
+        FROM User u 
+        JOIN u.orders o 
+        WHERE o.status = 'DELIVERED' 
+        GROUP BY u.id 
+        ORDER BY SUM(o.totalPrice) DESC
+        """)
+    List<TopUserDTO> findTopUsers(Pageable pageable);
+
+
 }

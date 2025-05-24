@@ -1,6 +1,7 @@
 package com.programing.bookweb.service;
 
 import com.programing.bookweb.dto.CartDTO;
+import com.programing.bookweb.dto.TopUserDTO;
 import com.programing.bookweb.dto.UserOrder;
 import com.programing.bookweb.entity.Order;
 import com.programing.bookweb.entity.User;
@@ -57,4 +58,6 @@ public interface IOrderService {
     Page<Order> getOrdersByStatusAndBetween(OrderStatus status, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
     Page<Order> getOrderSearch(String search, Pageable pageable);
+
+    List<TopUserDTO> getTopUsers();
 }

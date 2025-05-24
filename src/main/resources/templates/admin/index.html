@@ -156,18 +156,17 @@
                         </div>
                     </div>
 
-                    <div class="col-7">
+                    <div class="col-6">
                         <div class="card top-selling overflow-auto">
                             <div class="card-body pb-0">
-                                <h5 class="card-title">Top 10 sản phẩm bán chạy <span>| 3 tháng gần nhất</span></h5>
+                                <h5 class="card-title">Sản phẩm bán chạy <span>| 3 tháng gần nhất</span></h5>
                                 <table class="table table-borderless">
                                     <thead>
                                     <tr>
                                         <th scope="col">STT</th>
-                                        <th scope="col">Ảnh sản phẩm</th>
-                                        <th scope="col">Tiêu đề</th>
+                                        <th scope="col" style="width: 16rem">Tiêu đề</th>
                                         <th scope="col">Giá bán</th>
-                                        <th scope="col">Số lượng đã bán</th>
+                                        <th scope="col" style="width: 8rem">Số lượng đã bán</th>
                                         <th scope="col">Doanh thu</th>
                                     </tr>
                                     </thead>
@@ -177,20 +176,13 @@
                                     </tr>
                                     <tr th:each="product, productStat : ${topSellingProducts}">
                                         <td th:text="${productStat.count}"></td>
-                                        <th scope="row">
-                                            <a th:href="@{/dashboard/product_management/update/{id}(id=${product.id})}">
-                                                <img th:if="${product.imageProduct}" th:src="@{'/assets/img/product/' + ${product.imageProduct}}"
-                                                     alt="" style="width: 60px; height: 60px; object-fit: cover;">
-                                                <img th:unless="${product.imageProduct}" th:src="@{'/assets/img/product-image-default.jpg'}"
-                                                     alt="" style="width: 60px; height: 60px; object-fit: cover;">
-                                            </a>
-                                        </th>
                                         <td>
-                                            <a th:href="@{/dashboard/product_management/update/{id}(id=${product.id})}" class="text-primary fw-bold" th:text="${product.title}"></a>
+                                            <a th:href="@{/dashboard/product_management/update/{id}(id=${product.id})}"
+                                               class="text-primary fw-bold" th:text="${#strings.abbreviate(product.title, 40)}"></a>
                                         </td>
-                                        <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
-                                        <td class="fw-bold" th:text="${product.quantitySold}"></td>
-                                        <td th:text="${#numbers.formatDecimal(product.price * product.quantitySold, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
+                                        <td th:text="${#numbers.formatDecimal(product.price * (1 - product.discount / 100.0), 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
+                                        <td class="fw-bold" th:text="${product.quantity}"></td>
+                                        <td th:text="${#numbers.formatDecimal((product.price * (1 - product.discount / 100.0)) * product.quantity, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -198,16 +190,17 @@
                         </div>
                     </div>
 
-                    <div class="col-5">
+                    <div class="col-6">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Top 5 khách hàng chi nhiều nhất <span>| 6 tháng gần nhất</span></h5>
+                                <h5 class="card-title">Khách hàng mua nhiều nhất</h5>
                                 <div class="col-12">
                                     <table class="table table-borderless">
                                         <thead>
                                         <tr>
                                             <th scope="col">STT</th>
                                             <th scope="col">Tên khách hàng</th>
+                                            <th scope="col">Liên hệ</th>
                                             <th scope="col">Tổng chi</th>
                                         </tr>
                                         </thead>
@@ -220,7 +213,48 @@
                                             <td>
                                                 <a th:href="@{/dashboard/user_management/{id}(id=${user.id})}" class="text-primary fw-bold" th:text="${user.fullName}"></a>
                                             </td>
-                                            <td th:text="${#numbers.formatDecimal(user.totalSpending, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
+                                            <td>
+                                                <div th:text="'Số ĐT: ' + ${user.phoneNumber}"></div>
+                                                <small class="text-muted"
+                                                       th:text="'Email: ' + ${user.email}"></small>
+                                            </td>
+                                            <td th:text="${#numbers.formatDecimal(user.totalAmountPurchased, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Sản phẩm tồn kho</h5>
+                                <div class="col-12">
+                                    <table class="table table-borderless">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col">STT</th>
+                                            <th scope="col" style="width: 8rem">Tiêu đề</th>
+                                            <th scope="col" style="width: 8rem">Thể loại</th>
+                                            <th scope="col">Giá bán</th>
+                                            <th scope="col">Số lượng còn lại</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:if="${#lists.isEmpty(inventory)}">
+                                            <td colspan="3" class="text-center">Không có dữ liệu</td>
+                                        </tr>
+                                        <tr th:each="product, productStat : ${inventory}">
+                                            <td th:text="${productStat.count}"></td>
+                                            <td>
+                                                <a th:href="@{/dashboard/product_management/{id}(id=${product.id})}"
+                                                   class="text-primary fw-bold" th:text="${#strings.abbreviate(product.title, 40)}"></a>
+                                            </td>
+                                            <td th:text="${product.category.name}"></td>
+                                            <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
+                                            <td class="fw-bold" th:text="${product.quantity}"></td>
                                         </tr>
                                         </tbody>
                                     </table>

@@ -2,6 +2,7 @@ package com.programing.bookweb.service.impl;
 
 import com.programing.bookweb.dto.CartDTO;
 import com.programing.bookweb.dto.CartItemDTO;
+import com.programing.bookweb.dto.TopUserDTO;
 import com.programing.bookweb.dto.UserOrder;
 import com.programing.bookweb.entity.Order;
 import com.programing.bookweb.entity.OrderDetail;
@@ -255,5 +256,11 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public Page<Order> getAllOrdersByUserPage(User user, Pageable pageable) {
         return orderRepository.findByUserOrderByCreatedAtDesc(user, pageable);
+    }
+
+    @Override
+    public List<TopUserDTO> getTopUsers() {
+        Pageable pageable = PageRequest.of(0, 7);
+        return orderRepository.findTopUsers(pageable);
     }
 }

@@ -1,5 +1,6 @@
 package com.programing.bookweb.service.impl;
 
+import com.programing.bookweb.dto.TopProductDTO;
 import com.programing.bookweb.entity.OrderDetail;
 import com.programing.bookweb.entity.Product;
 import com.programing.bookweb.repository.CategoryRepository;
@@ -7,6 +8,7 @@ import com.programing.bookweb.repository.ProductRepository;
 import com.programing.bookweb.service.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -219,6 +221,21 @@ public class ProductServiceImpl implements IProductService {
             }
         }
         return productRepository.findByLayoutAndTitleContaining(layout, keyword.trim(), pageable);
+    }
+
+    @Override
+    public List<Product> getProductsWithOldestDateAndMaxQuantity() {
+        Pageable pageable = PageRequest.of(0, 10);
+        return productRepository.findTop5ProductsWithOldestDateAndMaxQuantity(pageable);
+    }
+
+    @Override
+    public List<TopProductDTO> getTopSellingProducts(LocalDateTime startDate, LocalDateTime endDate) {
+        Pageable pageable = PageRequest.of(0, 10);
+        if (startDate == null || endDate == null || startDate.isAfter(endDate)){
+            throw  new RuntimeException("Lỗi");
+        }
+        return productRepository.findTopSellingProducts(startDate, endDate, pageable);
     }
 
 

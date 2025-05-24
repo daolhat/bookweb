@@ -14,8 +14,6 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
 
     Page<Contact> findByOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<Contact> findByOrderByCreatedAtAsc(Pageable pageable);
-
     Page<Contact> findByStatus(ContactStatus status, Pageable pageable);
 
 }
