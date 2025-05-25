@@ -24,16 +24,12 @@ public class HomeController extends BaseController{
     @GetMapping("/")
     String getUserHomePage(Model model){
         Pageable pageable = PageRequest.of(0, 12);
-
         List<Product> bestSeller = productService.getBestSeller(pageable);
         model.addAttribute("bestSeller", bestSeller);
-
         List<Product> newProducts = productService.getNewProducts(pageable);
         model.addAttribute("newProducts", newProducts);
-
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
-
         return "user/index";
     }
 

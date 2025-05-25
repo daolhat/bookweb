@@ -271,29 +271,8 @@ public class AdminHomeController extends BaseController {
         LocalDateTime startDate = LocalDateTime.now().minusMonths(3);
         LocalDateTime endDate = LocalDateTime.now();
 
-//        // Lấy top N sản phẩm bán chạy
-//        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "quantitySold"));
-//        List<Product> topProducts = productService.getTopSellingProductsByDateRange(startDate, endDate, pageable);
-
         List<TopProductDTO> topProducts = productService.getTopSellingProducts(startDate, endDate);
 
-//        return topProducts.stream().map(product -> {
-//            Map<String, Object> productMap = new HashMap<>();
-//            productMap.put("id", product.getId());
-//            productMap.put("title", product.getTitle());
-//            productMap.put("imageProduct", product.getImageProduct());
-//            productMap.put("price", product.getPrice());
-//            productMap.put("quantitySold", product.getQuantitySold());
-//
-//            BigDecimal revenue = BigDecimal.valueOf(product.getPrice()).multiply(new BigDecimal(product.getQuantitySold()));
-//            if (product.getDiscount() > 0) {
-//                BigDecimal discountRate = BigDecimal.valueOf(product.getDiscount()).divide(BigDecimal.valueOf(100));
-//                BigDecimal discountAmount = revenue.multiply(discountRate);
-//                revenue = revenue.subtract(discountAmount);
-//            }
-//            productMap.put("revenue", revenue);
-//            return productMap;
-//        }).collect(Collectors.toList());
         return topProducts;
     }
 

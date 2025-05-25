@@ -33,7 +33,6 @@ public class AdminUserController extends BaseController {
         Pageable pageable = PageRequest.of(page - 1, 20);
         String searchKeyword = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
         Page<User> users;
-
         try {
             if (searchKeyword != null){
                 users = userService.getUserSearch(searchKeyword, pageable);
@@ -45,7 +44,6 @@ public class AdminUserController extends BaseController {
             users = userService.getAllUserPage(pageable);
             model.addAttribute("error", "Có lỗi xảy ra khi tải danh sách đơn hàng: " + e.getMessage());
         }
-
         model.addAttribute("users", users);
         model.addAttribute("totalPages", users.getTotalPages());
         model.addAttribute("pageNumber", page);
@@ -55,7 +53,9 @@ public class AdminUserController extends BaseController {
 
 
     @GetMapping("/{id}")
-    public String viewUserDetail(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+    public String viewUserDetail(@PathVariable Long id,
+                                 Model model,
+                                 RedirectAttributes redirectAttributes) {
         try {
             User user = userService.getUserById(id);
             if (user == null) {
@@ -77,7 +77,8 @@ public class AdminUserController extends BaseController {
 
 
     @PostMapping("/toggle-status/{id}")
-    public String toggleUserStatus(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String toggleUserStatus(@PathVariable Long id,
+                                   RedirectAttributes redirectAttributes) {
         try {
             User user = userService.getUserById(id);
             if (user == null) {
@@ -90,7 +91,6 @@ public class AdminUserController extends BaseController {
             userService.saveUser(user);
             String statusMessage = newStatus ? "kích hoạt" : "vô hiệu hóa";
             redirectAttributes.addFlashAttribute("success", "Đã " + statusMessage + " tài khoản của " + user.getFullName());
-            // Chuyển hướng về trang chi tiết người dùng
             return "redirect:/dashboard/user_management/" + id;
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,7 +102,8 @@ public class AdminUserController extends BaseController {
 
     @PostMapping("/delete/{id}")
     @Transactional
-    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deleteUser(@PathVariable Long id,
+                             RedirectAttributes redirectAttributes) {
         try {
             User user = userService.getUserById(id);
             if (user == null) {
@@ -118,7 +119,6 @@ public class AdminUserController extends BaseController {
             String userName = user.getFullName(); // Lưu lại tên người dùng trước khi xóa
             user.getRoles().clear();
             userService.saveUser(user);
-            // Sau đó xóa user
             userService.deleteUser(id);
             redirectAttributes.addFlashAttribute("success", "Đã xóa người dùng " + userName + " thành công");
             return "redirect:/dashboard/user_management";

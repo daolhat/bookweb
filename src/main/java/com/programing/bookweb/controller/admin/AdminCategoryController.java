@@ -46,17 +46,23 @@ public class AdminCategoryController extends BaseController {
             return "admin/category-add";
         }
         if (categoryService.existsByName(category)) {
-            result.rejectValue("name", "error.category", "Danh mục thể loại đã tồn tại");
+            result.rejectValue("name", "error.category", "Danh mục thể loại đã tồn tại.");
             return "admin/category-add";
         }
-        categoryService.addCategory(category);
-        redirectAttributes.addFlashAttribute("success", "Category added successfully");
-        return "redirect:/dashboard/category_management/add";
+        try {
+            categoryService.addCategory(category);
+            redirectAttributes.addFlashAttribute("success", "Thêm thể loại thành công.");
+            return "redirect:/dashboard/category_management/add";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Xảy ra lõi khi thêm thể loại.");
+            return "redirect:/dashboard/category_management/add";
+        }
     }
 
 
     @GetMapping("/update/{id}")
-    public String showEditCategoryForm(Model model, @PathVariable Long id) {
+    public String showEditCategoryForm(Model model,
+                                       @PathVariable Long id) {
         model.addAttribute("category", categoryService.getCategoryById(id));
         return "admin/category-detail";
     }
@@ -65,22 +71,28 @@ public class AdminCategoryController extends BaseController {
     @Transactional
     @PostMapping("/update/{id}")
     public String editCategory(@PathVariable Long id,
-                                 @Valid @ModelAttribute("category") Category category,
-                                 BindingResult result,
-                                 Model model,
-                                 RedirectAttributes redirectAttributes) {
+                               @Valid @ModelAttribute("category") Category category,
+                               BindingResult result,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("error", "Nhập lại thông tin");
             return "admin/category-detail";
         }
-        categoryService.updateCategory(id, category);
-        redirectAttributes.addFlashAttribute("success", "Category updated successfully");
+        try {
+            categoryService.updateCategory(id, category);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật thể loại thành công.");
+        } catch (Exception e){
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Có lỗi khi cập nhật.");
+        }
         return "redirect:/dashboard/category_management";
     }
 
 
     @GetMapping("/delete/{id}")
-    public String deleteCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deleteCategory(@PathVariable Long id,
+                                 RedirectAttributes redirectAttributes) {
         try {
             Category category = categoryService.getCategoryById(id);
             if (category != null) {

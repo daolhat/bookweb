@@ -37,13 +37,14 @@ public class OrderServiceImpl implements IOrderService {
     private final OrderDetailRepository orderDetailRepository;
     private final ProductRepository productRepository;
 
-    //lấy toàn bộ đơn hàng
+
     @Override
     public Page<Order> getAllOrders(Pageable pageable) {
         return orderRepository.findAll(pageable);
     }
 
-    //huỷ một đơn hàng
+
+
     @Transactional
     @Override
     public void cancelOrder(Order order) {
@@ -62,24 +63,28 @@ public class OrderServiceImpl implements IOrderService {
         orderRepository.save(order);
     }
 
-    //đếm số lượng đơn hàng theo từng người dùng
+
+
     @Override
     public Long countOrderByUser(User user) {
         return orderRepository.countByUser(user);
     }
 
-    //cập nhật trạng thái cho đơn hàng
+
+
     @Override
     public void setProcessingOrder(Order order) {
         order.setStatus(OrderStatus.PROCESSING);
         orderRepository.save(order);
     }
 
+
     @Override
     public void setDeliveringOrder(Order order) {
         order.setStatus(OrderStatus.DELIVERING);
         orderRepository.save(order);
     }
+
 
     @Override
     public void setDeliveredOrder(Order order) {
@@ -90,22 +95,20 @@ public class OrderServiceImpl implements IOrderService {
         orderRepository.save(order);
     }
 
+
     @Override
     public void setPaidOrder(Order order) {
         order.setPaymentStatus(PaymentStatus.PAID);
         orderRepository.save(order);
     }
 
-    @Override
-    public void setReceivedToOrder(Order order) {
-        order.setStatus(OrderStatus.DELIVERED);
-        orderRepository.save(order);
-    }
+
 
     @Override
     public long countOrdersByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         return orderRepository.countByCreatedAtBetween(startDate, endDate);
     }
+
 
     @Override
     public BigDecimal getRevenueByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
@@ -113,10 +116,6 @@ public class OrderServiceImpl implements IOrderService {
         return result != null ? result : BigDecimal.ZERO;
     }
 
-    @Override
-    public List<Object[]> getTopSpendingUsers(LocalDateTime startDate, LocalDateTime endDate, int limit) {
-        return orderRepository.findTopSpendingUsers(startDate, endDate, PageRequest.of(0, limit));
-    }
 
     @Override
     public Page<Order> getOrdersByStatus(OrderStatus status, Pageable pageable) {
@@ -126,6 +125,7 @@ public class OrderServiceImpl implements IOrderService {
         return orderRepository.findByStatus(status, pageable);
     }
 
+
     @Override
     public Page<Order> getOrdersBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
         if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
@@ -133,6 +133,7 @@ public class OrderServiceImpl implements IOrderService {
         }
         return orderRepository.findByCreatedAtBetween(startDate, endDate, pageable);
     }
+
 
     @Override
     public Page<Order> getOrdersByStatusAndBetween(OrderStatus status, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
@@ -148,6 +149,7 @@ public class OrderServiceImpl implements IOrderService {
         return orderRepository.findByStatusAndCreatedAtBetween(status, startDate, endDate, pageable);
     }
 
+
     @Override
     public Page<Order> getOrderSearch(String search, Pageable pageable) {
         if (search != null && !search.trim().isEmpty()) {
@@ -157,11 +159,13 @@ public class OrderServiceImpl implements IOrderService {
         return orderRepository.findAll(pageable);
     }
 
+
     @Override
     public BigDecimal getTotalRevenue() {
         BigDecimal result = orderRepository.sumTotalPrice();
         return result != null ? result : BigDecimal.ZERO;
     }
+
 
     @Override
     public void deleteOrder(Order order) {
@@ -176,6 +180,7 @@ public class OrderServiceImpl implements IOrderService {
 
         orderRepository.deleteById(order.getId());
     }
+
 
     @Transactional
     @Override
@@ -243,24 +248,29 @@ public class OrderServiceImpl implements IOrderService {
         return savedOrder;
     }
 
+
     @Override
     public Order getOrderById(Long orderId) {
         return orderRepository.findById(orderId).orElse(null);
     }
+
 
     @Override
     public Long countOrder() {
         return orderRepository.count();
     }
 
+
     @Override
     public Page<Order> getAllOrdersByUserPage(User user, Pageable pageable) {
         return orderRepository.findByUserOrderByCreatedAtDesc(user, pageable);
     }
+
 
     @Override
     public List<TopUserDTO> getTopUsers() {
         Pageable pageable = PageRequest.of(0, 7);
         return orderRepository.findTopUsers(pageable);
     }
+
 }

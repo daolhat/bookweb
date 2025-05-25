@@ -17,7 +17,7 @@ public interface IProductService {
 
     Product addProduct(Product product, MultipartFile imageProduct) throws SQLException, IOException;
 
-    Product updateProduct(Product product, MultipartFile imageProduct);
+    Product updateProduct(Product product, MultipartFile imageProduct) throws SQLException, IOException;
 
     void deleteProduct(Long productId);
 
@@ -30,8 +30,6 @@ public interface IProductService {
     List<Product> getNewProducts(Pageable pageable);
 
     List<Product> getProductsByCategory(Long categoryId, Pageable pageable);
-
-    List<Product> getTopSellingProductsByDateRange(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
     Page<Product> getProductByKeywordUser(String keyword, Pageable pageable);
 

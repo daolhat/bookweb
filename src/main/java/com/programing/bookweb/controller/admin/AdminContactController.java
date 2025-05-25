@@ -34,9 +34,11 @@ public class AdminContactController extends BaseController {
 
         String statusTemp = (statusParam != null && !statusParam.trim().isEmpty()) ? statusParam.trim() : null;
         ContactStatus status = null;
+
         if (statusTemp != null) {
             status = ContactStatus.valueOf(statusTemp);
         }
+
         try {
             if (status != null) {
                 contacts = contactService.getContactsByStatus(status, pageable);
@@ -53,7 +55,6 @@ public class AdminContactController extends BaseController {
         model.addAttribute("pageNumber", page);
         model.addAttribute("selectedStatus", status != null ? status.toString() : null);
         model.addAttribute("contactStatuses", ContactStatus.values());
-
         return "admin/contacts";
     }
 
@@ -70,17 +71,10 @@ public class AdminContactController extends BaseController {
                            Model model,
                            RedirectAttributes redirectAttributes){
         Contact contact = contactService.getContactById(id);
-
-//        if (contact.getStatus() != null && contact.getStatus() == ContactStatus.PROCESSED){
-//            redirectAttributes.addFlashAttribute("message", "Liên hệ đã được xử lý!");
-//            return "redirect:/dashboard/contact_management";
-//        }
-
         if (contact.getStatus() == null || contact.getStatus() == ContactStatus.PENDING) {
             contact.setStatus(ContactStatus.PROCESSING);
             contactService.updateContact(contact);
         }
-
         String userEmail = contact.getEmail();
         Email email = new Email();
         email.setTo(userEmail);
@@ -96,10 +90,8 @@ public class AdminContactController extends BaseController {
                              @RequestParam Long id,
                              @RequestParam(required = false) String respondent,
                              RedirectAttributes redirectAttributes){
-
         try {
             emailService.sendEmail(email.getTo(),email.getSubject(),email.getMessage());
-
             Contact contact = contactService.getContactById(id);
             if (contact != null){
                 contact.setRespondent(respondent);
@@ -107,15 +99,14 @@ public class AdminContactController extends BaseController {
                 contact.setStatus(ContactStatus.PROCESSED);
                 contactService.updateContact(contact);
             }
-
             redirectAttributes.addFlashAttribute("message","Gửi mail thành công!");
             return "redirect:/dashboard/contact_management/response/" + id + "?success=true";
-
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Lỗi khi gửi email: " + e.getMessage());
             return "redirect:/dashboard/contact_management/response/" + id;
         }
     }
+
 
     @PostMapping("/update-status/{id}")
     public String updateContactStatus(@PathVariable Long id,
@@ -127,10 +118,8 @@ public class AdminContactController extends BaseController {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy liên hệ");
                 return "redirect:/dashboard/contact_management";
             }
-
             contact.setStatus(status);
             contactService.updateContact(contact);
-
             redirectAttributes.addFlashAttribute("success", "Đã cập nhật trạng thái liên hệ thành " + status.getLabel());
             return "redirect:/dashboard/contact_management";
         } catch (Exception e) {

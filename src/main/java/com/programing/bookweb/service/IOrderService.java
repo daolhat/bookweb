@@ -43,13 +43,9 @@ public interface IOrderService {
 
     void setPaidOrder(Order order);
 
-    void setReceivedToOrder(Order order);
-
     long countOrdersByDateRange(LocalDateTime startDate, LocalDateTime endDate);
 
     BigDecimal getRevenueByDateRange(LocalDateTime startDate, LocalDateTime endDate);
-
-    List<Object[]> getTopSpendingUsers(LocalDateTime startDate, LocalDateTime endDate, int limit);
 
     Page<Order> getOrdersByStatus(OrderStatus status, Pageable pageable);
 

@@ -41,29 +41,26 @@ public class RegisterController extends BaseController{
     @PostMapping
     public String registerUser(@ModelAttribute("user") @Valid User user,
                                BindingResult result,
-                               Model model,
                                RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            model.addAttribute("error", "Vui lòng điền đầy đủ thông tin hợp lệ.");
+            redirectAttributes.addFlashAttribute("error", "Vui lòng điền đầy đủ thông tin hợp lệ.");
             return "user/register";
         }
-
         if (user.getPassword() == null || user.getPassword().length() < 8) {
-            model.addAttribute("error", "Mật khẩu phải có ít nhất 8 ký tự.");
+            redirectAttributes.addFlashAttribute("error", "Mật khẩu phải có ít nhất 8 ký tự.");
             return "user/register";
         }
-
         try {
             boolean isRegistered = userService.registerUser(user);
             if (isRegistered) {
                 redirectAttributes.addFlashAttribute("success", "Đăng ký thành công!");
                 return "redirect:/login";
             } else {
-                model.addAttribute("error", "Đã có lỗi xảy ra trong quá trình đăng ký.");
+                redirectAttributes.addFlashAttribute("error", "Đã có lỗi xảy ra trong quá trình đăng ký.");
                 return "user/register";
             }
         } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "user/register";
         }
     }

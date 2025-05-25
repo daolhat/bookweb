@@ -81,7 +81,8 @@ public class CartController extends BaseController {
 
     @PostMapping("/update-cart-item")
     @ResponseBody
-    public ResponseEntity<String> updateCartItem(@RequestParam Long productId, @RequestParam int quantity) {
+    public ResponseEntity<String> updateCartItem(@RequestParam Long productId,
+                                                 @RequestParam int quantity) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Vui lòng đăng nhập để cập nhật giỏ hàng");
@@ -114,7 +115,8 @@ public class CartController extends BaseController {
 
 
     @GetMapping("/checkout")
-    public String getCheckOut(Model model, RedirectAttributes redirectAttributes) {
+    public String getCheckOut(Model model,
+                              RedirectAttributes redirectAttributes) {
         User curUser = getCurrentUser();
         if (curUser == null) {
             redirectAttributes.addFlashAttribute("checkoutRedirect", true);
@@ -221,8 +223,6 @@ public class CartController extends BaseController {
                     session.setAttribute("vnpayPaymentTime", paymentTime);
                     session.setAttribute("orderResult", order);
 
-                    //session.setAttribute("paymentMethod", paymentMethod);
-
                     //cartService.clearCart(session);
                     return "redirect:/cart/checkout/order-result?success=true&orderId=" + order.getId();
                 } else {
@@ -240,6 +240,7 @@ public class CartController extends BaseController {
             return "redirect:/login";
         }
     }
+
 
     @GetMapping("/checkout/order-result")
     public String orderResult(@RequestParam(value = "success", defaultValue = "false") boolean isSuccess,
@@ -260,7 +261,6 @@ public class CartController extends BaseController {
                     orderService.setPaidOrder(order);
                 }
                 session.removeAttribute("paymentMethod");
-
                 if (session.getAttribute("vnpayTransactionId") != null) {
                     model.addAttribute("vnpayTransactionId", session.getAttribute("vnpayTransactionId"));
                     model.addAttribute("vnpayPaymentTime", session.getAttribute("vnpayPaymentTime"));
@@ -269,7 +269,6 @@ public class CartController extends BaseController {
                     session.removeAttribute("vnpayTransactionId");
                     session.removeAttribute("vnpayPaymentTime");
                 }
-
             } catch (Exception e) {
                 model.addAttribute("isSuccess", false);
                 model.addAttribute("errorMessage", "Không tìm thấy thông tin đơn hàng");

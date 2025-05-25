@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,6 +44,7 @@ public class AdminOrderController extends BaseController {
         String searchKeyword = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
         String statusTemp = (statusString != null && !statusString.trim().isEmpty()) ? statusString.trim() : null;
         OrderStatus status = null;
+
         if (statusTemp != null) {
             status = OrderStatus.valueOf(statusTemp);
         }
@@ -71,13 +73,11 @@ public class AdminOrderController extends BaseController {
             } else {
                 orders = orderService.getAllOrders(pageable);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             orders = orderService.getAllOrders(pageable);
             model.addAttribute("error", "Có lỗi xảy ra khi tải danh sách đơn hàng: " + e.getMessage());
         }
-
         model.addAttribute("orders", orders);
         model.addAttribute("totalPages", orders.getTotalPages());
         model.addAttribute("pageNumber", page);
@@ -86,20 +86,22 @@ public class AdminOrderController extends BaseController {
         model.addAttribute("startDate", fromDate);
         model.addAttribute("endDate", toDate);
         return "admin/orders";
-
     }
 
 
-
     @GetMapping("/detail/{id}")
-    public String showOrderDetailPage(Model model, @PathVariable Long id) {
+    public String showOrderDetailPage(Model model,
+                                      @PathVariable Long id,
+                                      RedirectAttributes redirectAttributes) {
         try {
             Order order = orderService.getOrderById(id);
+            if (order == null){
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng.");
+                return "redirect:/dashboard/order_management";
+            }
             List<OrderDetail> orderDetails = orderDetailService.getAllOrderDetailByOrder(order);
-
             model.addAttribute("order", order);
             model.addAttribute("ordersDetails", orderDetails);
-
             return "admin/order-detail";
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,37 +112,77 @@ public class AdminOrderController extends BaseController {
 
 
     @GetMapping("/detail/process/{id}")
-    public String setProcess(@PathVariable Long id) {
-        Order order = orderService.getOrderById(id);
-        orderService.setProcessingOrder(order);
-
+    public String setProcess(@PathVariable Long id,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            Order order = orderService.getOrderById(id);
+            if (order == null){
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng.");
+                return "redirect:/dashboard/order_management";
+            }
+            orderService.setProcessingOrder(order);
+            redirectAttributes.addFlashAttribute("success", "Đã xác nhận đơn hàng.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Lỗi xác nhận đơn hàng.");
+        }
         return "redirect:/dashboard/order_management/detail/" + id;
     }
 
 
     @GetMapping("/detail/deliver/{id}")
-    public String setDeliver(@PathVariable Long id) {
-        Order order = orderService.getOrderById(id);
-        orderService.setDeliveringOrder(order);
-
+    public String setDeliver(@PathVariable Long id,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            Order order = orderService.getOrderById(id);
+            if (order == null){
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng.");
+                return "redirect:/dashboard/order_management";
+            }
+            orderService.setDeliveringOrder(order);
+            redirectAttributes.addFlashAttribute("success", "Đơn hàng đã xác nhận đang được giao.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Lỗi xác nhận trạng thái đơn hàng.");
+        }
         return "redirect:/dashboard/order_management/detail/" + id;
     }
 
 
     @GetMapping("/detail/delivered/{id}")
-    public String setDelivered(@PathVariable Long id) {
-        Order order = orderService.getOrderById(id);
-        orderService.setDeliveredOrder(order);
-
+    public String setDelivered(@PathVariable Long id,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            Order order = orderService.getOrderById(id);
+            if (order == null){
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng.");
+                return "redirect:/dashboard/order_management";
+            }
+            orderService.setDeliveredOrder(order);
+            redirectAttributes.addFlashAttribute("success", "Đơn hàng đã xác nhận giao hàng thành công cho khách hàng.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Lỗi xác nhận trạng thái đơn hàng.");
+        }
         return "redirect:/dashboard/order_management/detail/" + id;
     }
 
 
     @GetMapping("/detail/cancel/{id}")
-    public String setCancel(@PathVariable Long id) {
-        Order order = orderService.getOrderById(id);
-        orderService.cancelOrder(order);
-
+    public String setCancel(@PathVariable Long id,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            Order order = orderService.getOrderById(id);
+            if (order == null){
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn hàng.");
+                return "redirect:/dashboard/order_management";
+            }
+            orderService.cancelOrder(order);
+            redirectAttributes.addFlashAttribute("success", "Đơn hàng đã được huỷ.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Lỗi xác nhận trạng thái đơn hàng.");
+        }
         return "redirect:/dashboard/order_management/detail/" + id;
     }
 

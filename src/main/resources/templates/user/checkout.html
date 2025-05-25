@@ -15,7 +15,6 @@
     <!-- ======= Header ======= -->
     <header th:replace="user/fragment/header :: header"></header>
 
-
     <div class="container mt-4">
         <h4 class="mb-3">Thanh toán đơn hàng</h4>
 
@@ -76,33 +75,27 @@
                     <div class="row mb-3">
                         <label for="fullName" class="col-sm-2 col-form-label">Họ tên người nhận</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="fullName" name="fullName"
-                                   th:field="*{fullName}" required>
+                            <input type="text" class="form-control" id="fullName" name="fullName" th:field="*{fullName}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <label for="phoneNumber" class="col-sm-2 col-form-label">Số điện thoại</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber"
-                                   th:field="*{phoneNumber}" required>
-
+                            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" th:field="*{phoneNumber}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <label for="email" class="col-sm-2 col-form-label">Email</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="email" name="email"
-                                   th:field="*{email}" required>
+                            <input type="text" class="form-control" id="email" name="email" th:field="*{email}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <label for="address" class="col-sm-2 col-form-label">Địa chỉ giao hàng</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="address" name="address"
-                                   th:field="*{address}" required>
+                            <input type="text" class="form-control" id="address" name="address" th:field="*{address}" required>
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -127,9 +120,9 @@
                     <div class="row">
                         <h6 class="fw-bold fs-5 mb-3">Thông tin thanh toán</h6>
                         <p class="mb-2">Tổng tiền sản phẩm: <span class="float-end" th:text="${#numbers.formatDecimal(totalCart, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span></p>
-                        <p class="mb-2">Giảm giá: <span class="float-end text-danger" th:if="${discount != null}">-<span
-                                th:text="${#numbers.formatDecimal(discount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span></span>
-                            <span class="float-end text-danger" th:unless="${discount != null}">0 đ</span></p>
+<!--                        <p class="mb-2">Giảm giá: <span class="float-end text-danger" th:if="${discount != null}">-<span-->
+<!--                                th:text="${#numbers.formatDecimal(discount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span></span>-->
+<!--                            <span class="float-end text-danger" th:unless="${discount != null}">0 đ</span></p>-->
                         <p class="mb-2">Phí vận chuyển: <span class="float-end text-success">Miễn phí</span></p>
                         <hr>
                         <p class="fw-bold">Tổng tiền thanh toán:
@@ -157,9 +150,7 @@
 <script th:src="@{/assets/vendor/tinymce/tinymce.min.js}"></script>
 <script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
 <script th:src="@{/assets/js/main.js}"></script>
-
-
-<script>
+<script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function() {
         const paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
         const onlinePaymentInfo = document.getElementById('online-payment-info');

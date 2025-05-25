@@ -6,7 +6,6 @@ import com.programing.bookweb.entity.Product;
 import com.programing.bookweb.service.ICategoryService;
 import com.programing.bookweb.service.IProductService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +23,6 @@ import java.util.List;
 @Controller
 @AllArgsConstructor
 @RequestMapping("/dashboard/product_management")
-@Slf4j
 public class AdminProductController extends BaseController {
 
     private final IProductService productService;
@@ -38,16 +36,10 @@ public class AdminProductController extends BaseController {
                                             @RequestParam(name = "sort", required = false) String sortBy,
                                             @RequestParam(name = "page", defaultValue = "1") int page,
                                             Model model) {
-
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
-
-        log.info("Filter parameters: keyword={}, categoryId={}, layout={}, sort={}, page={}",
-                keyword, categoryId, layout, sortBy, page);
-
         // Xử lý keyword trước khi tìm kiếm
         String normalizedKeyword = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : null;
-
         Pageable pageable;
         if (sortBy != null) {
             switch (sortBy) {
@@ -74,44 +66,32 @@ public class AdminProductController extends BaseController {
             if (normalizedKeyword != null && categoryId != null && layout != null) {
                 // Lọc theo cả 3 tiêu chí: từ khóa + danh mục + hình thức bìa
                 products = productService.getProductByCategoryIdAndKeywordAndLayoutUser(categoryId, normalizedKeyword, layout, pageable);
-                log.info("Filtering by all three criteria");
             } else if (normalizedKeyword != null && categoryId != null) {
                 // Lọc theo từ khóa + danh mục
                 products = productService.getProductByCategoryIdAndKeywordUser(categoryId, normalizedKeyword, pageable);
-                log.info("Filtering by keyword and category");
             } else if (normalizedKeyword != null && layout != null) {
                 // Lọc theo từ khóa + hình thức bìa
                 products = productService.getProductByLayoutAndKeywordUser(layout, normalizedKeyword, pageable);
-                log.info("Filtering by keyword and layout");
             } else if (categoryId != null && layout != null) {
                 // Lọc theo danh mục + hình thức bìa
                 products = productService.getProductByCategoryIdAndLayoutUser(categoryId, layout, pageable);
-                log.info("Filtering by category and layout");
             } else if (normalizedKeyword != null) {
                 // Chỉ lọc theo từ khóa
                 products = productService.getProductByKeywordUser(normalizedKeyword, pageable);
-                log.info("Filtering by keyword only");
             } else if (categoryId != null) {
                 // Chỉ lọc theo danh mục
                 products = productService.getProductByCategoryIdUser(categoryId, pageable);
-                log.info("Filtering by category only: categoryId={}", categoryId);
             } else if (layout != null) {
                 // Chỉ lọc theo hình thức bìa
                 products = productService.getProductByLayoutUser(layout, pageable);
-                log.info("Filtering by layout only: layout={}", layout);
             } else {
                 // Không có bộ lọc nào
                 products = productService.getAllProducts(pageable);
-                log.info("No filters applied");
             }
-
-            log.info("Query returned {} products", products.getContent().size());
         } catch (Exception e) {
-            log.error("Error fetching products: ", e);
             // Fallback to all products if there's an error
             products = productService.getAllProducts(pageable);
         }
-
         model.addAttribute("products", products);
         model.addAttribute("totalPages", products.getTotalPages());
         model.addAttribute("pageNumber", page);
@@ -119,7 +99,6 @@ public class AdminProductController extends BaseController {
         model.addAttribute("selectedCategoryId", categoryId);
         model.addAttribute("selectedLayout", layout);
         model.addAttribute("selectedSort", sortBy);
-
         return "admin/products";
     }
 
@@ -129,23 +108,21 @@ public class AdminProductController extends BaseController {
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
         model.addAttribute("product", new Product());
-
         return "admin/product-add";
     }
 
     @PostMapping("/add")
-    public String addNewProduct(
-            @ModelAttribute("product") Product product,
-            BindingResult result,
-            @RequestParam("imageProduct") MultipartFile imageProduct,
-            @RequestParam(value = "category", required = false) Long categoryId,
-            Model model,
-            RedirectAttributes redirectAttributes)
-            throws IOException {
+    public String addNewProduct(@ModelAttribute("product") Product product,
+                                BindingResult result,
+                                @RequestParam("imageProduct") MultipartFile imageProduct,
+                                @RequestParam(value = "category", required = false) Long categoryId,
+                                Model model,
+                                RedirectAttributes redirectAttributes) throws IOException {
         try {
-            System.out.println("Adding new product: " + product.getTitle());
-            System.out.println("Category ID: " + categoryId);
-
+            if (result.hasErrors()) {
+                model.addAttribute("error", "Nhập lại thông tin");
+                return "admin/category-detail";
+            }
             // Kiểm tra các trường bắt buộc
             if (product.getTitle() == null || product.getTitle().isEmpty() ||
                     product.getAuthor() == null || product.getAuthor().isEmpty() ||
@@ -154,39 +131,33 @@ public class AdminProductController extends BaseController {
                     product.getPrice() <= 0) {
                 List<Category> categories = categoryService.getAllCategories();
                 model.addAttribute("categories", categories);
-                model.addAttribute("error", "Vui lòng nhập đầy đủ thông tin cần thiết");
+                redirectAttributes.addFlashAttribute("error", "Vui lòng nhập đầy đủ thông tin cần thiết");
                 return "admin/product-add";
             }
-
             // Xử lý category
             if (categoryId == null || categoryId <= 0) {
                 List<Category> categories = categoryService.getAllCategories();
                 model.addAttribute("categories", categories);
-                model.addAttribute("error", "Vui lòng chọn thể loại sách");
+                redirectAttributes.addFlashAttribute("error", "Vui lòng chọn thể loại sách");
                 return "admin/product-add";
             }
-
             Category category = categoryService.getCategoryById(categoryId);
             if (category == null) {
                 List<Category> categories = categoryService.getAllCategories();
                 model.addAttribute("categories", categories);
-                model.addAttribute("error", "Thể loại không tồn tại");
+                redirectAttributes.addFlashAttribute("error", "Thể loại không tồn tại");
                 return "admin/product-add";
             }
-
             // Gán category cho product
             product.setCategory(category);
-
             // Xử lý các giá trị mặc định
             if (product.getQuantitySold() == 0) {
                 product.setQuantitySold(0);
             }
-
             // Thêm sản phẩm
             productService.addProduct(product, imageProduct);
             redirectAttributes.addFlashAttribute("success", "Thêm thành công sản phẩm");
             return "redirect:/dashboard/product_management/add";
-
         } catch (Exception e) {
             e.printStackTrace();
             List<Category> categories = categoryService.getAllCategories();
@@ -198,31 +169,32 @@ public class AdminProductController extends BaseController {
 
 
     @GetMapping("/update/{id}")
-    public String showEditProductForm(@PathVariable Long id, Model model) {
+    public String showEditProductForm(@PathVariable Long id,
+                                      Model model) {
         Product product = productService.getProductById(id);
         model.addAttribute("product", product);
-
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
-
         return "admin/products-detail";
     }
 
 
     @PostMapping("/update/{id}")
-    public String editProduct(
-            @PathVariable Long id,
-            @ModelAttribute("product") Product productForm,
-            BindingResult result,
-            @RequestParam(value = "image", required = false) MultipartFile imageFile,
-            @RequestParam(value = "category", required = false) Long categoryId,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-        // Lấy sản phẩm hiện có từ database
+    public String editProduct(@PathVariable Long id,
+                              @ModelAttribute("product") Product productForm,
+                              BindingResult result,
+                              @RequestParam(value = "image", required = false) MultipartFile imageFile,
+                              @RequestParam(value = "category", required = false) Long categoryId,
+                              Model model,
+                              RedirectAttributes redirectAttributes) {
         Product existingProduct = productService.getProductById(id);
         if (existingProduct == null) {
-            redirectAttributes.addFlashAttribute("error", "Không tìm thấy sản phẩm");
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy sản phẩm.");
             return "redirect:/dashboard/product_management";
+        }
+        if (result.hasErrors()){
+            redirectAttributes.addFlashAttribute("error", "Nhập lại thông tin.");
+            return "redirect:/dashboard/product_management/add";
         }
 
         try {
@@ -249,20 +221,19 @@ public class AdminProductController extends BaseController {
                 if (category != null) {
                     existingProduct.setCategory(category);
                 } else {
-                    model.addAttribute("error", "Không tìm thấy category với ID:" + categoryId);
+                    redirectAttributes.addFlashAttribute("error", "Không tìm thấy category với ID:" + categoryId);
                 }
             } else {
-                model.addAttribute("error", "Vui lòng chọn thể loại sách");
+                redirectAttributes.addFlashAttribute("error", "Vui lòng chọn thể loại sách");
             }
             // Kiểm tra nếu category vẫn null
             if (existingProduct.getCategory() == null) {
                 List<Category> categories = categoryService.getAllCategories();
                 model.addAttribute("categories", categories);
-                model.addAttribute("error", "Vui lòng chọn thể loại sách");
+                redirectAttributes.addFlashAttribute("error", "Vui lòng chọn thể loại sách");
                 model.addAttribute("product", existingProduct);
                 return "admin/products-detail";
             }
-
             // Xử lý file ảnh nếu được upload
             if (imageFile != null && !imageFile.isEmpty()) {
                 Product updatedProduct = productService.updateProduct(existingProduct, imageFile);
@@ -281,24 +252,21 @@ public class AdminProductController extends BaseController {
                     redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật sản phẩm");
                 }
             }
-
             return "redirect:/dashboard/product_management";
-
         } catch (Exception e) {
             e.printStackTrace();
-
             List<Category> categories = categoryService.getAllCategories();
             model.addAttribute("categories", categories);
             model.addAttribute("error", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
             model.addAttribute("product", existingProduct);
-
             return "admin/products-detail";
         }
     }
 
 
     @GetMapping("/delete/{id}")
-    public String deleteProduct(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deleteProduct(@PathVariable Long id,
+                                RedirectAttributes redirectAttributes) {
         try {
             Product product = productService.getProductById(id);
             if (product != null) {
@@ -323,7 +291,5 @@ public class AdminProductController extends BaseController {
         }
         return "redirect:/dashboard/product_management";
     }
-
-    
 
 }

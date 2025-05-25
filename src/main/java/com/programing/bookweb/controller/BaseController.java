@@ -23,6 +23,7 @@ public abstract class BaseController {
     @Autowired
     private ICategoryService categoryService;
 
+
     @ModelAttribute("cartItemCount")
     public int cartItemCount(HttpSession session) {
         CartDTO cart = cartService.getCart(session);
@@ -32,10 +33,12 @@ public abstract class BaseController {
         return cart.getCartItems().size();
     }
 
+
     @ModelAttribute("categories")
     public List<Category> getAllCategory(){
         return categoryService.getAllCategories();
     }
+
 
     @ModelAttribute("currentUser")
     public User getCurrentUser() {

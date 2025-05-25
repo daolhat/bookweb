@@ -22,6 +22,7 @@ public class ContactController extends BaseController{
     private final IContactService contactService;
     private final IUserService userService;
 
+
     @GetMapping
     public String getContactPage(Model model){
         User user = userService.getUserById(getCurrentUser().getId());
@@ -30,6 +31,7 @@ public class ContactController extends BaseController{
         return "user/contact";
     }
 
+
     @PostMapping("/submit")
     public String submitContactForm(@ModelAttribute Contact contact,
                                     RedirectAttributes redirectAttributes) {
@@ -37,7 +39,7 @@ public class ContactController extends BaseController{
         contact.setStatus(ContactStatus.PENDING);
         Contact savedContact = contactService.saveContact(contact, user);
         if(savedContact != null){
-            redirectAttributes.addFlashAttribute("thankForContacting","Cảm ơn bạn đã liên hệ!");
+            redirectAttributes.addFlashAttribute("success","Cảm ơn bạn đã liên hệ!. Chúng tôi sẽ phản hồi trong thời gian sớm nhất.");
             return "redirect:/contact?success=true";
         } else {
             redirectAttributes.addFlashAttribute("error","Lỗi khi gửi liên hệ!");

@@ -57,8 +57,8 @@ public class CartServiceImpl implements ICartService {
         List<CartItemDTO> cartItems = cart.getCartItems();
         cartItems.removeIf(item -> item.getProductId().equals(productId));
         session.setAttribute("cart", cart);
-
     }
+
 
     @Override
     public CartDTO getCart(HttpSession session) {
@@ -70,10 +70,12 @@ public class CartServiceImpl implements ICartService {
         return cart;
     }
 
+
     @Override
     public void clearCart(HttpSession session) {
         CartDTO cart = getCart(session);
         cart.getCartItems().clear();
         session.setAttribute("cart", cart);
     }
+
 }

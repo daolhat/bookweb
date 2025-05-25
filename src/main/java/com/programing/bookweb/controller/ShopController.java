@@ -19,11 +19,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/shop")
 @AllArgsConstructor
-@Slf4j
 public class ShopController extends BaseController{
 
     private final IProductService productService;
     private final ICategoryService categoryService;
+
 
     @GetMapping
     public String getShopPage(
@@ -35,9 +35,6 @@ public class ShopController extends BaseController{
             Model model) {
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
-
-        log.info("Filter parameters: keyword={}, categoryId={}, layout={}, sort={}, page={}",
-                keyword, categoryId, layout, sortBy, page);
 
         String normalizedKeyword = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : null;
 
@@ -66,43 +63,31 @@ public class ShopController extends BaseController{
             if (normalizedKeyword != null && categoryId != null && layout != null) {
                 // Lọc theo cả 3 tiêu chí: từ khóa + danh mục + hình thức bìa
                 products = productService.getProductByCategoryIdAndKeywordAndLayoutUser(categoryId, normalizedKeyword, layout, pageable);
-                log.info("Filtering by all three criteria");
             } else if (normalizedKeyword != null && categoryId != null) {
                 // Lọc theo từ khóa + danh mục
                 products = productService.getProductByCategoryIdAndKeywordUser(categoryId, normalizedKeyword, pageable);
-                log.info("Filtering by keyword and category");
             } else if (normalizedKeyword != null && layout != null) {
                 // Lọc theo từ khóa + hình thức bìa
                 products = productService.getProductByLayoutAndKeywordUser(layout, normalizedKeyword, pageable);
-                log.info("Filtering by keyword and layout");
             } else if (categoryId != null && layout != null) {
                 // Lọc theo danh mục + hình thức bìa
                 products = productService.getProductByCategoryIdAndLayoutUser(categoryId, layout, pageable);
-                log.info("Filtering by category and layout");
             } else if (normalizedKeyword != null) {
                 // Chỉ lọc theo từ khóa
                 products = productService.getProductByKeywordUser(normalizedKeyword, pageable);
-                log.info("Filtering by keyword only");
             } else if (categoryId != null) {
                 // Chỉ lọc theo danh mục
                 products = productService.getProductByCategoryIdUser(categoryId, pageable);
-                log.info("Filtering by category only: categoryId={}", categoryId);
             } else if (layout != null) {
                 // Chỉ lọc theo hình thức bìa
                 products = productService.getProductByLayoutUser(layout, pageable);
-                log.info("Filtering by layout only: layout={}", layout);
             } else {
                 // Không có bộ lọc nào
                 products = productService.getAllProducts(pageable);
-                log.info("No filters applied");
             }
-
-            log.info("Query returned {} products", products.getContent().size());
         } catch (Exception e) {
-            log.error("Error fetching products: ", e);
             products = productService.getAllProducts(pageable);
         }
-        
         model.addAttribute("products", products);
         model.addAttribute("totalPages", products.getTotalPages());
         model.addAttribute("pageNumber", page);
@@ -110,7 +95,6 @@ public class ShopController extends BaseController{
         model.addAttribute("selectedCategoryId", categoryId);
         model.addAttribute("selectedLayout", layout);
         model.addAttribute("selectedSort", sortBy);
-
         return "user/shop";
     }
 
@@ -118,13 +102,10 @@ public class ShopController extends BaseController{
     @GetMapping("/product/{id}")
     public String viewProductDetail(@PathVariable Long id, Model model) {
         Pageable pageable = PageRequest.of(0, 6);
-
         Product product = productService.getProductById(id);
         model.addAttribute("product", product);
-
         List<Product> products = productService.getProductsByCategory(product.getCategory().getId(), pageable);
         model.addAttribute("relatedProducts", products);
-
         return "user/product-detail";
     }
 

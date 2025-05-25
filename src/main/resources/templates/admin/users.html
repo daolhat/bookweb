@@ -27,17 +27,17 @@
         </nav>
     </div>
 
-    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle me-1"></i>
-        <span th:text="${success}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+<!--    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">-->
+<!--        <i class="bi bi-check-circle me-1"></i>-->
+<!--        <span th:text="${success}"></span>-->
+<!--        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
+<!--    </div>-->
 
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle me-1"></i>
-        <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+<!--    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">-->
+<!--        <i class="bi bi-exclamation-triangle me-1"></i>-->
+<!--        <span th:text="${error}"></span>-->
+<!--        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
+<!--    </div>-->
 
     <section class="section dashboard">
         <div class="card">
@@ -192,6 +192,30 @@
             </div>
         </div>
     </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <!-- Success Toast -->
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="bi bi-check-circle me-2"></i>
+                <strong class="me-auto">Thông báo</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="successToastBody"></div>
+        </div>
+
+        <!-- Error Toast -->
+        <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-warning text-white">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong class="me-auto">Lỗi</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="errorToastBody"></div>
+        </div>
+    </div>
+
 </main>
 
 <!-- ======= Footer ======= -->
@@ -211,8 +235,7 @@
 <script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
 <!-- Template Main JS File -->
 <script th:src="@{/assets/js/main.js}"></script>
-
-<script>
+<script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function () {
         const deleteButtons = document.querySelectorAll('.delete-user');
         const deleteForm = document.getElementById('deleteForm');
@@ -234,6 +257,35 @@
                 deleteModal.show();
             });
         });
+
+        function showToast(type, message) {
+            const toastElement = document.getElementById(type + 'Toast');
+            const toastBody = document.getElementById(type + 'ToastBody');
+            if (toastElement && toastBody && typeof bootstrap !== 'undefined' && bootstrap.Toast) {
+                toastBody.textContent = message;
+                const toast = new bootstrap.Toast(toastElement);
+                toast.show();
+                setTimeout(() => {
+                    toast.hide();
+                }, 2000);
+            } else {
+                console.warn(`Cannot show toast: Bootstrap or toast element '${type}Toast' not found.`);
+            }
+        }
+
+        /*[# th:if="${success != null}"]*/
+        const successMessage = /*[[${success}]]*/ '';
+        if (successMessage) {
+            showToast('success', successMessage);
+        }
+        /*[/]*/
+
+        /*[# th:if="${error != null}"]*/
+        const errorMessage = /*[[${error}]]*/ '';
+        if (errorMessage) {
+            showToast('error', errorMessage);
+        }
+        /*[/]*/
     });
 </script>
 
