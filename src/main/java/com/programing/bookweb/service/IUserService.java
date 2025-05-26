@@ -13,7 +13,7 @@ public interface IUserService  {
 
     User getUserById(Long userId);
 
-    User updateUser(User user, MultipartFile avatar);
+    void updateUser(User user);
 
     void changePassword(User user,String newPassword);
 

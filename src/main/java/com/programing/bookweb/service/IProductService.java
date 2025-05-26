@@ -4,10 +4,7 @@ import com.programing.bookweb.dto.TopProductDTO;
 import com.programing.bookweb.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,9 +12,9 @@ public interface IProductService {
 
     Long countProduct();
 
-    Product addProduct(Product product, MultipartFile imageProduct) throws SQLException, IOException;
+    void addProduct(Product product);
 
-    Product updateProduct(Product product, MultipartFile imageProduct) throws SQLException, IOException;
+    void updateProduct(Product product);
 
     void deleteProduct(Long productId);
 

@@ -7,20 +7,13 @@ import com.programing.bookweb.repository.CategoryRepository;
 import com.programing.bookweb.repository.ProductRepository;
 import com.programing.bookweb.service.IProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.sql.SQLException;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -30,8 +23,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements IProductService {
 
-    private static final String PRODUCT_IMAGE_DIR = "src/main/resources/static/assets/img/product";
-
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
@@ -40,174 +31,18 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.count();
     }
 
-//    @Transactional
-//    @Override
-//    public Product addProduct(Product product, MultipartFile imageProduct) throws SQLException, IOException {
-//        if (imageProduct != null && !imageProduct.isEmpty()){
-//            try {
-//                String originalFileName = imageProduct.getOriginalFilename();
-//                String uniqueFileName = generateUniqueFileName(originalFileName);
-//                Path imagePath = Paths.get(PRODUCT_IMAGE_DIR, uniqueFileName);
-//                // Create directory if not exists
-//                Files.createDirectories(imagePath.getParent());
-//                Files.copy(imageProduct.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-//                product.setImageProduct(uniqueFileName);
-//            } catch (IOException e) {
-//                throw new RuntimeException("Lỗi khi lưu ảnh", e);
-//            }
-//        }
-//        product.setQuantitySold(0);
-//        product.setCreatedAt(LocalDateTime.now());
-//        return productRepository.save(product);
-//    }
 
-    @Transactional
     @Override
-    public Product addProduct(Product product, MultipartFile imageProduct) throws SQLException, IOException {
-        // Kiểm tra trường bắt buộc
-        if (product.getTitle() == null || product.getTitle().isEmpty()) {
-            throw new IllegalArgumentException("Tiêu đề không được để trống");
-        }
-        if (product.getCategory() == null || product.getCategory().getId() == null) {
-            throw new IllegalArgumentException("Thể loại không được để trống");
-        }
-
-        // Xử lý hình ảnh
-        if (imageProduct != null && !imageProduct.isEmpty()) {
-            String contentType = imageProduct.getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) {
-                throw new IllegalArgumentException("Tệp phải là hình ảnh (PNG, JPEG, v.v.)");
-            }
-            if (imageProduct.getSize() > 10 * 1024 * 1024) {
-                throw new IllegalArgumentException("Tệp hình ảnh quá lớn, tối đa 10MB");
-            }
-
-            Path dirPath = Paths.get(PRODUCT_IMAGE_DIR);
-            if (!Files.exists(dirPath)) {
-                Files.createDirectories(dirPath);
-            }
-            if (!Files.isWritable(dirPath)) {
-                throw new IOException("Thư mục " + PRODUCT_IMAGE_DIR + " không có quyền ghi");
-            }
-
-            String originalFileName = imageProduct.getOriginalFilename();
-            String cleanFileName = originalFileName.replaceAll("[^a-zA-Z0-9.-]", "_");
-            String uniqueFileName = System.currentTimeMillis() + "_" + cleanFileName;
-            Path imagePath = Paths.get(PRODUCT_IMAGE_DIR, uniqueFileName);
-            Files.copy(imageProduct.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-            product.setImageProduct(uniqueFileName);
-        } else {
-            product.setImageProduct("default-product.jpg");
-        }
-
-        // Đặt giá trị mặc định
-        product.setQuantitySold(0);
-        product.setCreatedAt(LocalDateTime.now());
-
-        try {
-            return productRepository.save(product);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Lỗi khi lưu sản phẩm vào cơ sở dữ liệu: " + e.getMessage(), e);
-        }
+    public void addProduct(Product product) {
+        productRepository.save(product);
     }
 
 
-//    @Transactional
-//    @Override
-//    public Product updateProduct(Product product, MultipartFile imageProduct) {
-//        if (imageProduct != null && !imageProduct.isEmpty()){
-//            try {
-//                String originalFileName = imageProduct.getOriginalFilename();
-//                String uniqueFileName = generateUniqueFileName(originalFileName);
-//                Path imagePath = Paths.get(PRODUCT_IMAGE_DIR, uniqueFileName);
-//                // Create directory if not exists
-//                Files.createDirectories(imagePath.getParent());
-//                Files.copy(imageProduct.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-//                product.setImageProduct(uniqueFileName);
-//            } catch (IOException e) {
-//                throw new RuntimeException("Lỗi khi lưu ảnh", e);
-//            }
-//        }
-//        product.setUpdatedAt(LocalDateTime.now());
-//        return productRepository.save(product);
-//    }
-
-
-    @Transactional
     @Override
-    public Product updateProduct(Product product, MultipartFile imageProduct) throws SQLException, IOException{
-        // Kiểm tra tồn tại sản phẩm
-        Product existingProduct = productRepository.findById(product.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sản phẩm với ID: " + product.getId()));
-
-        // Kiểm tra trường bắt buộc
-        if (product.getTitle() == null || product.getTitle().isEmpty()) {
-            throw new IllegalArgumentException("Tiêu đề không được để trống");
-        }
-        if (product.getCategory() == null || product.getCategory().getId() == null) {
-            throw new IllegalArgumentException("Thể loại không được để trống");
-        }
-
-        // Cập nhật các trường
-        existingProduct.setTitle(product.getTitle());
-        existingProduct.setAuthor(product.getAuthor());
-        existingProduct.setSupplier(product.getSupplier());
-        existingProduct.setPublisher(product.getPublisher());
-        existingProduct.setPublishingYear(product.getPublishingYear());
-        existingProduct.setIntroduction(product.getIntroduction());
-        existingProduct.setPrice(product.getPrice());
-        existingProduct.setDiscount(product.getDiscount());
-        existingProduct.setQuantitySold(product.getQuantitySold());
-        existingProduct.setWeight(product.getWeight());
-        existingProduct.setNumberOfPage(product.getNumberOfPage());
-        existingProduct.setQuantity(product.getQuantity());
-        existingProduct.setSize(product.getSize());
-        existingProduct.setLayout(product.getLayout());
-        existingProduct.setTranslator(product.getTranslator());
-        existingProduct.setCategory(product.getCategory());
-
-        // Xử lý hình ảnh
-        if (imageProduct != null && !imageProduct.isEmpty()) {
-            String contentType = imageProduct.getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) {
-                throw new IllegalArgumentException("Tệp phải là hình ảnh (PNG, JPEG, v.v.)");
-            }
-            if (imageProduct.getSize() > 10 * 1024 * 1024) {
-                throw new IllegalArgumentException("Tệp hình ảnh quá lớn, tối đa 10MB");
-            }
-
-            Path dirPath = Paths.get(PRODUCT_IMAGE_DIR);
-            if (!Files.exists(dirPath)) {
-                Files.createDirectories(dirPath);
-            }
-            if (!Files.isWritable(dirPath)) {
-                throw new IOException("Thư mục " + PRODUCT_IMAGE_DIR + " không có quyền ghi");
-            }
-
-            // Xóa ảnh cũ
-            if (existingProduct.getImageProduct() != null && !existingProduct.getImageProduct().isEmpty()) {
-                Path oldImagePath = Paths.get(PRODUCT_IMAGE_DIR, existingProduct.getImageProduct());
-                Files.deleteIfExists(oldImagePath);
-            }
-
-            String originalFileName = imageProduct.getOriginalFilename();
-            String cleanFileName = originalFileName.replaceAll("[^a-zA-Z0-9.-]", "_");
-            String uniqueFileName = System.currentTimeMillis() + "_" + cleanFileName;
-            Path imagePath = Paths.get(PRODUCT_IMAGE_DIR, uniqueFileName);
-            Files.copy(imageProduct.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-            existingProduct.setImageProduct(uniqueFileName);
-        } else {
-            existingProduct.setImageProduct(existingProduct.getImageProduct()); // Giữ nguyên ảnh cũ
-        }
-
-        existingProduct.setUpdatedAt(LocalDateTime.now());
-
-        try {
-            return productRepository.save(existingProduct);
-        } catch (DataAccessException e) {
-            throw new RuntimeException("Lỗi khi cập nhật sản phẩm vào cơ sở dữ liệu: " + e.getMessage(), e);
-        }
+    public void updateProduct(Product product) {
+        productRepository.save(product);
     }
+
 
     @Override
     @Transactional
@@ -360,8 +195,4 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findTopSellingProducts(startDate, endDate, pageable);
     }
 
-
-    private String generateUniqueFileName(String originalFileName) {
-        return System.currentTimeMillis() + "_" + originalFileName;
-    }
 }

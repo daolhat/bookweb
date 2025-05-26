@@ -157,7 +157,7 @@
                                     <td th:text="${product.code}"></td>
                                     <td th:text="${product.title}"></td>
                                     <td class="text-center">
-                                        <img th:if="${product.imageProduct}" th:src="@{'/assets/img/product/' + ${product.imageProduct}}"
+                                        <img th:if="${product.imageProduct}" th:src="@{'/images/product/' + ${product.imageProduct}}"
                                              style="height: 120px; width: 90px; object-fit: cover;"
                                              alt="Ảnh sản phẩm">
                                         <img th:unless="${product.imageProduct}" th:src="@{/assets/img/product-image-default.jpg}"
@@ -232,7 +232,7 @@
                                     <!-- First page -->
                                     <li class="page-item" th:classappend="${pageNumber == 1 ? 'active' : ''}">
                                         <a class="page-link"
-                                           th:href="@{/dashboard/contact_management(page=1, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
+                                           th:href="@{/dashboard/product_management(page=1, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort=${selectedSort})}"
                                            th:text="1">1</a>
                                     </li>
 

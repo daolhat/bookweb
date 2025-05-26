@@ -32,29 +32,25 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Thêm mới sản phẩm</h4>
-                <form class="row g-3" th:action="@{/dashboard/product_management/add}" method="post" th:object="${product}" enctype="multipart/form-data" >
-
+                <form class="row g-3" th:action="@{/dashboard/product_management/add}" method="post" th:object="${productDTO}" enctype="multipart/form-data" >
                     <div class="col-lg-3 d-flex justify-content-center">
                         <div class="text-center">
                             <label for="inputFile" class="form-label ">Ảnh bìa</label>
                             <div class="col-sm-12">
                                 <div class="d-flex flex-column align-items-center">
                                     <div class="image-container mb-3" id="imageContainer">
-                                        <span th:unless="${product.imageProduct}">No Image</span>
-                                        <img th:if="${product.imageProduct}" th:src="@{'/assets/img/product/' + ${product.imageProduct}}"
-                                             style="max-width: 100%; max-height: 100%; object-fit: cover;"
-                                             alt="cover image"/>
+                                        <span>Ảnh bìa</span>
                                     </div>
                                     <div class="d-flex gap-2 justify-content-center mt-3">
                                         <label class="btn btn-primary btn-upload">
-                                            <input type="file" id="inputFile" name="imageProduct" accept="image/*"
-                                                   hidden>
+                                            <input type="file" id="inputFile" name="imageProduct" th:field="${productDTO.imageProduct}" accept="image/*" hidden>
                                             <i class="bi bi-upload"></i> Tải ảnh
                                         </label>
                                         <button type="button" class="btn btn-danger btn-delete" id="deleteButton">
                                             <i class="bi bi-trash"></i> Xoá ảnh
                                         </button>
                                     </div>
+                                    <p th:if="${#fields.hasErrors('imageProduct')}" th:errorclass="text-danger" th:errors="${productDTO.imageProduct}"></p>
                                 </div>
                             </div>
                         </div>
@@ -64,82 +60,100 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <label for="title" class="form-label">Tiêu đề</label>
-                                <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                                <input type="text" class="form-control" id="title" th:field="${productDTO.title}">
+                                <p th:if="${#fields.hasErrors('title')}" th:errorclass="text-danger" th:errors="${productDTO.title}"></p>
                             </div>
-                            <div class="col-md-6 ">
+                            <div class="col-md-6">
                                 <label for="author" class="form-label">Tác giả</label>
-                                <input type="text" class="form-control" id="author" th:field="*{author}" required>
+                                <input type="text" class="form-control" id="author" th:field="${productDTO.author}">
+                                <p th:if="${#fields.hasErrors('author')}" th:errorclass="text-danger" th:errors="${productDTO.author}"></p>
                             </div>
                             <div class="col-md-6 ">
                                 <label for="translator" class="form-label">Dịch giả</label>
-                                <input type="text" class="form-control" id="translator" th:field="*{translator}" required>
+                                <input type="text" class="form-control" id="translator" th:field="${productDTO.translator}">
+                                <p th:if="${#fields.hasErrors('translator')}" th:errorclass="text-danger" th:errors="${productDTO.translator}"></p>
                             </div>
                             <div class="col-md-6">
                                 <label for="publisher" class="form-label">Nhà xuất bản</label>
-                                <input type="text" class="form-control" id="publisher" th:field="*{publisher}" required>
+                                <input type="text" class="form-control" id="publisher" th:field="${productDTO.publisher}">
+                                <p th:if="${#fields.hasErrors('publisher')}" th:errorclass="text-danger" th:errors="${productDTO.publisher}"></p>
+
                             </div>
                             <div class="col-md-6">
                                 <label for="supplier" class="form-label">Nhà cung cấp</label>
-                                <input type="text" class="form-control" id="supplier" th:field="*{supplier}" required>
+                                <input type="text" class="form-control" id="supplier" th:field="${productDTO.supplier}">
+                                <p th:if="${#fields.hasErrors('supplier')}" th:errorclass="text-danger" th:errors="${productDTO.supplier}"></p>
                             </div>
                             <div class="col-md-6">
                                 <label for="categoryId" class="form-label">Thể loại</label>
-                                <select class="form-select" id="categoryId" name="category" required>
+                                <select th:field="${productDTO.categoryId}" class="form-select" id="categoryId" name="category">
                                     <option value="">-- Chọn thể loại --</option>
                                     <option th:each="category : ${categories}"
                                             th:value="${category.id}"
                                             th:text="${category.name}">
                                     </option>
                                 </select>
-                                <input type="hidden" name="_category" value="on"/>
+                                <p th:if="${#fields.hasErrors('categoryId')}" th:errorclass="text-danger" th:errors="${productDTO.categoryId}"></p>
                             </div>
                             <div class="col-md-2">
                                 <label for="publishingYear" class="form-label">Năm xuất bản</label>
-                                <input type="text" class="form-control" id="publishingYear" th:field="*{publishingYear}" required>
+                                <input type="text" class="form-control" id="publishingYear" th:field="${productDTO.publishingYear}">
+                                <p th:if="${#fields.hasErrors('publishingYear')}" th:errorclass="text-danger" th:errors="${productDTO.publishingYear}"></p>
                             </div>
                             <div class="col-md-4">
                                 <label for="layout" class="form-label">Hình thức bìa</label>
-                                <select th:field="*{layout}" class="form-select" id="layout" required>
+                                <select th:field="${productDTO.layout}" class="form-select" id="layout">
                                     <option value="">-- Chọn hình thức bìa --</option>
                                     <option value="Bìa mềm">Bìa mềm</option>
                                     <option value="Bìa cứng">Bìa cứng</option>
                                 </select>
+                                <p th:if="${#fields.hasErrors('layout')}" th:errorclass="text-danger" th:errors="${productDTO.layout}"></p>
                             </div>
                             <div class="col-md-2">
                                 <label for="numberOfPage" class="form-label">Số trang</label>
-                                <input type="number" class="form-control" id="numberOfPage" th:field="*{numberOfPage}" required>
+                                <input type="number" class="form-control" id="numberOfPage" th:field="${productDTO.numberOfPage}">
+                                <p th:if="${#fields.hasErrors('numberOfPage')}" th:errorclass="text-danger" th:errors="${productDTO.numberOfPage}"></p>
                             </div>
                             <div class="col-md-2">
                                 <label for="weight" class="form-label">Trọng lượng (gr)</label>
-                                <input type="text" class="form-control" id="weight" th:field="*{weight}" required>
+                                <input type="text" class="form-control" id="weight" th:field="${productDTO.weight}">
+                                <p th:if="${#fields.hasErrors('weight')}" th:errorclass="text-danger" th:errors="${productDTO.weight}"></p>
                             </div>
 
                             <div class="col-md-5">
                                 <label for="size" class="form-label">Kích thước bao bì</label>
-                                <input type="text" class="form-control" id="size" th:field="*{size}" required>
+                                <input type="text" class="form-control" id="size" th:field="${productDTO.size}">
+                                <p th:if="${#fields.hasErrors('size')}" th:errorclass="text-danger" th:errors="${productDTO.size}"></p>
                             </div>
 
                             <div class="col-md-3">
                                 <label for="quantity" class="form-label">Số lượng</label>
-                                <input type="number" class="form-control" id="quantity" min="0" th:field="*{quantity}" required>
+                                <input type="number" class="form-control" id="quantity" min="0" th:field="${productDTO.quantity}">
+                                <p th:if="${#fields.hasErrors('quantity')}" th:errorclass="text-danger" th:errors="${productDTO.quantity}"></p>
                             </div>
+
                             <div class="col-md-6">
                                 <label for="price" class="form-label">Giá gốc</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="price" th:field="*{price}" min="0" required>
+                                    <input type="number" class="form-control" id="price" th:field="${productDTO.price}">
                                     <span class="input-group-text">đ</span>
                                 </div>
+                                <p th:if="${#fields.hasErrors('price')}" th:errorclass="text-danger" th:errors="${productDTO.price}"></p>
                             </div>
+
                             <div class="col-md-3">
                                 <label for="discount" class="form-label">Giảm giá</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="discount" th:field="*{discount}" min="0" max="100" value="0" required>
+                                    <input type="number" class="form-control" id="discount" th:field="${productDTO.discount}">
                                     <span class="input-group-text">%</span>
                                 </div>
+                                <p th:if="${#fields.hasErrors('discount')}" th:errorclass="text-danger" th:errors="${productDTO.discount}"></p>
                             </div>
+
                             <div class="col-12">
                                 <label for="introduction" class="form-label">Mô tả/ Giới thiệu về sách</label>
-                                <textarea class="form-control" id="introduction" th:field="*{introduction}" style="height: 200px;" required></textarea>
+                                <textarea class="form-control" id="introduction" th:field="${productDTO.introduction}" style="height: 200px;" placeholder="Nhập mô tả chi tiết về sách..."></textarea>
+                                <p th:if="${#fields.hasErrors('introduction')}" th:errorclass="text-danger" th:errors="${productDTO.introduction}"></p>
                             </div>
                         </div>
                     </div>

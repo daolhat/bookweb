@@ -45,7 +45,7 @@
                             <tr th:each="item : ${cart.cartItems}">
                                 <td>
                                     <div class="d-flex">
-                                        <img th:src="@{'/assets/img/product/' + ${item.imageProduct}}" alt="Product Image" class="me-3"
+                                        <img th:src="@{'/images/product/' + ${item.imageProduct}}" alt="Product Image" class="me-3"
                                              style="width: 60px; height: 80px; object-fit: cover;">
                                         <div>
                                             <h6 th:text="${item.title}"></h6>

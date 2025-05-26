@@ -1,5 +1,6 @@
 package com.programing.bookweb.controller;
 
+import com.programing.bookweb.dto.UserDTO;
 import com.programing.bookweb.entity.User;
 import com.programing.bookweb.service.IUserService;
 import jakarta.validation.Valid;
@@ -13,6 +14,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 @Controller
 @AllArgsConstructor
 @RequestMapping("/profile")
@@ -21,41 +32,107 @@ public class ProfileController extends BaseController{
     private final IUserService userService;
     private final PasswordEncoder passwordEncoder;
 
+    private static final String USER_IMAGE_DIR = "public/images/user";
 
     @GetMapping
     public String getUser(Model model) {
-        User user = userService.getUserById(getCurrentUser().getId());
-        model.addAttribute("user", user);
+        try {
+            User user = userService.getUserById(getCurrentUser().getId());
+            model.addAttribute("user", user);
+
+            UserDTO userDTO = new UserDTO();
+            userDTO.setAddress(user.getAddress());
+            userDTO.setGender(user.getGender());
+            userDTO.setFullName(user.getFullName());
+            userDTO.setPhoneNumber(user.getPhoneNumber());
+
+            Date date = Date.from(user.getBirthday().atStartOfDay(ZoneId.systemDefault()).toInstant());
+            userDTO.setBirthday(date);
+
+            model.addAttribute("userDTO", userDTO);
+        } catch (Exception e) {
+            System.out.println("Lỗi: " + e.getMessage());
+            return "redirect:/";
+        }
         return "user/user-profile";
     }
 
 
     @PostMapping("/update")
-    public String updateUser(@ModelAttribute("user") @Valid User user,
+    public String updateUser(@Valid @ModelAttribute("userDTO") UserDTO userDTO,
                              BindingResult result,
-                             @RequestParam(value = "avatar", required = false) MultipartFile avatar,
+                             Model model,
                              RedirectAttributes redirectAttributes) {
-        User existingUser = userService.getUserById(user.getId());
-        if (existingUser == null) {
-            redirectAttributes.addFlashAttribute("error", "Người dùng không tồn tại!");
-            return "redirect:/profile";
-        }
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("error", "Vui lòng điền đầy đủ thông tin hợp lệ.");
-            return "user/register";
-        }
-        existingUser.setFullName(user.getFullName());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setPhoneNumber(user.getPhoneNumber());
-        existingUser.setGender(user.getGender());
-        existingUser.setBirthday(user.getBirthday());
-        existingUser.setAddress(user.getAddress());
+
         try {
-            userService.updateUser(existingUser, avatar);
-            redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin thành công!");
+            User user = userService.getUserById(getCurrentUser().getId());
+            if (user == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy thông tin tài khoản");
+                return "redirect:/profile";
+            }
+            model.addAttribute("user", user);
+
+            if (result.hasErrors()) {
+                return "user/user-profile";
+            }
+
+            Path uploadDir = Paths.get(USER_IMAGE_DIR);
+
+            if (!userDTO.getAvatar().isEmpty()) {
+                //Xoá ảnh cũ
+                Path oldImagePath = uploadDir.resolve(user.getAvatar());
+                try {
+                    Files.delete(oldImagePath);
+                } catch (Exception e) {
+                    System.out.println("Lỗi: " + e.getMessage());
+                }
+                MultipartFile image = userDTO.getAvatar();
+                Date createdAt = new Date();
+                String storageFileName = createdAt.getTime() + "_" + image.getOriginalFilename();
+                Path filePath = uploadDir.resolve(storageFileName);
+                try (InputStream inputStream = image.getInputStream()) {
+                    Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                }
+                user.setAvatar(storageFileName);
+            }
+
+//            MultipartFile image = userDTO.getAvatar();
+//            Date createdAt = new Date();
+//            String storageFileName = createdAt.getTime() + "_" + image.getOriginalFilename();
+//            try {
+//                if (!Files.exists(uploadDir)){
+//                    Files.createDirectories(uploadDir);
+//                }
+//                Path filePath = uploadDir.resolve(storageFileName);
+//                try (InputStream inputStream = image.getInputStream()) {
+//                    Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+//                }
+//            } catch (Exception e) {
+//                System.out.println("Lỗi ngoại lệ: " + e.getMessage());
+//            }
+
+//            user.setAvatar(storageFileName);
+            user.setFullName(userDTO.getFullName());
+            user.setGender(userDTO.getGender());
+            user.setPhoneNumber(userDTO.getPhoneNumber());
+            user.setAddress(userDTO.getAddress());
+            user.setUpdatedAt(LocalDateTime.now());
+            LocalDate localDate = userDTO.getBirthday().toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+            user.setBirthday(localDate);
+
+            try {
+                userService.updateUser(user);
+                redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin tài khoản thành công.");
+            } catch (Exception e) {
+                System.out.println("Lỗi: " + e.getMessage());
+                redirectAttributes.addFlashAttribute("error", "Cập nhật thông tin tài khoản không thành công.");
+            }
         } catch (Exception e) {
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật thông tin tài khoản.");
+            System.out.println("Lỗi: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Lỗi cập nhật thông tin tài khoản");
         }
         return "redirect:/profile";
     }

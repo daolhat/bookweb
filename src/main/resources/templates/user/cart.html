@@ -40,7 +40,7 @@
                     <hr>
 
                     <div th:each="item : ${cart.cartItems}" class="d-flex align-items-center mb-3 pb-3 border-bottom">
-                        <img th:src="@{'/assets/img/product/' + ${item.imageProduct}}" alt="book" style="height: 120px; width: 90px; object-fit: cover;">
+                        <img th:src="@{'/images/product/' + ${item.imageProduct}}" alt="book" style="height: 120px; width: 90px; object-fit: cover;">
                         <div class="ms-3">
                             <p class="mb-0 fw-bold" th:text="${item.title}"></p>
                             <p>

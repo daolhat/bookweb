@@ -33,74 +33,78 @@
                 <section class="section">
                     <div class="card">
                         <div class="card-body" style="padding-top: 20px;">
-                            <form id="userProfileForm" th:action="@{/profile/update}" method="post" enctype="multipart/form-data"
-                                  th:object="${user}">
-                                <input type="hidden" th:field="*{id}">
+                            <form id="userProfileForm" th:action="@{/profile/update}" method="post" enctype="multipart/form-data" th:object="${userDTO}">
                                 <div class="row mb-3">
-                                    <label for="imageContainer" class="col-md-4 col-lg-3 col-form-label">Ảnh
-                                        bìa</label>
+                                    <label for="imageContainer" class="col-md-4 col-lg-3 col-form-label">Ảnh người dùng</label>
                                     <div class="col-md-8 col-lg-9">
                                         <div class="d-flex flex-column align-items-start">
                                             <div class="image-container mb-3" id="imageContainer" style="width: 150px; height: 150px;">
-                                                <span th:unless="${user.avatar}">No Image</span>
+                                                <span th:unless="${user.avatar}">Không có ảnh</span>
                                                 <img th:if="${user.avatar}"
-                                                     th:src="@{'/assets/img/user/' + ${user.avatar}}"
+                                                     th:src="@{'/images/user/' + ${user.avatar}}"
                                                      style="max-width: 100%; max-height: 100%; object-fit: cover;"
                                                      alt=""/>
                                             </div>
                                             <div class="d-flex gap-2">
                                                 <label class="btn btn-primary btn-upload">
-                                                    <input type="file" id="fileInput" name="avatar" accept="image/*" hidden>
+                                                    <input type="file" id="fileInput" name="avatar" accept="image/*" th:field="${userDTO.avatar}" hidden>
                                                     <i class="bi bi-upload"></i> Tải ảnh
                                                 </label>
                                                 <button type="button" class="btn btn-danger btn-delete" id="deleteButton">
                                                     <i class="bi bi-trash"></i> Xoá ảnh
                                                 </button>
                                             </div>
+                                            <p th:if="${#fields.hasErrors('avatar')}" th:errorclass="text-danger" th:errors="${userDTO.avatar}"></p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Họ tên</label>
                                     <div class="col-md-8 col-lg-9">
-                                        <input th:field="*{fullName}" type="text" class="form-control" id="fullName" required>
+                                        <input th:field="${userDTO.fullName}" type="text" class="form-control" id="fullName">
+                                        <p th:if="${#fields.hasErrors('fullName')}" th:errorclass="text-danger" th:errors="${userDTO.fullName}"></p>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label for="gender" class="col-md-4 col-lg-3 col-form-label">Giới tính</label>
                                     <div class="col-md-8 col-lg-9">
-                                        <select th:field="*{gender}" class="form-select" id="gender" required>
-                                            <option value="">-- Chọn giới tính --</option>
+                                        <select th:field="${userDTO.gender}" class="form-select" id="gender">
+                                            <option value="Không">Không</option>
                                             <option value="Nam">Nam</option>
                                             <option value="Nữ">Nữ</option>
                                         </select>
+                                        <p th:if="${#fields.hasErrors('gender')}" th:errorclass="text-danger" th:errors="${userDTO.gender}"></p>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label for="address" class="col-md-4 col-lg-3 col-form-label">Địa chỉ</label>
                                     <div class="col-md-8 col-lg-9">
-                                        <input th:field="*{address}" type="text" class="form-control" id="address" required>
+                                        <input th:field="${userDTO.address}" type="text" class="form-control" id="address">
+                                        <p th:if="${#fields.hasErrors('address')}" th:errorclass="text-danger" th:errors="${userDTO.address}"></p>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label for="phoneNumber" class="col-md-4 col-lg-3 col-form-label">Số điện thoại</label>
                                     <div class="col-md-8 col-lg-9">
-                                        <input th:field="*{phoneNumber}" type="text" class="form-control" id="phoneNumber" required>
+                                        <input th:field="${userDTO.phoneNumber}" type="text" class="form-control" id="phoneNumber">
+                                        <p th:if="${#fields.hasErrors('phoneNumber')}" th:errorclass="text-danger" th:errors="${userDTO.phoneNumber}"></p>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label for="birthday" class="col-md-4 col-lg-3 col-form-label">Ngày sinh</label>
                                     <div class="col-md-8 col-lg-9">
-                                        <input th:attr="data-date=${user.birthday}" type="date" class="form-control" id="birthday" name="birthday" required>
+                                        <input th:field="${userDTO.birthday}" type="date" class="form-control" id="birthday" name="birthday">
+                                        <p th:if="${#fields.hasErrors('birthday')}" th:errorclass="text-danger" th:errors="${userDTO.birthday}"></p>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <label for="email" class="col-md-4 col-lg-3 col-form-label">Email</label>
                                     <div class="col-md-8 col-lg-9">
-                                        <input th:field="*{email}" type="email" class="form-control" id="email" readonly>
+                                        <input th:value="${user.email}" type="email" class="form-control" id="email" readonly>
                                         <small class="text-muted">Email không thể thay đổi</small>
                                     </div>
-
+                                </div>
+                                <div class="row mb-3">
                                     <div class="text-center mt-4">
                                         <button type="submit" class="btn btn-primary" id="submitBtn">Lưu thông tin</button>
                                     </div>
@@ -156,59 +160,14 @@
     const fileInput = document.getElementById('fileInput');
     const imageContainer = document.getElementById('imageContainer');
     const deleteButton = document.getElementById('deleteButton');
-    const birthdayInput = document.getElementById('birthday');
-    const userProfileForm = document.getElementById('userProfileForm');
-    const leftSidebarAvatar = document.querySelector('.card-body.profile-card img');
 
-    // Xử lý hiển thị ngày sinh
     document.addEventListener('DOMContentLoaded', function() {
-        // Lấy giá trị ngày từ thuộc tính data-date
-        const birthDate = birthdayInput.getAttribute('data-date');
-        if (birthDate) {
-            // Định dạng lại ngày cho đúng với input type="date"
-            birthdayInput.value = birthDate;
-        }
-
-        // Xử lý form submission
-        userProfileForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const formData = new FormData(userProfileForm);
-
-            fetch(userProfileForm.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Hiển thị thông báo thành công
-                    alert('Cập nhật thông tin thành công!');
-
-                    // Cập nhật ảnh ở sidebar nếu có ảnh mới
-                    if (fileInput.files.length > 0) {
-                        const file = fileInput.files[0];
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            if (leftSidebarAvatar) {
-                                leftSidebarAvatar.src = e.target.result;
-                            }
-                        };
-                        reader.readAsDataURL(file);
-                    } else if (removeAvatarInput.value === "true") {
-                        // Nếu xóa ảnh, hiển thị ảnh mặc định
-                        if (leftSidebarAvatar) {
-                            leftSidebarAvatar.src = '/assets/img/avatar-default.jpg';
-                        }
-                    }
-                } else {
-                    alert('Đã xảy ra lỗi khi cập nhật thông tin!');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Đã xảy ra lỗi khi cập nhật thông tin!');
-            });
-        });
+<!--        // Lấy giá trị ngày từ thuộc tính data-date-->
+<!--        const birthDate = birthdayInput.getAttribute('data-date');-->
+<!--        if (birthDate) {-->
+<!--            // Định dạng lại ngày cho đúng với input type="date"-->
+<!--            birthdayInput.value = birthDate;-->
+<!--        }-->
 
         function showToast(type, message) {
             const toastElement = document.getElementById(type + 'Toast');

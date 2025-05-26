@@ -65,7 +65,7 @@
                             <div class="row" th:if="${!#lists.isEmpty(order.orderDetails)}">
                                 <div class="col-md-2">
                                     <img th:if="${order.orderDetails[0].product != null && order.orderDetails[0].product.imageProduct != null}"
-                                         th:src="@{'/assets/img/product/' + ${order.orderDetails[0].product.imageProduct}}"
+                                         th:src="@{'/images/product/' + ${order.orderDetails[0].product.imageProduct}}"
                                          class="img-fluid" alt="Sản phẩm">
                                     <img th:unless="${order.orderDetails[0].product != null && order.orderDetails[0].product.imageProduct != null}"
                                          th:src="@{/assets/img/product-default.jpg}"

@@ -28,7 +28,7 @@
             <div class="container">
                 <div class="row bg-white rounded p-4">
                     <div class="col-md-4 d-flex justify-content-center align-items-center">
-                        <img th:src="@{'/assets/img/product/' + ${product.imageProduct}}" class="img-fluid rounded" alt="" style="min-height: 400px;">
+                        <img th:src="@{'/images/product/' + ${product.imageProduct}}" class="img-fluid rounded" alt="" style="min-height: 400px;">
                     </div>
 
                     <div class="col-md-8">
@@ -131,7 +131,7 @@
                     <span class="badge bg-danger position-absolute top-0 start-0 m-2" th:text="'-' + ${#numbers.formatDecimal(relatedProduct.discount, 0, 0)} + '%'"></span>
                     <a th:href="@{/shop/product/{id}(id=${relatedProduct.id})}" class="text-decoration-none text-dark flex-grow-1 d-flex flex-column">
                         <div class="d-flex justify-content-center flex-grow-1">
-                            <img th:src="@{'/assets/img/product/' + ${relatedProduct.imageProduct}}" class="product-img img-fluid"
+                            <img th:src="@{'/images/product/' + ${relatedProduct.imageProduct}}" class="product-img img-fluid"
                                  style="max-height: 200px; object-fit: cover;" alt="Sản phẩm">
                         </div>
                         <h6 class="mt-2 fw-semibold flex-grow-1" th:text="${#strings.abbreviate(relatedProduct.title, 40)}"></h6>

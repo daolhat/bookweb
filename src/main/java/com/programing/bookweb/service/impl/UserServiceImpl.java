@@ -11,13 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +21,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserServiceImpl implements IUserService {
 
-    private static final String USER_IMAGE_DIR = "src/main/resources/static/assets/img/user";
     private static final String DEFAULT_ROLE = "USER";
 
     private final UserRepository userRepository;
@@ -47,24 +40,10 @@ public class UserServiceImpl implements IUserService {
         return userRepository.findById(userId).orElse(null);
     }
 
-    @Override
-    public User updateUser(User user, MultipartFile avatar) {
-        if (avatar != null && !avatar.isEmpty()){
-            try {
-                String originalFileName = avatar.getOriginalFilename();
-                String uniqueFileName = generateUniqueFileName(originalFileName);
-                Path imagePath = Paths.get(USER_IMAGE_DIR, uniqueFileName);
-                // Create directory if not exists
-                Files.createDirectories(imagePath.getParent());
-                Files.copy(avatar.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                user.setAvatar(uniqueFileName);
-            } catch (IOException e) {
-                throw new RuntimeException("Lỗi khi lưu ảnh", e);
-            }
-        }
-        user.setUpdatedAt(LocalDateTime.now());
-        return userRepository.save(user);
 
+    @Override
+    public void updateUser(User user) {
+        userRepository.save(user);
     }
 
     @Override
@@ -170,8 +149,4 @@ public class UserServiceImpl implements IUserService {
         return getAllUserPage(pageable);
     }
 
-
-    private String generateUniqueFileName(String originalFileName) {
-        return System.currentTimeMillis() + "_" + originalFileName;
-    }
 }

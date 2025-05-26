@@ -46,14 +46,10 @@
 
                                 <div class="row p-3">
                                     <div class="col-md-6">
-                                        <p class="mb-2"><strong>Mã đơn hàng:</strong> <span
-                                                th:text="${order.code}"></span></p>
-                                        <p class="mb-2"><strong>Người nhận:</strong> <span
-                                                th:text="${order.receiver}"></span></p>
-                                        <p class="mb-2"><strong>Số điện thoại:</strong> <span
-                                                th:text="${order.customerPhone}"></span></p>
-                                        <p class="mb-2"><strong>Email:</strong> <span th:text="${order.email}"></span>
-                                        </p>
+                                        <p class="mb-2"><strong>Mã đơn hàng:</strong> <span th:text="${order.code}"></span></p>
+                                        <p class="mb-2"><strong>Người nhận:</strong> <span th:text="${order.receiver}"></span></p>
+                                        <p class="mb-2"><strong>Số điện thoại:</strong> <span th:text="${order.customerPhone}"></span></p>
+                                        <p class="mb-2"><strong>Email:</strong> <span th:text="${order.email}"></span></p>
                                         <p class="mb-2"><strong>Thời gian tạo:</strong> <span
                                                 th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm:ss')}"></span>
                                         </p>
@@ -103,7 +99,7 @@
                             <tr th:each="item : ${ordersDetails}">
                                 <td th:text="${item.product.code}"></td>
                                 <td>
-                                    <img th:src="@{'/assets/img/product/' + ${item.product.imageProduct}}"
+                                    <img th:src="@{'/images/product/' + ${item.product.imageProduct}}"
                                          class="product-img img-fluid"
                                          style="max-height: 120px; max-width: 90px; object-fit: cover;">
                                 </td>

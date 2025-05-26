@@ -24,20 +24,20 @@
             </ol>
         </nav>
 
-        <!-- Thông báo thành công -->
-        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success != null}">
-            <i class="bi bi-check-circle me-2"></i>
-            <span th:if="${param.success == 'order_cancelled'}">Đơn hàng đã được hủy thành công.</span>
-            <span th:if="${param.success == 'order_received'}">Đã xác nhận nhận hàng thành công.</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+<!--        &lt;!&ndash; Thông báo thành công &ndash;&gt;-->
+<!--        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success != null}">-->
+<!--            <i class="bi bi-check-circle me-2"></i>-->
+<!--            <span th:if="${param.success == 'order_cancelled'}">Đơn hàng đã được hủy thành công.</span>-->
+<!--            <span th:if="${param.success == 'order_received'}">Đã xác nhận nhận hàng thành công.</span>-->
+<!--            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
+<!--        </div>-->
 
-        <!-- Thông báo lỗi -->
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${param.error != null}">
-            <i class="bi bi-exclamation-triangle me-2"></i>
-            <span th:text="${param.error}">Đã xảy ra lỗi.</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+<!--        &lt;!&ndash; Thông báo lỗi &ndash;&gt;-->
+<!--        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${param.error != null}">-->
+<!--            <i class="bi bi-exclamation-triangle me-2"></i>-->
+<!--            <span th:text="${param.error}">Đã xảy ra lỗi.</span>-->
+<!--            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
+<!--        </div>-->
 
         <div class="row">
             <div th:replace="user/fragment/sidebar :: sidebar"></div>
@@ -74,7 +74,7 @@
                             <div class="row border-bottom p-3" th:each="item : ${ordersDetails}">
                                 <div class="col-md-2 p-3">
                                     <img th:if="${item.product != null && item.product.imageProduct != null}"
-                                         th:src="@{'/assets/img/product/' + ${item.product.imageProduct}}"
+                                         th:src="@{'/images/product/' + ${item.product.imageProduct}}"
                                          class="img-fluid" alt="Sản phẩm">
                                     <img th:unless="${item.product != null && item.product.imageProduct != null}"
                                          th:src="@{/assets/img/product-default.jpg}"

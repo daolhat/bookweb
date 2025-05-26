@@ -70,7 +70,7 @@
                     <span class="badge bg-danger position-absolute top-0 start-0 m-2" th:text="'-' + ${#numbers.formatDecimal(product.discount, 0, 0)} + '%'"></span>
                     <a th:href="@{'/shop/product/' + ${product.id}}"  class="text-decoration-none text-dark flex-grow-1 d-flex flex-column">
                         <div class="d-flex justify-content-center flex-grow-1">
-                            <img th:src="@{'/assets/img/product/' + ${product.imageProduct}}" class="product-img img-fluid"
+                            <img th:src="@{'/images/product/' + ${product.imageProduct}}" class="product-img img-fluid"
                                  style="max-height: 200px; object-fit: cover;" alt="Sản phẩm">
                         </div>
                         <h6 class="mt-2 fw-semibold flex-grow-1" th:text="${#strings.abbreviate(product.title, 40)}"></h6>
@@ -95,7 +95,7 @@
                     <span class="badge bg-danger position-absolute top-0 start-0 m-2" th:text="'-' + ${#numbers.formatDecimal(product.discount, 0, 0)} + '%'"></span>
                     <a th:href="@{/shop/product/{id}(id=${product.id})}" class="text-decoration-none text-dark flex-grow-1 d-flex flex-column">
                         <div class="d-flex justify-content-center flex-grow-1">
-                            <img th:src="@{'/assets/img/product/' + ${product.imageProduct}}" class="product-img img-fluid"
+                            <img th:src="@{'/images/product/' + ${product.imageProduct}}" class="product-img img-fluid"
                                  style="max-height: 200px; object-fit: cover;" alt="Sản phẩm">
                         </div>
                         <h6 class="mt-2 fw-semibold flex-grow-1" th:text="${#strings.abbreviate(product.title, 40)}"></h6>

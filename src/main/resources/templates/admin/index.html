@@ -227,41 +227,41 @@
                         </div>
                     </div>
 
-                    <div class="col-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Sản phẩm tồn kho</h5>
-                                <div class="col-12">
-                                    <table class="table table-borderless">
-                                        <thead>
-                                        <tr>
-                                            <th scope="col">STT</th>
-                                            <th scope="col" style="width: 8rem">Tiêu đề</th>
-                                            <th scope="col" style="width: 8rem">Thể loại</th>
-                                            <th scope="col">Giá bán</th>
-                                            <th scope="col">Số lượng còn lại</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr th:if="${#lists.isEmpty(inventory)}">
-                                            <td colspan="3" class="text-center">Không có dữ liệu</td>
-                                        </tr>
-                                        <tr th:each="product, productStat : ${inventory}">
-                                            <td th:text="${productStat.count}"></td>
-                                            <td>
-                                                <a th:href="@{/dashboard/product_management/{id}(id=${product.id})}"
-                                                   class="text-primary fw-bold" th:text="${#strings.abbreviate(product.title, 40)}"></a>
-                                            </td>
-                                            <td th:text="${product.category.name}"></td>
-                                            <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
-                                            <td class="fw-bold" th:text="${product.quantity}"></td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!--                    <div class="col-6">-->
+<!--                        <div class="card">-->
+<!--                            <div class="card-body">-->
+<!--                                <h5 class="card-title">Sản phẩm tồn kho</h5>-->
+<!--                                <div class="col-12">-->
+<!--                                    <table class="table table-borderless">-->
+<!--                                        <thead>-->
+<!--                                        <tr>-->
+<!--                                            <th scope="col">STT</th>-->
+<!--                                            <th scope="col" style="width: 8rem">Tiêu đề</th>-->
+<!--                                            <th scope="col" style="width: 8rem">Thể loại</th>-->
+<!--                                            <th scope="col">Giá bán</th>-->
+<!--                                            <th scope="col">Số lượng còn lại</th>-->
+<!--                                        </tr>-->
+<!--                                        </thead>-->
+<!--                                        <tbody>-->
+<!--                                        <tr th:if="${#lists.isEmpty(inventory)}">-->
+<!--                                            <td colspan="3" class="text-center">Không có dữ liệu</td>-->
+<!--                                        </tr>-->
+<!--                                        <tr th:each="product, productStat : ${inventory}">-->
+<!--                                            <td th:text="${productStat.count}"></td>-->
+<!--                                            <td>-->
+<!--                                                <a th:href="@{/dashboard/product_management/{id}(id=${product.id})}"-->
+<!--                                                   class="text-primary fw-bold" th:text="${#strings.abbreviate(product.title, 40)}"></a>-->
+<!--                                            </td>-->
+<!--                                            <td th:text="${product.category.name}"></td>-->
+<!--                                            <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>-->
+<!--                                            <td class="fw-bold" th:text="${product.quantity}"></td>-->
+<!--                                        </tr>-->
+<!--                                        </tbody>-->
+<!--                                    </table>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
             </div>
 
