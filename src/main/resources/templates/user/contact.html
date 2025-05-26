@@ -25,20 +25,6 @@
             </ol>
         </nav>
 
-        <!-- Thông báo thành công -->
-<!--        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${param.success != null}">-->
-<!--            <i class="bi bi-check-circle me-2"></i>-->
-<!--            <span>Tin nhắn của bạn đã được gửi thành công. Chúng tôi sẽ phản hồi trong thời gian sớm nhất!</span>-->
-<!--            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; Thông báo lỗi &ndash;&gt;-->
-<!--        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${param.error != null}">-->
-<!--            <i class="bi bi-exclamation-triangle me-2"></i>-->
-<!--            <span th:text="${param.error}">Đã xảy ra lỗi khi gửi tin nhắn.</span>-->
-<!--            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
-<!--        </div>-->
-
         <div class="row">
             <div th:replace="user/fragment/sidebar :: sidebar"></div>
             <div class="col-lg-9">

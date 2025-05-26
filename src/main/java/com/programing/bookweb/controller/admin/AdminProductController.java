@@ -40,7 +40,6 @@ public class AdminProductController extends BaseController {
     private final IProductService productService;
     private final ICategoryService categoryService;
 
-//    private static final String PRODUCT_IMAGE_DIR = "src/main/resources/static/assets/img/product/";
     private static final String PRODUCT_IMAGE_DIR = "public/images/product/";
 
     @GetMapping
@@ -57,8 +56,8 @@ public class AdminProductController extends BaseController {
         Pageable pageable;
         if (sortBy != null) {
             switch (sortBy) {
-                case "newest":
-                    pageable = PageRequest.of(page - 1, 12, Sort.by("createdAt").descending());
+                case "oldest":
+                    pageable = PageRequest.of(page - 1, 12, Sort.by("createdAt").ascending());
                     break;
                 case "price_asc":
                     pageable = PageRequest.of(page - 1, 12, Sort.by("price").ascending());
@@ -67,10 +66,10 @@ public class AdminProductController extends BaseController {
                     pageable = PageRequest.of(page - 1, 12, Sort.by("price").descending());
                     break;
                 default:
-                    pageable = PageRequest.of(page - 1, 12);
+                    pageable = PageRequest.of(page - 1, 12, Sort.by("createdAt").descending());
             }
         } else {
-            pageable = PageRequest.of(page - 1, 12);
+            pageable = PageRequest.of(page - 1, 12, Sort.by("createdAt").descending());
         }
 
         Page<Product> products;

@@ -33,25 +33,6 @@
         </div>
     </div>
 
-<!--    &lt;!&ndash; Hiển thị thông báo thành công hoặc lỗi nếu có &ndash;&gt;-->
-<!--    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">-->
-<!--        <i class="bi bi-check-circle me-1"></i>-->
-<!--        <span th:text="${success}"></span>-->
-<!--        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
-<!--    </div>-->
-
-<!--    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">-->
-<!--        <i class="bi bi-exclamation-triangle me-1"></i>-->
-<!--        <span th:text="${error}"></span>-->
-<!--        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
-<!--    </div>-->
-
-<!--    <div th:if="${info}" class="alert alert-info alert-dismissible fade show" role="alert">-->
-<!--        <i class="bi bi-info-circle me-1"></i>-->
-<!--        <span th:text="${info}"></span>-->
-<!--        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
-<!--    </div>-->
-
     <section class="section">
         <div class="row">
             <div class="col-lg-12">
@@ -100,9 +81,9 @@
                                            th:class="${selectedSort == null ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">
                                             Mặc định</a>
                                         <a type="button"
-                                           th:href="@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='newest')}"
-                                           th:class="${selectedSort != null && selectedSort == 'newest' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">
-                                            Sách mới</a>
+                                           th:href="@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='oldest')}"
+                                           th:class="${selectedSort != null && selectedSort == 'oldest' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">
+                                            Cũ nhất</a>
                                         <a type="button"
                                            th:href="@{/dashboard/product_management(page=${pageNumber}, keyword=${keyword}, categoryId=${selectedCategoryId}, layout=${selectedLayout}, sort='price_asc')}"
                                            th:class="${selectedSort != null && selectedSort == 'price_asc' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm'}">

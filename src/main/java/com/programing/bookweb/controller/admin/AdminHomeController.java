@@ -270,9 +270,7 @@ public class AdminHomeController extends BaseController {
         // Mặc định lấy theo 3 tháng gần nhất
         LocalDateTime startDate = LocalDateTime.now().minusMonths(3);
         LocalDateTime endDate = LocalDateTime.now();
-
         List<TopProductDTO> topProducts = productService.getTopSellingProducts(startDate, endDate);
-
         return topProducts;
     }
 

@@ -15,8 +15,8 @@ public class MailConfig {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
-        mailSender.setUsername("rooks.bookstore@gmail.com");
-        mailSender.setPassword("udqzeeuraikwhuir");
+        mailSender.setUsername("nhateeco@gmail.com");
+        mailSender.setPassword("kptbhvvlojdozvhw");
 
         // Enable TLS
         Properties props = mailSender.getJavaMailProperties();

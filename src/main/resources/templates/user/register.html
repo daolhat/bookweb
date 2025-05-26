@@ -34,12 +34,6 @@
                                     <p class="text-center small">Nhập thông tin để tạo tài khoản</p>
                                 </div>
 
-<!--                                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">-->
-<!--                                    <i class="bi bi-exclamation-triangle me-1"></i>-->
-<!--                                    <span th:text="${error}"></span>-->
-<!--                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
-<!--                                </div>-->
-
                                 <form class="row g-3 needs-validation" th:action="@{/register}" method="post" th:object="${user}" novalidate >
                                     <div class="col-12">
                                         <label for="fullName" class="form-label">Họ tên</label>

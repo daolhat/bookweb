@@ -35,17 +35,6 @@
                                     <p class="text-center small">Nhập email/số điện thoại và mật khẩu để đăng nhập</p>
                                 </div>
 
-<!--                                <div th:if="${param.error}" class="alert alert-danger mb-3">-->
-<!--                                    <p th:if="${errorMessage}" th:text="${errorMessage}"></p>-->
-<!--                                    <p th:unless="${errorMessage}">Đăng nhập không thành công. Vui lòng kiểm tra lại thông tin.</p>-->
-<!--                                </div>-->
-<!--                                <div th:if="${param.logout}" class="alert alert-success mb-3">-->
-<!--                                    Bạn đã đăng xuất thành công.-->
-<!--                                </div>-->
-<!--                                <div th:if="${checkoutRedirect}" class="alert alert-info mb-3">-->
-<!--                                    Vui lòng đăng nhập để tiến hành thanh toán.-->
-<!--                                </div>-->
-
                                 <form class="row g-3 needs-validation" method="post" th:action="@{/login}" novalidate>
                                     <div class="col-12">
                                         <label for="username" class="form-label">Email hoặc số điện thoại</label>

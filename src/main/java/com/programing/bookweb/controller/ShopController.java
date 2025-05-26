@@ -26,13 +26,12 @@ public class ShopController extends BaseController{
 
 
     @GetMapping
-    public String getShopPage(
-            @RequestParam(value = "keyword", required = false) String keyword,
-            @RequestParam(value = "categoryId", required = false) Long categoryId,
-            @RequestParam(value = "layout", required = false) String layout,
-            @RequestParam(value = "sort", required = false) String sortBy,
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            Model model) {
+    public String getShopPage(@RequestParam(value = "keyword", required = false) String keyword,
+                              @RequestParam(value = "categoryId", required = false) Long categoryId,
+                              @RequestParam(value = "layout", required = false) String layout,
+                              @RequestParam(value = "sort", required = false) String sortBy,
+                              @RequestParam(name = "page", defaultValue = "1") int page,
+                              Model model) {
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
 
@@ -41,8 +40,8 @@ public class ShopController extends BaseController{
         Pageable pageable;
         if (sortBy != null) {
             switch (sortBy) {
-                case "newest":
-                    pageable = PageRequest.of(page - 1, 12, Sort.by("createdAt").descending());
+                case "oldest":
+                    pageable = PageRequest.of(page - 1, 12, Sort.by("createdAt").ascending());
                     break;
                 case "price_asc":
                     pageable = PageRequest.of(page - 1, 12, Sort.by("price").ascending());
@@ -51,10 +50,10 @@ public class ShopController extends BaseController{
                     pageable = PageRequest.of(page - 1, 12, Sort.by("price").descending());
                     break;
                 default:
-                    pageable = PageRequest.of(page - 1, 12);
+                    pageable = PageRequest.of(page - 1, 12, Sort.by("createdAt").descending());
             }
         } else {
-            pageable = PageRequest.of(page - 1, 12);
+            pageable = PageRequest.of(page - 1, 12, Sort.by("createdAt").descending());
         }
 
         Page<Product> products;
@@ -100,7 +99,8 @@ public class ShopController extends BaseController{
 
 
     @GetMapping("/product/{id}")
-    public String viewProductDetail(@PathVariable Long id, Model model) {
+    public String viewProductDetail(@PathVariable Long id,
+                                    Model model) {
         Pageable pageable = PageRequest.of(0, 6);
         Product product = productService.getProductById(id);
         model.addAttribute("product", product);
