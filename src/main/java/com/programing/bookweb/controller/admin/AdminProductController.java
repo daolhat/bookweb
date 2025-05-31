@@ -200,6 +200,7 @@ public class AdminProductController extends BaseController {
         try {
             productService.addProduct(product);
             redirectAttributes.addFlashAttribute("success", "Thêm sản phẩm thành công.");
+            return "redirect:/dashboard/product_management/add";
         } catch (Exception e) {
             System.out.println("Lỗi: " + e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Lỗi khi thêm sản phẩm.");

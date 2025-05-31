@@ -3,15 +3,10 @@ package com.programing.bookweb.controller.admin;
 import com.programing.bookweb.controller.BaseController;
 import com.programing.bookweb.dto.TopProductDTO;
 import com.programing.bookweb.dto.TopUserDTO;
-import com.programing.bookweb.entity.Product;
-import com.programing.bookweb.entity.User;
 import com.programing.bookweb.service.IOrderService;
 import com.programing.bookweb.service.IProductService;
 import com.programing.bookweb.service.IUserService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @AllArgsConstructor
@@ -73,9 +67,9 @@ public class AdminHomeController extends BaseController {
             List<TopUserDTO> topSpendingUsers = orderService.getTopUsers();
             model.addAttribute("topSpendingUsers", topSpendingUsers != null ? topSpendingUsers : new ArrayList<>());
 
-            //Sản phẩm tồn kho
-            List<Product> inventory = productService.getProductsWithOldestDateAndMaxQuantity();
-            model.addAttribute("inventory", inventory != null ? inventory : new ArrayList<>());
+//            //Sản phẩm tồn kho
+//            List<Product> inventory = productService.getProductsWithOldestDateAndMaxQuantity();
+//            model.addAttribute("inventory", inventory != null ? inventory : new ArrayList<>());
 
             // Thông tin tổng quát
             BigDecimal totalRevenue = orderService.getTotalRevenue();

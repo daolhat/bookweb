@@ -41,12 +41,26 @@ public class ProfileController extends BaseController{
             model.addAttribute("user", user);
 
             UserDTO userDTO = new UserDTO();
+
+//            String address = !user.getAddress().isEmpty() ? user.getAddress() : "Không có địa chỉ";
+//            userDTO.setAddress(address);
+//
+//            String gender = !user.getGender().isEmpty() ? user.getGender() : "Không";
+//            userDTO.setGender(gender);
+
+//            String avatar = !user.getAvatar().isEmpty() ? user.getAvatar() : " ";
+//            userDTO.setAvatar(avatar);
+
             userDTO.setAddress(user.getAddress());
             userDTO.setGender(user.getGender());
             userDTO.setFullName(user.getFullName());
             userDTO.setPhoneNumber(user.getPhoneNumber());
 
+//            Date localDate = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+
             Date date = Date.from(user.getBirthday().atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+//            Date date = user.getBirthday() != null ? birthDate : localDate;
             userDTO.setBirthday(date);
 
             model.addAttribute("userDTO", userDTO);
@@ -63,7 +77,6 @@ public class ProfileController extends BaseController{
                              BindingResult result,
                              Model model,
                              RedirectAttributes redirectAttributes) {
-
         try {
             User user = userService.getUserById(getCurrentUser().getId());
             if (user == null) {

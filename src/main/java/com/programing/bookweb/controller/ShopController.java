@@ -5,7 +5,6 @@ import com.programing.bookweb.entity.Product;
 import com.programing.bookweb.service.ICategoryService;
 import com.programing.bookweb.service.IProductService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

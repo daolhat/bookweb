@@ -45,9 +45,14 @@
                                     </div>
                                     <div class="ps-3">
                                         <h6 th:text="${dailyOrderStats.todayOrderCount}">0</h6>
-                                        <span th:if="${dailyOrderStats.orderGrowthRate > 0}" class="text-success small pt-1 fw-bold" th:text="${#numbers.formatDecimal(dailyOrderStats.orderGrowthRate, 0, 1) + '%'}">0%</span>
-                                        <span th:if="${dailyOrderStats.orderGrowthRate <= 0}" class="text-danger small pt-1 fw-bold" th:text="${#numbers.formatDecimal(dailyOrderStats.orderGrowthRate, 0, 1) + '%'}">0%</span>
-                                        <span class="text-muted small pt-2 ps-1" th:text="${dailyOrderStats.orderGrowthRate > 0 ? 'Tăng' : 'Giảm'}">Tăng</span>
+                                        <span th:if="${dailyOrderStats.orderGrowthRate > 0}"
+                                              class="text-success small pt-1 fw-bold"
+                                              th:text="${#numbers.formatDecimal(dailyOrderStats.orderGrowthRate, 0, 1) + '%'}">0%</span>
+                                        <span th:if="${dailyOrderStats.orderGrowthRate <= 0}"
+                                              class="text-danger small pt-1 fw-bold"
+                                              th:text="${#numbers.formatDecimal(dailyOrderStats.orderGrowthRate, 0, 1) + '%'}">0%</span>
+                                        <span class="text-muted small pt-2 ps-1"
+                                              th:text="${dailyOrderStats.orderGrowthRate > 0 ? 'Tăng' : 'Giảm'}">Tăng</span>
                                     </div>
                                 </div>
                             </div>
@@ -64,10 +69,16 @@
                                         <i class="bi bi-currency-dollar"></i>
                                     </div>
                                     <div class="ps-3">
-                                        <h6 th:text="${#numbers.formatDecimal(revenueStats.currentMonthRevenue, 0, 'COMMA', 0, 'POINT') + ' đ'}">0 đ</h6>
-                                        <span th:if="${revenueStats.revenueGrowthRate > 0}" class="text-success small pt-1 fw-bold" th:text="${#numbers.formatDecimal(revenueStats.revenueGrowthRate, 0, 1) + '%'}">0%</span>
-                                        <span th:if="${revenueStats.revenueGrowthRate <= 0}" class="text-danger small pt-1 fw-bold" th:text="${#numbers.formatDecimal(revenueStats.revenueGrowthRate, 0, 1) + '%'}">0%</span>
-                                        <span class="text-muted small pt-2 ps-1" th:text="${revenueStats.revenueGrowthRate > 0 ? 'Tăng' : 'Giảm'}">Tăng</span>
+                                        <h6 th:text="${#numbers.formatDecimal(revenueStats.currentMonthRevenue, 0, 'COMMA', 0, 'POINT') + ' đ'}">
+                                            0 đ</h6>
+                                        <span th:if="${revenueStats.revenueGrowthRate > 0}"
+                                              class="text-success small pt-1 fw-bold"
+                                              th:text="${#numbers.formatDecimal(revenueStats.revenueGrowthRate, 0, 1) + '%'}">0%</span>
+                                        <span th:if="${revenueStats.revenueGrowthRate <= 0}"
+                                              class="text-danger small pt-1 fw-bold"
+                                              th:text="${#numbers.formatDecimal(revenueStats.revenueGrowthRate, 0, 1) + '%'}">0%</span>
+                                        <span class="text-muted small pt-2 ps-1"
+                                              th:text="${revenueStats.revenueGrowthRate > 0 ? 'Tăng' : 'Giảm'}">Tăng</span>
                                     </div>
                                 </div>
                             </div>
@@ -84,9 +95,10 @@
                                     </div>
                                     <div class="ps-3">
                                         <h6 th:text="${userStats.totalUsers}">0</h6>
-                                        <span th:if="${userStats.userGrowthRate > 0}" class="text-success small pt-1 fw-bold" th:text="${#numbers.formatDecimal(userStats.userGrowthRate, 0, 1) + '%'}">0%</span>
-                                        <span th:if="${userStats.userGrowthRate <= 0}" class="text-danger small pt-1 fw-bold" th:text="${#numbers.formatDecimal(userStats.userGrowthRate, 0, 1) + '%'}">0%</span>
-                                        <span class="text-muted small pt-2 ps-1">Mới: <span th:text="${userStats.newUsersThisMonth}">0</span></span>
+                                        <!--                                        <span th:if="${userStats.userGrowthRate > 0}" class="text-success small pt-1 fw-bold" th:text="${#numbers.formatDecimal(userStats.userGrowthRate, 0, 1) + '%'}">0%</span>-->
+                                        <!--                                        <span th:if="${userStats.userGrowthRate <= 0}" class="text-danger small pt-1 fw-bold" th:text="${#numbers.formatDecimal(userStats.userGrowthRate, 0, 1) + '%'}">0%</span>-->
+                                        <span class="text-muted small pt-2 ps-1">Mới: <span
+                                                th:text="${userStats.newUsersThisMonth}">0</span></span>
                                     </div>
                                 </div>
                             </div>
@@ -156,6 +168,75 @@
                         </div>
                     </div>
 
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Biểu đồ thống kê doanh thu <span>| 6 tháng gần nhất</span></h5>
+                                <div id="monthlyChart"></div>
+                                <script th:inline="javascript">
+                                    document.addEventListener("DOMContentLoaded", () => {
+                                      // Lấy dữ liệu từ controller
+                                      const monthlyLabels = /*[[${monthlyChartLabels}]]*/ [];
+                                      const monthlyRevenueData = /*[[${monthlyChartRevenueData}]]*/ [];
+                                      const monthlyUserData = /*[[${monthlyChartUserData}]]*/ [];
+
+                                      new ApexCharts(document.querySelector("#monthlyChart"), {
+                                        series: [{
+                                          name: 'Doanh thu (triệu đồng)',
+                                          data: monthlyRevenueData,
+                                          type: 'column'
+                                        }, {
+                                          name: 'Người dùng mới',
+                                          data: monthlyUserData,
+                                          type: 'line'
+                                        }],
+                                        chart: {
+                                          height: 350,
+                                          type: 'line',
+                                          toolbar: {
+                                            show: false
+                                          },
+                                        },
+                                        plotOptions: {
+                                          bar: {
+                                            borderRadius: 5,
+                                            columnWidth: '50%',
+                                          }
+                                        },
+                                        colors: ['#2eca6a', '#ff771d'],
+                                        dataLabels: {
+                                          enabled: false
+                                        },
+                                        stroke: {
+                                          width: [0, 3]
+                                        },
+                                        xaxis: {
+                                          categories: monthlyLabels
+                                        },
+                                        yaxis: [
+                                          {
+                                            title: {
+                                              text: 'Doanh thu (triệu đồng)',
+                                            },
+                                          },
+                                          {
+                                            opposite: true,
+                                            title: {
+                                              text: 'Người dùng mới'
+                                            }
+                                          }
+                                        ],
+                                        tooltip: {
+                                          shared: true,
+                                          intersect: false
+                                        }
+                                      }).render();
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col-6">
                         <div class="card top-selling overflow-auto">
                             <div class="card-body pb-0">
@@ -178,7 +259,8 @@
                                         <td th:text="${productStat.count}"></td>
                                         <td>
                                             <a th:href="@{/dashboard/product_management/update/{id}(id=${product.id})}"
-                                               class="text-primary fw-bold" th:text="${#strings.abbreviate(product.title, 40)}"></a>
+                                               class="text-primary fw-bold"
+                                               th:text="${#strings.abbreviate(product.title, 40)}"></a>
                                         </td>
                                         <td th:text="${#numbers.formatDecimal(product.price * (1 - product.discount / 100.0), 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>
                                         <td class="fw-bold" th:text="${product.quantity}"></td>
@@ -211,7 +293,8 @@
                                         <tr th:each="user, userStat : ${topSpendingUsers}">
                                             <td th:text="${userStat.count}"></td>
                                             <td>
-                                                <a th:href="@{/dashboard/user_management/{id}(id=${user.id})}" class="text-primary fw-bold" th:text="${user.fullName}"></a>
+                                                <a th:href="@{/dashboard/user_management/{id}(id=${user.id})}"
+                                                   class="text-primary fw-bold" th:text="${user.fullName}"></a>
                                             </td>
                                             <td>
                                                 <div th:text="'Số ĐT: ' + ${user.phoneNumber}"></div>
@@ -227,41 +310,6 @@
                         </div>
                     </div>
 
-<!--                    <div class="col-6">-->
-<!--                        <div class="card">-->
-<!--                            <div class="card-body">-->
-<!--                                <h5 class="card-title">Sản phẩm tồn kho</h5>-->
-<!--                                <div class="col-12">-->
-<!--                                    <table class="table table-borderless">-->
-<!--                                        <thead>-->
-<!--                                        <tr>-->
-<!--                                            <th scope="col">STT</th>-->
-<!--                                            <th scope="col" style="width: 8rem">Tiêu đề</th>-->
-<!--                                            <th scope="col" style="width: 8rem">Thể loại</th>-->
-<!--                                            <th scope="col">Giá bán</th>-->
-<!--                                            <th scope="col">Số lượng còn lại</th>-->
-<!--                                        </tr>-->
-<!--                                        </thead>-->
-<!--                                        <tbody>-->
-<!--                                        <tr th:if="${#lists.isEmpty(inventory)}">-->
-<!--                                            <td colspan="3" class="text-center">Không có dữ liệu</td>-->
-<!--                                        </tr>-->
-<!--                                        <tr th:each="product, productStat : ${inventory}">-->
-<!--                                            <td th:text="${productStat.count}"></td>-->
-<!--                                            <td>-->
-<!--                                                <a th:href="@{/dashboard/product_management/{id}(id=${product.id})}"-->
-<!--                                                   class="text-primary fw-bold" th:text="${#strings.abbreviate(product.title, 40)}"></a>-->
-<!--                                            </td>-->
-<!--                                            <td th:text="${product.category.name}"></td>-->
-<!--                                            <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT') + ' đ'}"></td>-->
-<!--                                            <td class="fw-bold" th:text="${product.quantity}"></td>-->
-<!--                                        </tr>-->
-<!--                                        </tbody>-->
-<!--                                    </table>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
                 </div>
             </div>
 
