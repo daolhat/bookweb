@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -93,6 +94,11 @@ public class UserServiceImpl implements IUserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setEnabled(true);
         user.setCreatedAt(LocalDateTime.now());
+
+        user.setAddress("Không có");
+        user.setGender("Không");
+        user.setAvatar("avatardefault.jpg");
+        user.setBirthday(LocalDate.of(2000, 1, 1));
         // Initialize collections
         if (user.getRoles() == null) {
             user.setRoles(new HashSet<>());
